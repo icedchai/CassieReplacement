@@ -108,6 +108,7 @@
             {
                 CassieClip cassieClip = new CassieClip(file);
                 registeredClips.Add(cassieClip);
+
                 // Prevent duplicates from being registered by appending _ to the name as needed.
                 while (AudioClipStorage.AudioClips.ContainsKey(cassieClip.Name))
                 {
