@@ -22,7 +22,7 @@
         /// <summary>
         /// Gets or sets the directory from which audio files are sourced.
         /// </summary>
-        [Description("This is the folders where all of your audio clips will be stored. Defaults to EXILED/Configs if is set to null or empty.")]
+        [Description("This is the folders where all of your audio clips will be stored. Defaults to EXILED/Configs if is set to null or empty. \n\nIMPORTANT: DIRECTORIES ARE ABSOLUTE, NOT RELATIVE!")]
         public List<string> BaseDirectories { get; set; } = new List<string>
         {
             "cassie",
@@ -37,7 +37,6 @@
         /// <summary>
         /// Gets or sets the number of seconds each clip has subtracted from its 'length'.
         /// </summary>
-
         [Description("This is the amount of seconds that each clip is allowed to bleed into the next one. Intended use case is for reverb.")]
         public float CassieReverb { get; set; } = 0f;
     }
