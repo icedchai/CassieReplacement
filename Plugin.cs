@@ -81,6 +81,12 @@
         public override void OnDisabled()
         {
             base.OnDisabled();
+            Singleton = null;
+            foreach (CassieClip clip in registeredClips)
+            {
+                AudioClipStorage.DestroyClip(clip.Name);
+                registeredClips.Remove(clip);
+            }
         }
 
         /// <summary>
@@ -107,7 +113,6 @@
             foreach (FileInfo file in d.GetFiles("*.ogg"))
             {
                 CassieClip cassieClip = new CassieClip(file);
-                registeredClips.Add(cassieClip);
 
                 // Prevent duplicates from being registered by appending _ to the name as needed.
                 while (AudioClipStorage.AudioClips.ContainsKey(cassieClip.Name))
@@ -115,6 +120,7 @@
                     cassieClip.Name += "_";
                 }
 
+                registeredClips.Add(cassieClip);
                 AudioClipStorage.LoadClip(cassieClip.FileInfo.FullName, cassieClip.Name);
 
                 Log.Debug($"Registered {cassieClip.Name}, at {cassieClip.FileInfo.FullName}, length {cassieClip.Length}");
