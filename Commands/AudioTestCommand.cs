@@ -12,13 +12,13 @@
     public class AudioTestCommand : ICommand
     {
         /// <inheritdoc/>
-        public string Command => "test";
+        public string Command => "customcassie";
 
         /// <inheritdoc/>
-        public string[] Aliases => new string[] { "test1" };
+        public string[] Aliases => new string[] { "ccassie", "cassiesay", "custommsg" };
 
         /// <inheritdoc/>
-        public string Description => "Test command";
+        public string Description => "Runs a custom CASSIE line.";
 
         /// <inheritdoc/>
         public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
