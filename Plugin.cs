@@ -77,6 +77,7 @@
                     // This created speaker will be in 2D space ( audio will be always playing directly on you not from specific location ) but make sure that max distance is set to some higher value.
                     Speaker speaker = p.AddSpeaker("Main", isSpatial: false, maxDistance: 5000f);
                 });
+                Timing.RunCoroutine(CommonFuncs.CassieCheck());
             });
         }
 

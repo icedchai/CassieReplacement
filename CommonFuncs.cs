@@ -3,9 +3,12 @@
     using Exiled.API.Features;
     using MEC;
     using Respawning;
+    using Subtitles;
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using UnityEngine;
+    using Utils.Networking;
 
     /// <summary>
     /// Common functions used throughout the project.
@@ -16,6 +19,24 @@
 
         private static Config Config => Plugin.Singleton.Config;
 
+        private static int ticksSinceCassieSpoke = 0;
+
+        public static IEnumerator<float> CassieCheck()
+        {
+            while (true)
+            {
+                if (Cassie.IsSpeaking)
+                {
+                    ticksSinceCassieSpoke = 0;
+                }
+                else
+                {
+                    ticksSinceCassieSpoke++;
+                }
+
+                yield return Timing.WaitForOneFrame;
+            }
+        }
         /// <summary>
         /// Reads a message.
         /// </summary>
@@ -49,18 +70,14 @@
                 a += " . .";
             }
 
-            if (!Cassie.IsSpeaking)
+            if (ticksSinceCassieSpoke <= 360)
             {
-                Cassie.Clear();
-                Timing.CallDelayed(3f, () =>
-                {
-                    RespawnEffectsController.PlayCassieAnnouncement(string.IsNullOrWhiteSpace(translation) ? a : $"{translation.Replace(' ', '\u2005')}<size=0>{a}</size>", false, true, !string.IsNullOrWhiteSpace(translation));
-                    Timing.CallDelayed(2.25f, () => ReadWords(messages));
-                });
+                Timing.CallDelayed(0.5f, () => ReadMessage(messages, translation));
             }
             else
             {
-                Timing.CallDelayed(0.5f, () => ReadMessage(messages));
+                RespawnEffectsController.PlayCassieAnnouncement(string.IsNullOrWhiteSpace(translation) ? a : $"{translation.Replace(' ', '\u2005')}<size=0>{a}</size>", false, true, !string.IsNullOrWhiteSpace(translation));
+                Timing.CallDelayed(2.25f, () => ReadWords(messages));
             }
         }
 
