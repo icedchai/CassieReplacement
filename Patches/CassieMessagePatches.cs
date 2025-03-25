@@ -2,21 +2,22 @@
 {
     using Exiled.API.Features;
     using HarmonyLib;
+    using Respawning;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
 
-    [HarmonyPatch(typeof(Cassie), nameof(Cassie.Message))]
+    [HarmonyPatch(typeof(RespawnEffectsController), nameof(RespawnEffectsController.PlayCassieAnnouncement))]
     public static class CassieMessagePatches
     {
         [HarmonyPrefix]
-        public static bool MessagePrefix(string message, bool isHeld, bool isNoisy, bool isSubtitles)
+        public static bool MessagePrefix(string words, bool makeHold, bool makeNoise, bool customAnnouncement)
         {
-            if (message.StartsWith("customcassie"))
+            if (words.StartsWith("customcassie"))
             {
-                CommonFuncs.ReadMessage(message.Split(' ').ToList());
+                CommonFuncs.ReadMessage(words.Split(' ').ToList());
                 return false;
             }
 
