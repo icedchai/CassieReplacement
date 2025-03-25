@@ -2,6 +2,7 @@
 {
     using Exiled.API.Features;
     using MEC;
+    using Respawning;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -19,7 +20,7 @@
         /// Reads a message.
         /// </summary>
         /// <param name="messages">A list of strings to read.</param>
-        public static void ReadMessage(List<string> messages)
+        public static void ReadMessage(List<string> messages, string translation = "")
         {
             float bg = 0f;
             foreach (string msg in messages)
@@ -53,7 +54,7 @@
                 Cassie.Clear();
                 Timing.CallDelayed(3f, () =>
                 {
-                    Cassie.Message(a, false, true, true);
+                    RespawnEffectsController.PlayCassieAnnouncement(string.IsNullOrWhiteSpace(translation) ? a : $"{translation.Replace(' ', '\u2005')}<size=0>{a}</size>", false, true, !string.IsNullOrWhiteSpace(translation));
                     Timing.CallDelayed(2.25f, () => ReadWords(messages));
                 });
             }

@@ -32,6 +32,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="0Harmony">
+      <HintPath>..\..\dependancies\0Harmony.dll</HintPath>
+    </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>$(EXILED_REFERENCES)\Assembly-CSharp.dll</HintPath>
     </Reference>
@@ -121,6 +124,8 @@
     <Compile Include="CommonFuncs.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Commands\ListWordsCommand.cs" />
+    <Compile Include="Patches\CassieMessagePatches.cs" />
+    <Compile Include="Patches\Patcher.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

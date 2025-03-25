@@ -1,7 +1,10 @@
 ﻿namespace CassieReplacement
 {
     using CassieReplacement.Models;
+    using CassieReplacement.Patches;
+    using Exiled.API.Enums;
     using Exiled.API.Features;
+    using HarmonyLib;
     using MEC;
     using NVorbis;
     using System;
@@ -59,7 +62,7 @@
         {
             base.OnEnabled();
             Singleton = this;
-
+            Patcher.DoPatching();
             foreach (string configDir in Config.BaseDirectories)
             {
                 // Ensure that a null or non-existent directory does not get through.
@@ -82,6 +85,8 @@
         {
             base.OnDisabled();
             Singleton = null;
+            Harmony harmony = new Harmony("me.icedchai.cassie.patch");
+            harmony.UnpatchAll("me.icedchai.cassie.patch");
             foreach (CassieClip clip in registeredClips)
             {
                 AudioClipStorage.DestroyClip(clip.Name);
