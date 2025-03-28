@@ -37,7 +37,7 @@
         public override string Author => "icedchqi";
 
         /// <inheritdoc/>
-        public override Version Version => new (1, 2, 0);
+        public override Version Version => new (1, 2, 1);
 
         private static List<CassieClip> registeredClips = new List<CassieClip>();
 
@@ -72,13 +72,11 @@
 
             Timing.CallDelayed(10f, () =>
             {
-                CassiePlayer = AudioPlayer.CreateOrGet($"icedchqi_cassieplayer", onIntialCreation: (p) =>
-                {
-                    // This created speaker will be in 2D space ( audio will be always playing directly on you not from specific location ) but make sure that max distance is set to some higher value.
-                    Speaker speaker = p.AddSpeaker("Main", isSpatial: false, maxDistance: 5000f);
-                });
+                CommonFuncs.InitSpeaker();
                 Timing.RunCoroutine(CommonFuncs.CassieCheck());
             });
+
+            Exiled.Events.Handlers.Server.RoundStarted += CommonFuncs.InitSpeaker;
         }
 
         /// <inheritdoc/>
@@ -93,6 +91,8 @@
                 AudioClipStorage.DestroyClip(clip.Name);
                 registeredClips.Remove(clip);
             }
+
+            Exiled.Events.Handlers.Server.RoundStarted -= CommonFuncs.InitSpeaker;
         }
 
         /// <summary>

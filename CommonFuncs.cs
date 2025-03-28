@@ -15,11 +15,37 @@
     /// </summary>
     public static class CommonFuncs
     {
-        private static AudioPlayer CassiePlayer => Plugin.CassiePlayer;
+        private static AudioPlayer CassiePlayer
+        {
+            get
+            {
+                return Plugin.CassiePlayer;
+            }
+
+            set
+            {
+                Plugin.CassiePlayer = value;
+            }
+        }
 
         private static Config Config => Plugin.Singleton.Config;
 
         private static int ticksSinceCassieSpoke = 0;
+
+        /// <summary>
+        /// Destroys the speaker on <see cref="Plugin.CassiePlayer"/>, and then re-adds it.
+        /// </summary>
+        public static void InitSpeaker()
+        {
+            if (AudioPlayer.TryGet($"icedchqi_cassieplayer", out AudioPlayer player))
+            {
+                player.Destroy();
+            }
+
+            CassiePlayer = AudioPlayer.Create("icedchqi_cassieplayer");
+            CassiePlayer.AddSpeaker("Main", isSpatial: false, maxDistance: 5000f);
+
+        }
 
         public static IEnumerator<float> CassieCheck()
         {
