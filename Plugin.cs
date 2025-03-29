@@ -72,7 +72,6 @@
 
             Timing.CallDelayed(10f, () =>
             {
-                CommonFuncs.InitSpeaker();
                 Timing.RunCoroutine(CommonFuncs.CassieCheck());
             });
 

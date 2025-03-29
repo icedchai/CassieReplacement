@@ -39,7 +39,10 @@
         {
             if (AudioPlayer.TryGet($"icedchqi_cassieplayer", out AudioPlayer player))
             {
-                player.Destroy();
+                if (player is not null)
+                {
+                    player.Destroy();
+                }
             }
 
             CassiePlayer = AudioPlayer.Create("icedchqi_cassieplayer");
@@ -63,6 +66,7 @@
                 yield return Timing.WaitForOneFrame;
             }
         }
+
         /// <summary>
         /// Reads a message.
         /// </summary>
