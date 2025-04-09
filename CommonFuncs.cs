@@ -50,6 +50,10 @@
 
         }
 
+        /// <summary>
+        /// Checks every frame whether CASSIE is speaking.
+        /// </summary>
+        /// <returns>IEnumerator float.</returns>
         public static IEnumerator<float> CassieCheck()
         {
             while (true)

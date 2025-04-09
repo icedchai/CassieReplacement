@@ -37,12 +37,18 @@
         public override string Author => "icedchqi";
 
         /// <inheritdoc/>
-        public override Version Version => new (1, 2, 1);
+        public override Version Version => new (1, 3, 0);
 
         private static List<CassieClip> registeredClips = new List<CassieClip>();
 
+        /// <summary>
+        /// Gets a list of all registered <see cref="CassieClip"/>'s.
+        /// </summary>
         public static List<CassieClip> RegisteredClips => registeredClips;
 
+        /// <summary>
+        /// Gets a list of all registered <see cref="CassieClip"/> names.
+        /// </summary>
         public static List<string> RegisteredClipNames
         {
             get
