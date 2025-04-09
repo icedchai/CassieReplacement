@@ -124,6 +124,7 @@
             if (!AudioClipStorage.AudioClips.ContainsKey(msg))
             {
                 ReadWords(messages);
+                return;
             }
 
             CassiePlayer.AddClip(msg, Config.CassieVolume);

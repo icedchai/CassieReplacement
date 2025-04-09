@@ -17,7 +17,9 @@
         {
             if (words.StartsWith("customcassie"))
             {
-                CommonFuncs.ReadMessage(words.Split(' ').ToList());
+                List<string> input = words.ToLower().Split(' ').ToList();
+                input.Remove("customcassie");
+                CommonFuncs.ReadMessage(input);
                 return false;
             }
 
@@ -30,7 +32,9 @@
         {
             if (message.StartsWith("customcassie"))
             {
-                CommonFuncs.ReadMessage(message.Split(' ').ToList(), translation);
+                List<string> input = message.ToLower().Split(' ').ToList();
+                input.Remove("customcassie");
+                CommonFuncs.ReadMessage(input, translation);
                 return false;
             }
 
