@@ -107,27 +107,27 @@
             else
             {
                 RespawnEffectsController.PlayCassieAnnouncement(string.IsNullOrWhiteSpace(translation) ? a : $"{translation.Replace(' ', '\u2005')}<size=0>{a}</size>", false, true, !string.IsNullOrWhiteSpace(translation));
-                Timing.CallDelayed(2.25f, () => ReadWords(messages, CassiePlayer));
+                Timing.CallDelayed(2.25f, () => ReadWords(messages));
             }
         }
 
-        private static void ReadWords(List<string> messages, AudioPlayer audioPlayer)
+        private static void ReadWords(List<string> messages)
         {
             string msg = messages[0].ToLower();
             messages.Remove(msg);
             if (msg[0] == '.')
             {
-                Timing.CallDelayed(0.25f, () => ReadWords(messages, audioPlayer));
+                Timing.CallDelayed(0.25f, () => ReadWords(messages));
                 return;
             }
 
             if (!AudioClipStorage.AudioClips.ContainsKey(msg))
             {
-                ReadWords(messages, audioPlayer);
+                ReadWords(messages);
             }
 
-            audioPlayer.AddClip(msg, Config.CassieVolume);
-            Timing.CallDelayed(Plugin.GetClipLength(msg), () => ReadWords(messages, audioPlayer));
+            CassiePlayer.AddClip(msg, Config.CassieVolume);
+            Timing.CallDelayed(Plugin.GetClipLength(msg), () => ReadWords(messages));
         }
     }
 }
