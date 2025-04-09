@@ -71,8 +71,13 @@
         /// Reads a message.
         /// </summary>
         /// <param name="messages">A list of strings to read.</param>
-        public static void ReadMessage(List<string> messages, string translation = "")
+        public static void ReadMessage(List<string> messages, AudioPlayer audioPlayer = null, string translation = "")
         {
+            if (audioPlayer is null)
+            {
+                audioPlayer = CassiePlayer;
+            }
+
             float bg = 0f;
             foreach (string msg in messages)
             {
@@ -102,33 +107,38 @@
 
             if (ticksSinceCassieSpoke <= 360)
             {
-                Timing.CallDelayed(0.5f, () => ReadMessage(messages, translation));
+                Timing.CallDelayed(0.5f, () => ReadMessage(messages, audioPlayer: audioPlayer, translation: translation));
             }
             else
             {
                 RespawnEffectsController.PlayCassieAnnouncement(string.IsNullOrWhiteSpace(translation) ? a : $"{translation.Replace(' ', '\u2005')}<size=0>{a}</size>", false, true, !string.IsNullOrWhiteSpace(translation));
-                Timing.CallDelayed(2.25f, () => ReadWords(messages));
+                Timing.CallDelayed(2.25f, () => ReadWords(messages, audioPlayer));
             }
         }
 
-        private static void ReadWords(List<string> messages)
+        private static void ReadWords(List<string> messages, AudioPlayer audioPlayer = null)
         {
+            if (audioPlayer is null)
+            {
+                audioPlayer = CassiePlayer;
+            }
+
             string msg = messages[0].ToLower();
             messages.Remove(msg);
             if (msg[0] == '.')
             {
-                Timing.CallDelayed(0.25f, () => ReadWords(messages));
+                Timing.CallDelayed(0.25f, () => ReadWords(messages, audioPlayer));
                 return;
             }
 
             if (!AudioClipStorage.AudioClips.ContainsKey(msg))
             {
-                ReadWords(messages);
+                ReadWords(messages, audioPlayer);
                 return;
             }
 
-            CassiePlayer.AddClip(msg, Config.CassieVolume);
-            Timing.CallDelayed(Plugin.GetClipLength(msg), () => ReadWords(messages));
+            audioPlayer.AddClip(msg, Config.CassieVolume);
+            Timing.CallDelayed(Plugin.GetClipLength(msg), () => ReadWords(messages, audioPlayer));
         }
     }
 }

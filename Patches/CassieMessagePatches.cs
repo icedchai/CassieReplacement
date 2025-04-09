@@ -34,7 +34,7 @@
             {
                 List<string> input = message.ToLower().Split(' ').ToList();
                 input.Remove("customcassie");
-                CommonFuncs.ReadMessage(input, translation);
+                CommonFuncs.ReadMessage(input, translation: translation);
                 return false;
             }
 
