@@ -14,16 +14,22 @@
         /// Initializes a new instance of the <see cref="CassieClip"/> class.
         /// </summary>
         /// <param name="file">The FileInfo.</param>
-        public CassieClip(FileInfo file)
+        /// <param name="reverb">The amount to subtract from the length of the clip.</param>
+        /// <param name="prefix">The prefix to add to the name.</param>
+        public CassieClip(FileInfo file, float reverb = 0f, string prefix = "")
         {
             VorbisReader vorbisReader = new (file.FullName);
             FileInfo = file;
             Name = Path.GetFileNameWithoutExtension(file.FullName).ToLower().Replace(' ', '_');
-            Length = vorbisReader.TotalTime.TotalSeconds - Plugin.PluginConfig.CassieReverb > 0 ? (float)vorbisReader.TotalTime.TotalSeconds - Plugin.PluginConfig.CassieReverb : 0f;
+            Name = $"{prefix}{Name}";
+            BaseLength = (float)vorbisReader.TotalTime.TotalSeconds;
+            Length = BaseLength - reverb > 0 ? BaseLength - reverb : 0f;
             vorbisReader.Dispose();
         }
 
-        public float Length { get; set; } = 0f;
+        public float BaseLength { get; set; }
+
+        public float Length { get; set; }
 
         public string Name { get; set; }
 

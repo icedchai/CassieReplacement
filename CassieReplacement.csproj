@@ -124,6 +124,7 @@
     <Compile Include="CommonFuncs.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Commands\ListWordsCommand.cs" />
+    <Compile Include="Models\CassieDirectory.cs" />
     <Compile Include="Patches\CassieMessagePatches.cs" />
     <Compile Include="Patches\Patcher.cs" />
     <Compile Include="Plugin.cs" />

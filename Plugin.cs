@@ -63,11 +63,10 @@
             base.OnEnabled();
             Singleton = this;
             Patcher.DoPatching();
-            foreach (string configDir in Config.BaseDirectories)
+            foreach (CassieDirectory configDir in Config.BaseDirectories)
             {
-                // Ensure that a null or non-existent directory does not get through.
-                string directory = string.IsNullOrWhiteSpace(configDir) || !Directory.Exists(configDir) ? Paths.Configs : configDir;
-                RegisterFolder(directory);
+                // Ensure that a null or non-existent directory does not get through
+                RegisterFolder(configDir);
             }
 
             Timing.CallDelayed(10f, () =>
@@ -111,13 +110,22 @@
             return 0f;
         }
 
-        private void RegisterFolder(string directory)
+        private void RegisterFolder(CassieDirectory directoryConfiguration, string directory = null)
         {
-            DirectoryInfo d = new DirectoryInfo(directory);
+            DirectoryInfo d = new DirectoryInfo(directoryConfiguration.Path);
+            if (directory is not null)
+            {
+                d = new DirectoryInfo(directory);
+            }
+
+            foreach (DirectoryInfo directoryInfo in d.GetDirectories())
+            {
+                RegisterFolder(directoryConfiguration, directoryInfo.FullName);
+            }
 
             foreach (FileInfo file in d.GetFiles("*.ogg"))
             {
-                CassieClip cassieClip = new CassieClip(file);
+                CassieClip cassieClip = new CassieClip(file, directoryConfiguration.BleedTime, directoryConfiguration.Prefix);
 
                 // Prevent duplicates from being registered by appending _ to the name as needed.
                 while (AudioClipStorage.AudioClips.ContainsKey(cassieClip.Name))
