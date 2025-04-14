@@ -71,7 +71,6 @@
             Patcher.DoPatching();
             foreach (CassieDirectory configDir in Config.BaseDirectories)
             {
-                // Ensure that a null or non-existent directory does not get through
                 RegisterFolder(configDir);
             }
 
@@ -122,6 +121,11 @@
             if (directory is not null)
             {
                 d = new DirectoryInfo(directory);
+            }
+
+            if (!d.Exists)
+            {
+                return;
             }
 
             foreach (DirectoryInfo directoryInfo in d.GetDirectories())
