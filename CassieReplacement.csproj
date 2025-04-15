@@ -33,7 +33,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="0Harmony">
-      <HintPath>..\..\dependancies\0Harmony.dll</HintPath>
+      <HintPath>$(EXILED_REFERENCES)\0Harmony.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>$(EXILED_REFERENCES)\Assembly-CSharp.dll</HintPath>
