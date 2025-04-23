@@ -4,9 +4,10 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using static UnityEngine.GraphicsBuffer;
 
     /// <summary>
-    /// The command used to invoke <see cref="CommonFuncs.ReadMessage(List{string})(System.Collections.Generic.List{string})"/> in-game.
+    /// The command used to invoke <see cref="Reader.ReadMessage(List{string})(System.Collections.Generic.List{string})"/> in-game.
     /// </summary>
     [CommandHandler(typeof(RemoteAdminCommandHandler))]
     public class AudioTestCommand : ICommand
@@ -24,13 +25,15 @@
         public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
         {
             List<string> words = arguments.ToList();
-            if (float.TryParse(arguments.At(0), out float vol))
+
+            string firstarg = words.First();
+            if (float.TryParse(firstarg, out float vol))
             {
-                words.Remove(arguments.At(0));
                 Plugin.PluginConfig.CassieVolume = vol;
             }
+            words.Remove(arguments.At(0));
 
-            CommonFuncs.ReadMessage(words);
+            Reader.ReadMessage(words, AudioPlayer.TryGet(firstarg, out AudioPlayer player) ? player : Plugin.CassiePlayer);
             response = $"Tried {string.Join(" ", words)}";
             return true;
         }

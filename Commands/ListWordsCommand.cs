@@ -5,7 +5,7 @@
     using System.Collections.Generic;
 
     /// <summary>
-    /// The command used to invoke <see cref="CommonFuncs.ReadMessage(List{string})(System.Collections.Generic.List{string})"/> in-game.
+    /// The command used to invoke <see cref="Reader.ReadMessage(List{string})(System.Collections.Generic.List{string})"/> in-game.
     /// </summary>
     [CommandHandler(typeof(RemoteAdminCommandHandler))]
     public class ListWordsCommand : ICommand

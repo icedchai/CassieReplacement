@@ -1,13 +1,13 @@
 ﻿namespace CassieReplacement.Patches
 {
-    using Exiled.API.Features;
-    using HarmonyLib;
-    using Respawning;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
+    using Exiled.API.Features;
+    using HarmonyLib;
+    using Respawning;
 
     [HarmonyPatch(typeof(RespawnEffectsController), nameof(RespawnEffectsController.PlayCassieAnnouncement))]
     public static class CassieMessagePatches
@@ -19,7 +19,7 @@
             {
                 List<string> input = words.ToLower().Split(' ').ToList();
                 input.Remove("customcassie");
-                CommonFuncs.ReadMessage(input);
+                Reader.CassieReadMessage(input);
                 return false;
             }
 
@@ -34,7 +34,7 @@
             {
                 List<string> input = message.ToLower().Split(' ').ToList();
                 input.Remove("customcassie");
-                CommonFuncs.ReadMessage(input, translation: translation);
+                Reader.CassieReadMessage(input, translation);
                 return false;
             }
 

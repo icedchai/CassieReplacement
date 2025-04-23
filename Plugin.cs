@@ -15,7 +15,9 @@
     /// <inheritdoc/>
     public class Plugin : Exiled.API.Features.Plugin<Config>
     {
-        public static AudioPlayer CassiePlayer;
+        public static AudioPlayer CassiePlayer { get; private set; }
+
+        public static AudioPlayer RadioPlayer { get; private set; }
 
         /// <summary>
         /// The singleton.
@@ -40,6 +42,15 @@
         public override Version Version => new (1, 3, 0);
 
         private static List<CassieClip> registeredClips = new List<CassieClip>();
+
+        /// <summary>
+        /// Destroys the speaker on <see cref="Plugin.CassiePlayer"/>, and then re-adds it.
+        /// </summary>
+        public void InitSpeaker()
+        {
+            CassiePlayer = AudioPlayer.CreateOrGet("icedchqi_cassieplayer");
+            CassiePlayer.AddSpeaker("Main", isSpatial: false, maxDistance: 5000f);
+        }
 
         /// <summary>
         /// Gets a list of all registered <see cref="CassieClip"/>'s.
@@ -76,10 +87,10 @@
 
             Timing.CallDelayed(10f, () =>
             {
-                Timing.RunCoroutine(CommonFuncs.CassieCheck());
+                Timing.RunCoroutine(Reader.CassieCheck());
             });
 
-            Exiled.Events.Handlers.Server.RoundStarted += CommonFuncs.InitSpeaker;
+            Exiled.Events.Handlers.Server.RoundStarted += InitSpeaker;
         }
 
         /// <inheritdoc/>
@@ -95,7 +106,7 @@
                 registeredClips.Remove(clip);
             }
 
-            Exiled.Events.Handlers.Server.RoundStarted -= CommonFuncs.InitSpeaker;
+            Exiled.Events.Handlers.Server.RoundStarted -= InitSpeaker;
         }
 
         /// <summary>

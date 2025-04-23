@@ -121,7 +121,7 @@
     <Compile Include="Models\CassieClip.cs" />
     <Compile Include="Commands\CassieCalcCommand.cs" />
     <Compile Include="Commands\AudioTestCommand.cs" />
-    <Compile Include="CommonFuncs.cs" />
+    <Compile Include="Reader.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Commands\ListWordsCommand.cs" />
     <Compile Include="Models\CassieDirectory.cs" />
@@ -133,6 +133,7 @@
   <ItemGroup>
     <None Include=".editorconfig" />
     <None Include="packages.config" />
+    <None Include="stylecop.json" />
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="$(EXILED_REFERENCES)\Assembly-CSharp-firstpass.dll" />
