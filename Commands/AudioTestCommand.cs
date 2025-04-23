@@ -30,10 +30,16 @@
             if (float.TryParse(firstarg, out float vol))
             {
                 Plugin.PluginConfig.CassieVolume = vol;
+                response = $"Volume set to {vol}";
+                return true;
             }
-            words.Remove(arguments.At(0));
 
-            Reader.ReadMessage(words, AudioPlayer.TryGet(firstarg, out AudioPlayer player) ? player : Plugin.CassiePlayer);
+            if (AudioPlayer.TryGet(firstarg, out AudioPlayer player))
+            {
+                words.Remove(arguments.At(0));
+            }
+
+            Reader.ReadMessage(words, player is not null ? player : Plugin.CassiePlayer);
             response = $"Tried {string.Join(" ", words)}";
             return true;
         }
