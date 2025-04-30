@@ -18,6 +18,8 @@
     {
         private static AudioPlayer CassiePlayer => Plugin.CassiePlayer;
 
+        private static AudioPlayer CassiePlayerGlobal => Plugin.CassiePlayerGlobal;
+
         private static Config Config => Plugin.Singleton.Config;
 
         private static int ticksSinceCassieSpoke = 0;
@@ -50,17 +52,17 @@
         /// <param name="translation">The CASSIE subtitles to use.</param>
         public static void CassieReadMessage(List<string> messages, string translation = "")
         {
-            ReadMessage(messages, CassiePlayer, true, translation);
+            ReadMessage(messages, new List<AudioPlayer> { CassiePlayer, CassiePlayerGlobal }, true, translation);
         }
 
         /// <summary>
         /// Reads a message from an <see cref="AudioPlayer"/> instance, using the registered audio clips.
         /// </summary>
         /// <param name="messages">The list of strings to read.</param>
-        /// <param name="audioPlayer">The <see cref="AudioPlayer"/> instance to play this message from.</param>
+        /// <param name="audioPlayers">The <see cref="AudioPlayer"/> instances to play this message from.</param>
         /// <param name="isNoisy">Value indicating whether to add a CASSIE background to this message reading.</param>
         /// <param name="translation">The CASSIE subtitles to use.</param>
-        public static void ReadMessage(List<string> messages, AudioPlayer audioPlayer, bool isNoisy = false, string translation = "")
+        public static void ReadMessage(List<string> messages, List<AudioPlayer> audioPlayers, bool isNoisy = false, string translation = "")
         {
             float bg = 0f;
             foreach (string msg in messages)
@@ -73,7 +75,7 @@
 
             if (!isNoisy)
             {
-                ReadWords(messages, audioPlayer);
+                ReadWords(messages, audioPlayers);
                 return;
             }
 
@@ -87,33 +89,37 @@
 
             if (ticksSinceCassieSpoke <= 360)
             {
-                Timing.CallDelayed(0.5f, () => ReadMessage(messages, audioPlayer: audioPlayer, translation: translation, isNoisy: isNoisy));
+                Timing.CallDelayed(0.5f, () => ReadMessage(messages, audioPlayers: audioPlayers, translation: translation, isNoisy: isNoisy));
             }
             else
             {
                 RespawnEffectsController.PlayCassieAnnouncement(string.IsNullOrWhiteSpace(translation) ? a : $"{translation.Replace(' ', '\u2005')}<size=0>{a}</size>", false, true, !string.IsNullOrWhiteSpace(translation));
-                Timing.CallDelayed(2.25f, () => ReadWords(messages, audioPlayer));
+                Timing.CallDelayed(2.25f, () => ReadWords(messages, audioPlayers));
             }
         }
 
-        private static void ReadWords(List<string> messages, AudioPlayer audioPlayer)
+        private static void ReadWords(List<string> messages, List<AudioPlayer> audioPlayers)
         {
             string msg = messages[0].ToLower();
             messages.Remove(msg);
             if (msg[0] == '.')
             {
-                Timing.CallDelayed(0.25f, () => ReadWords(messages, audioPlayer));
+                Timing.CallDelayed(0.25f, () => ReadWords(messages, audioPlayers));
                 return;
             }
 
             if (!AudioClipStorage.AudioClips.ContainsKey(msg))
             {
-                ReadWords(messages, audioPlayer);
+                ReadWords(messages, audioPlayers);
                 return;
             }
 
-            audioPlayer.AddClip(msg, Config.CassieVolume);
-            Timing.CallDelayed(Plugin.GetClipLength(msg), () => ReadWords(messages, audioPlayer));
+            foreach (AudioPlayer audioPlayer in audioPlayers)
+            {
+                audioPlayer.AddClip(msg, Config.CassieVolume);
+            }
+
+            Timing.CallDelayed(Plugin.GetClipLength(msg), () => ReadWords(messages, audioPlayers));
         }
     }
 }

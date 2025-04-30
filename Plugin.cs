@@ -5,17 +5,23 @@
     using Exiled.API.Enums;
     using Exiled.API.Features;
     using HarmonyLib;
+    using MapGeneration;
     using MEC;
     using NVorbis;
+    using PlayerRoles.FirstPersonControl;
+    using PlayerRoles.PlayableScps.Scp079;
     using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using System.Numerics;
 
     /// <inheritdoc/>
     public class Plugin : Exiled.API.Features.Plugin<Config>
     {
         public static AudioPlayer CassiePlayer { get; private set; }
+
+        public static AudioPlayer CassiePlayerGlobal { get; private set; }
 
         public static AudioPlayer RadioPlayer { get; private set; }
 
@@ -48,8 +54,30 @@
         /// </summary>
         public void InitSpeaker()
         {
+            CassiePlayerGlobal = AudioPlayer.CreateOrGet("icedchqi_cassieplayer_global");
+            CassiePlayerGlobal.Condition = p =>
+            {
+                if (p == null || p.IsHost)
+                {
+                    return false;
+                }
+
+                if (!p.TryGetCurrentRoom(out RoomIdentifier room))
+                {
+                    return true;
+                }
+
+                IEnumerable<Scp079InteractableBase> speakers = Scp079Speaker.AllInstances.Where(s => Room.Get(s.Room) == Room.Get(room));
+                return speakers.IsEmpty() || speakers.Any(s => UnityEngine.Vector3.Distance(p.GetPosition(), s.Position) > 10f);
+            };
+            CassiePlayerGlobal.AddSpeaker("Main", isSpatial: false, maxDistance: 5000f, volume: 1f);
             CassiePlayer = AudioPlayer.CreateOrGet("icedchqi_cassieplayer");
-            CassiePlayer.AddSpeaker("Main", isSpatial: false, maxDistance: 5000f);
+            int i = 0;
+            foreach (Scp079InteractableBase speaker in Scp079Speaker.AllInstances)
+            {
+                CassiePlayer.AddSpeaker($"speaker_{i}", speaker.Position, minDistance: 1, maxDistance: 10);
+                i++;
+            }
         }
 
         /// <summary>
@@ -60,19 +88,7 @@
         /// <summary>
         /// Gets a list of all registered <see cref="CassieClip"/> names.
         /// </summary>
-        public static List<string> RegisteredClipNames
-        {
-            get
-            {
-                List<string> ret = new List<string>();
-                foreach (CassieClip clip in registeredClips)
-                {
-                    ret.Add(clip.Name);
-                }
-
-                return ret;
-            }
-        }
+        public static List<string> RegisteredClipNames => registeredClips.Select(c => c.Name).ToList();
 
         /// <inheritdoc/>
         public override void OnEnabled()

@@ -37,9 +37,12 @@
             if (AudioPlayer.TryGet(firstarg, out AudioPlayer player))
             {
                 words.Remove(arguments.At(0));
+                Reader.ReadMessage(words, new List<AudioPlayer> { player });
+                response = $"Tried {string.Join(" ", words)}";
+                return true;
             }
 
-            Reader.ReadMessage(words, player is not null ? player : Plugin.CassiePlayer);
+            Reader.ReadMessage(words, new List<AudioPlayer> { Plugin.CassiePlayer, Plugin.CassiePlayerGlobal });
             response = $"Tried {string.Join(" ", words)}";
             return true;
         }
