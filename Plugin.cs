@@ -15,6 +15,7 @@
     using System.IO;
     using System.Linq;
     using System.Numerics;
+    using UnityEngine.Rendering;
 
     /// <inheritdoc/>
     public class Plugin : Exiled.API.Features.Plugin<Config>
@@ -68,15 +69,30 @@
                 }
 
                 IEnumerable<Scp079InteractableBase> speakers = Scp079Speaker.AllInstances.Where(s => Room.Get(s.Room) == Room.Get(room));
-                return speakers.IsEmpty() || speakers.Any(s => UnityEngine.Vector3.Distance(p.GetPosition(), s.Position) > 10f);
+                bool ret = speakers.IsEmpty() || speakers.Any(s => UnityEngine.Vector3.Distance(p.GetPosition(), s.Position) > 4f);
+                Log.Info($"Checked {speakers.Count()} speakers for {Player.Get(p).Nickname}, got {ret}");
+                return ret;
             };
-            CassiePlayerGlobal.AddSpeaker("Main", isSpatial: false, maxDistance: 5000f, volume: 1f);
+            CassiePlayerGlobal.AddSpeaker("Main", isSpatial: false, maxDistance: 50000f, volume: 1.5f);
             CassiePlayer = AudioPlayer.CreateOrGet("icedchqi_cassieplayer");
             int i = 0;
+            List<Speaker> loggedSpeakers = new();
             foreach (Scp079InteractableBase speaker in Scp079Speaker.AllInstances)
             {
-                CassiePlayer.AddSpeaker($"speaker_{i}", speaker.Position, minDistance: 1, maxDistance: 10);
                 i++;
+                IEnumerable<Speaker> closeSpeakers = CassiePlayer.SpeakersByName.Values.Where(s => UnityEngine.Vector3.Distance(s.Position, speaker.Position) < 2 && !loggedSpeakers.Contains(s));
+                if (closeSpeakers.Any())
+                {
+                    foreach (var item in closeSpeakers)
+                    {
+                        loggedSpeakers.Add(item);
+                    }
+
+                    Log.Debug($"Found {closeSpeakers.Count() + 1} speakers very close.");
+                    continue;
+                }
+
+                CassiePlayer.AddSpeaker($"speaker_{i}", speaker.Position, minDistance: 1, maxDistance: 10);
             }
         }
 
