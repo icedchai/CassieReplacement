@@ -19,7 +19,7 @@
             {
                 List<string> input = words.ToLower().Split(' ').ToList();
                 input.Remove("customcassie");
-                Reader.CassieReadMessage(input);
+                CustomCassieReader.Singleton.CassieReadMessage(input, makeNoise);
                 return false;
             }
 
@@ -34,7 +34,7 @@
             {
                 List<string> input = message.ToLower().Split(' ').ToList();
                 input.Remove("customcassie");
-                Reader.CassieReadMessage(input, translation);
+                CustomCassieReader.Singleton.CassieReadMessage(input, isNoisy, translation);
                 return false;
             }
 

@@ -1,5 +1,6 @@
 ﻿namespace CassieReplacement
 {
+    using CommandSystem.Commands.RemoteAdmin.Inventory;
     using Exiled.API.Features;
     using MEC;
     using PlayerRoles;
@@ -12,17 +13,26 @@
     using Utils.Networking;
 
     /// <summary>
-    /// Common functions used throughout the project.
+    /// Reads Custom CASSIE messages.
     /// </summary>
-    public static class Reader
+    public class CustomCassieReader
     {
-        private static AudioPlayer CassiePlayer => Plugin.CassiePlayer;
-
-        private static AudioPlayer CassiePlayerGlobal => Plugin.CassiePlayerGlobal;
-
-        private static Config Config => Plugin.Singleton.Config;
-
         private static int ticksSinceCassieSpoke = 0;
+
+        private string currentPrefix = string.Empty;
+
+        private string currentSuffix = string.Empty;
+
+        /// <summary>
+        /// Gets the <see cref="CustomCassieReader"/> singleton.
+        /// </summary>
+        public static CustomCassieReader Singleton { get; private set; } = new CustomCassieReader();
+
+        private AudioPlayer CassiePlayer => Plugin.CassiePlayer;
+
+        private AudioPlayer CassiePlayerGlobal => Plugin.CassiePlayerGlobal;
+
+        private Config Config => Plugin.Singleton.Config;
 
         /// <summary>
         /// Checks every frame whether CASSIE is speaking.
@@ -49,10 +59,11 @@
         /// Reads a message from CustomCassie, using the registered audio clips.
         /// </summary>
         /// <param name="messages">The list of strings to read.</param>
+        /// <param name="isNoisy">A value indicating whether to put this message to CASSIE background noise.</param>
         /// <param name="translation">The CASSIE subtitles to use.</param>
-        public static void CassieReadMessage(List<string> messages, string translation = "")
+        public void CassieReadMessage(List<string> messages, bool isNoisy = true, string translation = "")
         {
-            ReadMessage(messages, new List<AudioPlayer> { CassiePlayer, CassiePlayerGlobal }, true, translation);
+            ReadMessage(messages, new List<AudioPlayer> { CassiePlayer, CassiePlayerGlobal }, isNoisy, translation);
         }
 
         /// <summary>
@@ -62,11 +73,29 @@
         /// <param name="audioPlayers">The <see cref="AudioPlayer"/> instances to play this message from.</param>
         /// <param name="isNoisy">Value indicating whether to add a CASSIE background to this message reading.</param>
         /// <param name="translation">The CASSIE subtitles to use.</param>
-        public static void ReadMessage(List<string> messages, List<AudioPlayer> audioPlayers, bool isNoisy = false, string translation = "")
+        public void ReadMessage(List<string> messages, List<AudioPlayer> audioPlayers, bool isNoisy = false, string translation = "")
         {
             float bg = 0f;
-            foreach (string msg in messages)
+            for (int i = 0; i < messages.Count(); i++)
             {
+                string msg = messages[i];
+                if (msg.ToLower().StartsWith("prefix_"))
+                {
+                    currentPrefix = msg.Remove(6);
+                    messages.Remove(msg);
+                    continue;
+                }
+
+                if (msg.ToLower().StartsWith("suffix_"))
+                {
+                    currentSuffix = msg.Remove(6);
+                    messages.Remove(msg);
+                    continue;
+                }
+
+                msg = $"{currentPrefix}{msg}{currentSuffix}";
+                messages[i] = msg;
+
                 if (Plugin.RegisteredClips.Where(c => c.Name == msg).Any())
                 {
                     bg += Plugin.RegisteredClips.Where(c => c.Name == msg).FirstOrDefault().Length;
@@ -98,7 +127,7 @@
             }
         }
 
-        private static void ReadWords(List<string> messages, List<AudioPlayer> audioPlayers)
+        private void ReadWords(List<string> messages, List<AudioPlayer> audioPlayers)
         {
             string msg = messages[0].ToLower();
             messages.Remove(msg);

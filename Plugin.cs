@@ -70,13 +70,11 @@
 
                 IEnumerable<Scp079InteractableBase> speakers = Scp079Speaker.AllInstances.Where(s => Room.Get(s.Room) == Room.Get(room));
                 bool ret = speakers.IsEmpty() || speakers.Any(s => UnityEngine.Vector3.Distance(p.GetPosition(), s.Position) > 4f);
-                Log.Info($"Checked {speakers.Count()} speakers for {Player.Get(p).Nickname}, got {ret}");
                 return ret;
             };
             CassiePlayerGlobal.AddSpeaker("Main", isSpatial: false, maxDistance: 50000f, volume: 1.5f);
             CassiePlayer = AudioPlayer.CreateOrGet("icedchqi_cassieplayer");
             int i = 0;
-            List<Speaker> loggedSpeakers = new();
             foreach (Scp079InteractableBase speaker in Scp079Speaker.AllInstances)
             {
                 i++;
@@ -113,7 +111,7 @@
 
             Timing.CallDelayed(10f, () =>
             {
-                Timing.RunCoroutine(Reader.CassieCheck());
+                Timing.RunCoroutine(CustomCassieReader.CassieCheck());
             });
 
             Exiled.Events.Handlers.Server.RoundStarted += InitSpeaker;

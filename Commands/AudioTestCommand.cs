@@ -7,7 +7,7 @@
     using static UnityEngine.GraphicsBuffer;
 
     /// <summary>
-    /// The command used to invoke <see cref="Reader.ReadMessage(List{string})(System.Collections.Generic.List{string})"/> in-game.
+    /// The command used to invoke <see cref="CustomCassieReader.ReadMessage(List{string})(System.Collections.Generic.List{string})"/> in-game.
     /// </summary>
     [CommandHandler(typeof(RemoteAdminCommandHandler))]
     public class AudioTestCommand : ICommand
@@ -37,12 +37,12 @@
             if (AudioPlayer.TryGet(firstarg, out AudioPlayer player))
             {
                 words.Remove(arguments.At(0));
-                Reader.ReadMessage(words, new List<AudioPlayer> { player });
+                CustomCassieReader.Singleton.ReadMessage(words, new List<AudioPlayer> { player });
                 response = $"Tried {string.Join(" ", words)}";
                 return true;
             }
 
-            Reader.ReadMessage(words, new List<AudioPlayer> { Plugin.CassiePlayer, Plugin.CassiePlayerGlobal });
+            CustomCassieReader.Singleton.ReadMessage(words, new List<AudioPlayer> { Plugin.CassiePlayer, Plugin.CassiePlayerGlobal });
             response = $"Tried {string.Join(" ", words)}";
             return true;
         }

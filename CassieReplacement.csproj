@@ -121,7 +121,7 @@
     <Compile Include="Models\CassieClip.cs" />
     <Compile Include="Commands\CassieCalcCommand.cs" />
     <Compile Include="Commands\AudioTestCommand.cs" />
-    <Compile Include="Reader.cs" />
+    <Compile Include="CustomCassieReader.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Commands\ListWordsCommand.cs" />
     <Compile Include="Models\CassieDirectory.cs" />
