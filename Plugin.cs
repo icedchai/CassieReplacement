@@ -80,15 +80,9 @@
             foreach (Scp079InteractableBase speaker in Scp079Speaker.AllInstances)
             {
                 i++;
-                IEnumerable<Speaker> closeSpeakers = CassiePlayer.SpeakersByName.Values.Where(s => UnityEngine.Vector3.Distance(s.Position, speaker.Position) < 2 && !loggedSpeakers.Contains(s));
+                IEnumerable<Speaker> closeSpeakers = CassiePlayer.SpeakersByName.Values.Where(s => UnityEngine.Vector3.Distance(s.Position, speaker.Position) < 5);
                 if (closeSpeakers.Any())
                 {
-                    foreach (var item in closeSpeakers)
-                    {
-                        loggedSpeakers.Add(item);
-                    }
-
-                    Log.Debug($"Found {closeSpeakers.Count() + 1} speakers very close.");
                     continue;
                 }
 
