@@ -112,6 +112,9 @@
                 return;
             }
 
+            currentPrefix = string.Empty;
+            currentSuffix = string.Empty;
+
             // Calculates the empty CASSIE message to send.
             int bgi = (int)Math.Round(bg);
             string a = string.Empty;
