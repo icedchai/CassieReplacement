@@ -79,17 +79,27 @@
             for (int i = 0; i < messages.Count(); i++)
             {
                 string msg = messages[i];
+
+                if (string.IsNullOrWhiteSpace(msg))
+                {
+                    messages.Remove(msg);
+                    i--;
+                    continue;
+                }
+
                 if (msg.ToLower().StartsWith("prefix_"))
                 {
-                    currentPrefix = msg.Remove(6);
+                    currentPrefix = msg.Remove(0, 7);
                     messages.Remove(msg);
+                    i--;
                     continue;
                 }
 
                 if (msg.ToLower().StartsWith("suffix_"))
                 {
-                    currentSuffix = msg.Remove(6);
+                    currentSuffix = msg.Remove(0, 7);
                     messages.Remove(msg);
+                    i--;
                     continue;
                 }
 
