@@ -1,14 +1,13 @@
 ﻿namespace CassieReplacement
 {
     using CassieReplacement.Models;
-    using Exiled.API.Interfaces;
     using System.Collections.Generic;
     using System.ComponentModel;
 
     /// <summary>
     /// Plugin configuration.
     /// </summary>
-    public class Config : IConfig
+    public class Config
     {
         /// <summary>
         /// Gets or sets a value indicating whether the plugin is enabled.

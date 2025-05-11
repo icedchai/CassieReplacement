@@ -5,7 +5,6 @@
     using System.Linq;
     using System.Text;
     using System.Threading.Tasks;
-    using Exiled.API.Features;
     using HarmonyLib;
     using Respawning;
 
@@ -26,8 +25,6 @@
             return true;
         }
 
-        [HarmonyPatch(typeof(Cassie), nameof(Cassie.MessageTranslated))]
-        [HarmonyPrefix]
         public static bool TranslatedMessagePrefix(string message, string translation, bool isHeld, bool isNoisy, bool isSubtitles)
         {
             if (message.StartsWith("customcassie"))

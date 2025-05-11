@@ -2,8 +2,7 @@
 {
     using CassieReplacement.Models;
     using CassieReplacement.Patches;
-    using Exiled.API.Enums;
-    using Exiled.API.Features;
+    using LabApi.Features.Wrappers;
     using HarmonyLib;
     using MapGeneration;
     using MEC;
@@ -16,9 +15,12 @@
     using System.Linq;
     using System.Numerics;
     using UnityEngine.Rendering;
+    using LabApi.Features.Console;
+    using System.Reflection;
+    using LabApi.Features;
 
     /// <inheritdoc/>
-    public class Plugin : Exiled.API.Features.Plugin<Config>
+    public class Plugin : LabApi.Loader.Features.Plugins.Plugin<Config>
     {
         public static AudioPlayer CassiePlayer { get; private set; }
 
@@ -40,13 +42,16 @@
         public override string Name => "CASSIE Replacement";
 
         /// <inheritdoc/>
-        public override string Prefix => "cassie_replacement";
+        public override string Description => "CASSIE replacement plugin";
 
         /// <inheritdoc/>
         public override string Author => "icedchqi";
 
         /// <inheritdoc/>
         public override Version Version => new (1, 3, 0);
+
+        /// <inheritdoc/>
+        public override Version RequiredApiVersion => new (LabApiProperties.CompiledVersion);
 
         private static List<CassieClip> registeredClips = new List<CassieClip>();
 
@@ -99,10 +104,10 @@
         public static List<string> RegisteredClipNames => registeredClips.Select(c => c.Name).ToList();
 
         /// <inheritdoc/>
-        public override void OnEnabled()
+        public override void Enable()
         {
-            base.OnEnabled();
             Singleton = this;
+            CustomCassieReader.Singleton = new CustomCassieReader();
             Patcher.DoPatching();
             foreach (CassieDirectory configDir in Config.BaseDirectories)
             {
@@ -114,14 +119,14 @@
                 Timing.RunCoroutine(CustomCassieReader.CassieCheck());
             });
 
-            Exiled.Events.Handlers.Server.RoundStarted += InitSpeaker;
+            LabApi.Events.Handlers.ServerEvents.RoundStarted += InitSpeaker;
         }
 
         /// <inheritdoc/>
-        public override void OnDisabled()
+        public override void Disable()
         {
-            base.OnDisabled();
             Singleton = null;
+            CustomCassieReader.Singleton = null;
             Harmony harmony = new Harmony("me.icedchai.cassie.patch");
             harmony.UnpatchAll("me.icedchai.cassie.patch");
             foreach (CassieClip clip in registeredClips)
@@ -130,7 +135,7 @@
                 registeredClips.Remove(clip);
             }
 
-            Exiled.Events.Handlers.Server.RoundStarted -= InitSpeaker;
+            LabApi.Events.Handlers.ServerEvents.RoundStarted -= InitSpeaker;
         }
 
         /// <summary>
@@ -181,7 +186,7 @@
                 registeredClips.Add(cassieClip);
                 AudioClipStorage.LoadClip(cassieClip.FileInfo.FullName, cassieClip.Name);
 
-                Log.Debug($"Registered {cassieClip.Name}, at {cassieClip.FileInfo.FullName}, length {cassieClip.Length}");
+                Logger.Debug($"Registered {cassieClip.Name}, at {cassieClip.FileInfo.FullName}, length {cassieClip.Length}");
             }
         }
     }

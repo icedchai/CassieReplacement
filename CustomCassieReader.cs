@@ -1,16 +1,10 @@
 ﻿namespace CassieReplacement
 {
-    using CommandSystem.Commands.RemoteAdmin.Inventory;
-    using Exiled.API.Features;
     using MEC;
-    using PlayerRoles;
     using Respawning;
-    using Subtitles;
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using UnityEngine;
-    using Utils.Networking;
 
     /// <summary>
     /// Reads Custom CASSIE messages.
@@ -26,7 +20,7 @@
         /// <summary>
         /// Gets the <see cref="CustomCassieReader"/> singleton.
         /// </summary>
-        public static CustomCassieReader Singleton { get; private set; } = new CustomCassieReader();
+        public static CustomCassieReader Singleton { get; internal set; } = new CustomCassieReader();
 
         private AudioPlayer CassiePlayer => Plugin.CassiePlayer;
 
@@ -42,7 +36,7 @@
         {
             while (true)
             {
-                if (Cassie.IsSpeaking)
+                if (NineTailedFoxAnnouncer.singleton.queue.Count != 0)
                 {
                     ticksSinceCassieSpoke = 0;
                 }
