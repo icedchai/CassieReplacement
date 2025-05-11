@@ -112,6 +112,9 @@
                 }
             }
 
+            currentPrefix = string.Empty;
+            currentSuffix = string.Empty;
+
             if (!isNoisy)
             {
                 ReadWords(messages, audioPlayers);
