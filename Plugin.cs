@@ -46,7 +46,7 @@
         public override string Author => "icedchqi";
 
         /// <inheritdoc/>
-        public override Version Version => new (1, 3, 0);
+        public override Version Version => new (1, 4, 0);
 
         private static List<CassieClip> registeredClips = new List<CassieClip>();
 
