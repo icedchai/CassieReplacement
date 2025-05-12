@@ -23,7 +23,7 @@
                 string[] dividedBySplits = words.Split(new string[] { "</size><split>" }, StringSplitOptions.None);
 
                 // If customcassie signature not found allow regular execution.
-                if (!dividedBySplits[0].StartsWith("customcassie"))
+                if (!dividedBySplits[0].Contains("customcassie"))
                 {
                     return true;
                 }
@@ -31,12 +31,22 @@
                 StringBuilder subtitles = StringBuilderPool.Shared.Rent();
                 StringBuilder input = StringBuilderPool.Shared.Rent();
 
-                foreach (string section in dividedBySplits)
+                for (int i = 0; i < dividedBySplits.Length; i++)
                 {
+                    string section = dividedBySplits[i];
+                    if (string.IsNullOrWhiteSpace(section))
+                    {
+                        continue;
+                    }
+
                     string[] dividedBySize = section.Split(new string[] { "<size=0>" }, StringSplitOptions.None);
                     subtitles.Append(dividedBySize[0]);
-                    subtitles.Append("<split>");
                     input.Append(dividedBySize[1]);
+                    if (i < dividedBySplits.Length - 2)
+                    {
+                        subtitles.Append("<split>");
+                        input.Append("<split>");
+                    }
                 }
 
                 CustomCassieReader.Singleton.CassieReadMessage(input.ToString().ToLower().Split(' ').ToList(), isNoisy: makeNoise, translation: subtitles.ToString());
