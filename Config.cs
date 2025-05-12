@@ -10,19 +10,9 @@
     public class Config
     {
         /// <summary>
-        /// Gets or sets a value indicating whether the plugin is enabled.
-        /// </summary>
-        public bool IsEnabled { get; set; } = true;
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the plugin is in debug mode.
-        /// </summary>
-        public bool Debug { get; set; } = false;
-
-        /// <summary>
         /// Gets or sets the directory from which audio files are sourced.
         /// </summary>
-        [Description("This is the folders where all of your audio clips will be stored. \n\nIMPORTANT: DIRECTORIES ARE ABSOLUTE, NOT RELATIVE!")]
+        [Description("This is the folders where all of your audio clips will be stored. IMPORTANT: DIRECTORIES ARE ABSOLUTE, NOT RELATIVE!")]
         public List<CassieDirectory> BaseDirectories { get; set; } = new List<CassieDirectory>
         {
             new CassieDirectory()
