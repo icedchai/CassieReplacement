@@ -3,12 +3,26 @@
     using CassieReplacement.Models;
     using System.Collections.Generic;
     using System.ComponentModel;
+#if EXILED
+    using Exiled.API.Interfaces;
+
+    /// <summary>
+    /// Plugin configuration.
+    /// </summary>
+    public class Config : IConfig
+    {
+        public bool IsEnabled { get; set; } = true;
+
+        public bool Debug { get; set; } = false;
+#else
 
     /// <summary>
     /// Plugin configuration.
     /// </summary>
     public class Config
     {
+#endif
+
         /// <summary>
         /// Gets or sets the directory from which audio files are sourced.
         /// </summary>

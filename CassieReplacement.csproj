@@ -19,9 +19,10 @@
     <DebugType>embedded</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;EXILED</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>ARM64</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -39,7 +40,6 @@
       <HintPath>$(EXILED_REFERENCES)\Assembly-CSharp-firstpass.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp-Publicized">
-      <HintPath>$(EXILED_REFERENCES)\Assembly-CSharp-Publicized.dll</HintPath>
     </Reference>
     <Reference Include="AudioPlayerApi">
       <HintPath>..\..\dependancies\plugins\AudioPlayerApi.dll</HintPath>
@@ -47,14 +47,32 @@
     <Reference Include="CommandSystem.Core, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\ExMod.Exiled.9.6.0-beta7\lib\net48\CommandSystem.Core.dll</HintPath>
     </Reference>
+    <Reference Include="Exiled.API, Version=9.6.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>packages\ExMod.Exiled.9.6.0-beta8\lib\net48\Exiled.API.dll</HintPath>
+    </Reference>
+    <Reference Include="Exiled.CreditTags, Version=9.6.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>packages\ExMod.Exiled.9.6.0-beta8\lib\net48\Exiled.CreditTags.dll</HintPath>
+    </Reference>
+    <Reference Include="Exiled.CustomRoles, Version=9.6.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>packages\ExMod.Exiled.9.6.0-beta8\lib\net48\Exiled.CustomRoles.dll</HintPath>
+    </Reference>
+    <Reference Include="Exiled.Events, Version=9.6.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>packages\ExMod.Exiled.9.6.0-beta8\lib\net48\Exiled.Events.dll</HintPath>
+    </Reference>
+    <Reference Include="Exiled.Loader, Version=9.6.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>packages\ExMod.Exiled.9.6.0-beta8\lib\net48\Exiled.Loader.dll</HintPath>
+    </Reference>
+    <Reference Include="Exiled.Permissions, Version=9.6.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <HintPath>packages\ExMod.Exiled.9.6.0-beta8\lib\net48\Exiled.Permissions.dll</HintPath>
+    </Reference>
     <Reference Include="LabApi, Version=0.6.0.0, Culture=neutral, processorArchitecture=AMD64">
-      <HintPath>packages\ExMod.Exiled.9.6.0-beta7\lib\net48\LabApi.dll</HintPath>
+      <HintPath>packages\ExMod.Exiled.9.6.0-beta8\lib\net48\LabApi.dll</HintPath>
     </Reference>
     <Reference Include="Mirror">
       <HintPath>$(EXILED_REFERENCES)\Mirror.dll</HintPath>
     </Reference>
     <Reference Include="NorthwoodLib, Version=1.4.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\ExMod.Exiled.9.6.0-beta7\lib\net48\NorthwoodLib.dll</HintPath>
+      <HintPath>packages\ExMod.Exiled.9.6.0-beta8\lib\net48\NorthwoodLib.dll</HintPath>
     </Reference>
     <Reference Include="NVorbis, Version=0.10.5.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>packages\NVorbis.0.10.5\lib\net45\NVorbis.dll</HintPath>
@@ -93,7 +111,7 @@
       <HintPath>$(EXILED_REFERENCES)\UnityEngine.PhysicsModule.dll</HintPath>
     </Reference>
     <Reference Include="YamlDotNet, Version=11.0.0.0, Culture=neutral, PublicKeyToken=ec19458f3c15af5e, processorArchitecture=MSIL">
-      <HintPath>packages\ExMod.Exiled.9.6.0-beta7\lib\net48\YamlDotNet.dll</HintPath>
+      <HintPath>packages\ExMod.Exiled.9.6.0-beta8\lib\net48\YamlDotNet.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
