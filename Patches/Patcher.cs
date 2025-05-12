@@ -1,8 +1,10 @@
-﻿using Exiled.API.Features;
-using HarmonyLib;
+﻿using HarmonyLib;
+using LabApi.Features.Console;
+using LabApi.Loader.Features.Misc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -15,7 +17,7 @@ namespace CassieReplacement.Patches
         /// </summary>
         public static void DoPatching()
         {
-            Log.Debug("patched");
+            Logger.Debug("patched");
             var harmony = new Harmony("me.icedchai.cassie.patch");
             harmony.PatchAll();
         }
