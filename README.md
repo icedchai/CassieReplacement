@@ -24,9 +24,11 @@ base_directories:
   # The amount of time each clip in this directory may bleed into the next.
   bleed_time: 0
 ```
-   2.1. The `prefix` property defines how you can refer to the clip in CASSIE.
+2.1. The `prefix` property defines how you can refer to the clip in CASSIE.
  
 3. When writing a CASSIE announcement, type `customcassie` at the beginning to indicate to the plugin you want to use custom clips
+
    3.1. The filename, minus the extension, will be the name of the clip.
 example: `cassie customcassie customword1 customword2`
+
    3.2. A silent cassie announcement will simply play the sound effects in order.
