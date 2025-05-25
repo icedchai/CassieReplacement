@@ -17,7 +17,6 @@ namespace CassieReplacement.Patches
         /// </summary>
         public static void DoPatching()
         {
-            Logger.Debug("patched");
             var harmony = new Harmony("me.icedchai.cassie.patch");
             harmony.PatchAll();
         }

@@ -81,17 +81,20 @@
                     continue;
                 }
 
-                if (msg.ToLower().StartsWith("prefix_"))
+                if (msg.StartsWith("prefix_", true, null) || msg.StartsWith("suffix_", true, null))
                 {
-                    currentPrefix = msg.Remove(0, 7);
-                    messages.Remove(msg);
-                    i--;
-                    continue;
-                }
+                    switch (msg.Remove(6).ToLower())
+                    {
+                        case "prefix":
+                            currentPrefix = msg.Remove(0, 7);
+                            break;
+                        case "suffix":
+                            currentSuffix = msg.Remove(0, 7);
+                            break;
+                        default:
+                            break;
+                    }
 
-                if (msg.ToLower().StartsWith("suffix_"))
-                {
-                    currentSuffix = msg.Remove(0, 7);
                     messages.Remove(msg);
                     i--;
                     continue;
@@ -141,7 +144,7 @@
         {
             string msg = messages[0].ToLower();
             messages.Remove(msg);
-            if (msg[0] == '.')
+            if (msg == ".")
             {
                 Timing.CallDelayed(0.25f, () => ReadWords(messages, audioPlayers));
                 return;

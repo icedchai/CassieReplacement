@@ -41,7 +41,13 @@
         /// <inheritdoc/>
         public override string Name => "CASSIE Replacement";
 
-#if !EXILED
+#if EXILED
+        /// <inheritdoc/>
+        public override string Prefix => "cassie_replacement";
+
+        /// <inheritdoc/>
+        public override Version RequiredExiledVersion => new Version(9, 6, 0);
+#else
         /// <inheritdoc/>
         public override string Description => "CASSIE replacement plugin";
 
@@ -53,7 +59,7 @@
         public override string Author => "icedchqi";
 
         /// <inheritdoc/>
-        public override Version Version => new (1, 4, 0);
+        public override Version Version => new (1, 4, 1);
 
 
         private static List<CassieClip> registeredClips = new List<CassieClip>();
@@ -202,8 +208,6 @@
 
                 registeredClips.Add(cassieClip);
                 AudioClipStorage.LoadClip(cassieClip.FileInfo.FullName, cassieClip.Name);
-
-                Logger.Debug($"Registered {cassieClip.Name}, at {cassieClip.FileInfo.FullName}, length {cassieClip.Length}");
             }
         }
     }
