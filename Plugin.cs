@@ -208,8 +208,6 @@
 
                 registeredClips.Add(cassieClip);
                 AudioClipStorage.LoadClip(cassieClip.FileInfo.FullName, cassieClip.Name);
-
-                Logger.Debug($"Registered {cassieClip.Name}, at {cassieClip.FileInfo.FullName}, length {cassieClip.Length}");
             }
         }
     }
