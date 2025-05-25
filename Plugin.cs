@@ -42,6 +42,10 @@
         public override string Name => "CASSIE Replacement";
 
 #if EXILED
+        /// <inheritdoc/>
+        public override string Prefix => "cassie_replacement";
+
+        /// <inheritdoc/>
         public override Version RequiredExiledVersion => new Version(9, 6, 0);
 #else
         /// <inheritdoc/>
