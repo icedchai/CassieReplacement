@@ -41,7 +41,9 @@
         /// <inheritdoc/>
         public override string Name => "CASSIE Replacement";
 
-#if !EXILED
+#if EXILED
+        public override Version RequiredExiledVersion => new Version(9, 6, 0);
+#else
         /// <inheritdoc/>
         public override string Description => "CASSIE replacement plugin";
 
@@ -53,7 +55,7 @@
         public override string Author => "icedchqi";
 
         /// <inheritdoc/>
-        public override Version Version => new (1, 4, 0);
+        public override Version Version => new (1, 4, 1);
 
 
         private static List<CassieClip> registeredClips = new List<CassieClip>();
