@@ -1,8 +1,9 @@
 ﻿namespace CassieReplacement
 {
-    using CassieReplacement.Models;
     using System.Collections.Generic;
     using System.ComponentModel;
+    using CassieReplacement.Models;
+#pragma warning disable SA1600
 #if EXILED
     using Exiled.API.Interfaces;
 
@@ -22,6 +23,8 @@
     public class Config
     {
 #endif
+        [Description("The prefix to use when writing CASSIE messages to allow CASSIE replacer to take over.")]
+        public string CustomCassiePrefix { get; set; } = "customcassie";
 
         /// <summary>
         /// Gets or sets the directory from which audio files are sourced.
@@ -29,7 +32,7 @@
         [Description("This is the folders where all of your audio clips will be stored. IMPORTANT: DIRECTORIES ARE ABSOLUTE, NOT RELATIVE!")]
         public List<CassieDirectory> BaseDirectories { get; set; } = new List<CassieDirectory>
         {
-            new CassieDirectory()
+            new CassieDirectory(),
         };
 
         /// <summary>

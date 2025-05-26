@@ -23,7 +23,7 @@
                 string[] dividedBySplits = words.Split(new string[] { "</size><split>" }, StringSplitOptions.None);
 
                 // If customcassie signature not found allow regular execution.
-                if (!dividedBySplits[0].Contains("customcassie"))
+                if (!dividedBySplits[0].Contains(Plugin.PluginConfig.CustomCassiePrefix))
                 {
                     return true;
                 }
@@ -55,10 +55,10 @@
                 return false;
             }
 
-            if (words.StartsWith("customcassie"))
+            if (words.StartsWith(Plugin.PluginConfig.CustomCassiePrefix))
             {
                 List<string> input = words.ToLower().Split(' ').ToList();
-                input.Remove("customcassie");
+                input.Remove(Plugin.PluginConfig.CustomCassiePrefix);
                 CustomCassieReader.Singleton.CassieReadMessage(input, makeNoise);
                 return false;
             }
@@ -69,10 +69,10 @@
         // test\u2005subtitles<size=0>test subtitles</size><split>
         public static bool TranslatedMessagePrefix(string message, string translation, bool isHeld, bool isNoisy, bool isSubtitles)
         {
-            if (message.StartsWith("customcassie"))
+            if (message.StartsWith(Plugin.PluginConfig.CustomCassiePrefix))
             {
                 List<string> input = message.ToLower().Split(' ').ToList();
-                input.Remove("customcassie");
+                input.Remove(Plugin.PluginConfig.CustomCassiePrefix);
                 CustomCassieReader.Singleton.CassieReadMessage(input, isNoisy, translation);
                 return false;
             }
