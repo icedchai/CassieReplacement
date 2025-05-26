@@ -11,6 +11,7 @@
     using System.Text;
     using System.Threading.Tasks;
     using Utf8Json.Resolvers.Internal;
+    using YamlDotNet.Serialization;
 
 #pragma warning disable SA1600
     public class CassieAnnouncement
@@ -41,7 +42,6 @@
         {
         }
 
-/*
         private string words;
 
         private string translation;
@@ -56,11 +56,9 @@
         {
             get => translation;
             set => translation = value;
-        }*/
-        public string Translation { get; set; }
+        }
 
-        public string Words { get; set; }
-
+        [YamlIgnore]
         public bool IsCustomMessage => Words.StartsWith(Plugin.PluginConfig.CustomCassiePrefix);
 
         public void Announce(bool isHeld = false, bool isNoisy = true, bool isSubtitles = true)

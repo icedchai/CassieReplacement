@@ -48,9 +48,9 @@
         /// <inheritdoc/>
         public override Version RequiredExiledVersion => new Version(9, 6, 0);
 
-        public override PluginPriority Priority => PluginPriority.Lower;
+        public override PluginPriority Priority => PluginPriority.Highest;
 
-        // private CassieEventHandlers cassieEventHandlers { get; set; }
+        private CassieEventHandlers cassieEventHandlers { get; set; }
 #else
         /// <inheritdoc/>
         public override string Description => "CASSIE replacement plugin";
@@ -121,8 +121,8 @@
         public override void OnEnabled()
         {
             base.OnEnabled();
-            /*cassieEventHandlers = new();
-            cassieEventHandlers.Register();*/
+            cassieEventHandlers = new();
+            cassieEventHandlers.Register();
 #else
         public override void Enable()
         {
@@ -149,8 +149,8 @@
         public override void OnDisabled()
         {
             base.OnDisabled();
-            /*cassieEventHandlers.Unregister();
-            cassieEventHandlers = null;*/
+            cassieEventHandlers.Unregister();
+            cassieEventHandlers = null;
 #else
         public override void Disable()
         {

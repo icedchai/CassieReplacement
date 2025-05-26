@@ -11,21 +11,22 @@
     {
         public bool ShouldOverrideAnnouncements { get; set; } = false;
 
-        public CassieAnnouncement NtfWaveAnnouncement { get; set; } = new CassieAnnouncement { Words = "mtfunit epsilon 11 designated {letter} {number} hasentered allremaining {threatoverview}",
-            Translation = "Mobile Task Force Unit Epsilon-11 designated {letter}-{number} has entered the facility.<split>All remaining personnel are advised to proceed with standard evacuation protocols until an MTF squad reaches your destination.<split>{threatoverview}" };
+        public CassieAnnouncement NtfWaveAnnouncement { get; set; } = new ("mtfunit epsilon 11 designated {letter} {number} hasentered allremaining {threatoverview}",
+            "Mobile Task Force Unit Epsilon-11 designated {letter}-{number} has entered the facility.<split>All remaining personnel are advised to proceed with standard evacuation protocols until an MTF squad reaches your destination.<split>{threatoverview}");
 
-        public CassieAnnouncement ThreatOverviewNoScps { get; set; } = new CassieAnnouncement { Words = "noscpsleft", Translation = "Substantial threat to safety remains within the facility -- exercise caution." };
+        public CassieAnnouncement ThreatOverviewNoScps { get; set; } = new("noscpsleft", "Substantial threat to safety remains within the facility -- exercise caution.");
 
-        public CassieAnnouncement ThreatOverviewOneScp { get; set; } = new CassieAnnouncement { Words = "awaitingrecontaiment 1 scpsubject", Translation = "Awaiting recontaiment of: 1 SCP subject." };
+        public CassieAnnouncement ThreatOverviewOneScp { get; set; } = new ("awaitingrecontaiment 1 scpsubject", "Awaiting recontaiment of: 1 SCP subject.");
 
-        public CassieAnnouncement ThreatOverviewScps { get; set; } = new CassieAnnouncement { Words = "awaitingrecontainment {scps} scpsubjects", Translation = "Awaiting recontainment of: {scps} SCP subjects." };
+        public CassieAnnouncement ThreatOverviewScps { get; set; } = new ("awaitingrecontainment {scps} scpsubjects", "Awaiting recontainment of: {scps} SCP subjects.");
 
-        public CassieAnnouncement ScpTerminationAnnouncement { get; set; } = new CassieAnnouncement { Words = "{scp} {deathcause}", Translation = "{scp} {deathcause}" };
-        /*
+        public CassieAnnouncement ScpTerminationAnnouncement { get; set; } = new ("{scp} {deathcause}", "{scp} {deathcause}");
+
 
         public Dictionary<RoleTypeId, CassieAnnouncement> ScpLookupTable { get; set; } = new Dictionary<RoleTypeId, CassieAnnouncement>
         {
             { RoleTypeId.Scp049, new CassieAnnouncement("Scp 0 4 9", "SCP-049") },
+            { RoleTypeId.Scp0492, new CassieAnnouncement("Scp 0 4 9 2", "SCP-049-2") },
             { RoleTypeId.Scp096, new CassieAnnouncement("Scp 0 9 6", "SCP-096") },
             { RoleTypeId.Scp079, new CassieAnnouncement("Scp 0 7 9", "SCP-079") },
             { RoleTypeId.Scp106, new CassieAnnouncement("Scp 1 0 6", "SCP-106") },
@@ -41,7 +42,9 @@
 
             { CassieDamageType.Decontamination, new CassieAnnouncement(" lost in decontamination sequence", "lost in decontamination sequence.") },
 
-            { CassieDamageType.Firearm, new CassieAnnouncement(" Containedsuccessfully {team}", "contained successfully {team}") },
+            { CassieDamageType.Player, new CassieAnnouncement(" Containedsuccessfully {team}", "contained successfully {team}.") },
+
+            { CassieDamageType.Unknown, new CassieAnnouncement(" SUCCESSFULLY TERMINATED . TERMINATION CAUSE UNSPECIFIED", "successfully terminated. Termination cause unspecified.") },
         };
 
         public Dictionary<Team, CassieAnnouncement> TeamTerminationCallsignLookupTable { get; set; } = new Dictionary<Team, CassieAnnouncement>
@@ -52,11 +55,11 @@
 
             { Team.Scientists, new CassieAnnouncement(" BY SCIENCE PERSONNEL", "by Science Personnel") },
 
-            { Team.FoundationForces, new CassieAnnouncement(" CONTAINMENTUNIT {letter} {number}", "Containment Unit {letter}-{number}") },
+            { Team.FoundationForces, new CassieAnnouncement(" CONTAINMENTUNIT {letter} {number}", "-- Containment Unit {letter}-{number}") },
 
-            { Team.Dead, new CassieAnnouncement(" CONTAINMENTUNIT UNKNOWN", "Containment Unit Unknown") },
+            { Team.OtherAlive, new CassieAnnouncement(" CONTAINMENTUNIT UNKNOWN", "-- Containment Unit Unknown") },
 
-            { Team.SCPs, new CassieAnnouncement(" BY {scpkiller}", "{scpkiller}") },
-        };*/
+            { Team.SCPs, new CassieAnnouncement(" BY {scpkiller}", "by {scpkiller}") },
+        };
     }
 }
