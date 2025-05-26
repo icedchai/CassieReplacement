@@ -1,5 +1,6 @@
 ﻿namespace CassieReplacement
 {
+    using CassieReplacement.Models;
     using MEC;
     using Respawning;
     using System;
@@ -61,6 +62,17 @@
         }
 
         /// <summary>
+        /// Reads a message from CustomCassie, using the registered audio clips.
+        /// </summary>
+        /// <param name="messages">The words to read.</param>
+        /// <param name="isNoisy">A value indicating whether to put this message to CASSIE background noise.</param>
+        /// <param name="translation">The CASSIE subtitles to use.</param>
+        public void CassieReadMessage(string messages, bool isNoisy = true, string translation = "")
+        {
+            ReadMessage(messages.Split(' ').ToList(), new List<AudioPlayer> { CassiePlayer, CassiePlayerGlobal }, isNoisy, translation);
+        }
+
+        /// <summary>
         /// Reads a message from an <see cref="AudioPlayer"/> instance, using the registered audio clips.
         /// </summary>
         /// <param name="messages">The list of strings to read.</param>
@@ -70,6 +82,7 @@
         public void ReadMessage(List<string> messages, List<AudioPlayer> audioPlayers, bool isNoisy = false, string translation = "")
         {
             float bg = 0f;
+            string baseCassieAnnouncement = string.Empty;
             for (int i = 0; i < messages.Count(); i++)
             {
                 string msg = messages[i];
@@ -105,7 +118,19 @@
 
                 if (Plugin.RegisteredClips.Where(c => c.Name == msg).Any())
                 {
-                    bg += Plugin.RegisteredClips.Where(c => c.Name == msg).FirstOrDefault().Length;
+                    CassieClip currentClip = Plugin.RegisteredClips.Where(c => c.Name == msg).First();
+
+                    int howManyDotsToAdd = (int)Math.Round(currentClip.Length * 2, MidpointRounding.AwayFromZero);
+                    for (int j = 0; j < howManyDotsToAdd; j++)
+                    {
+                        baseCassieAnnouncement += " .";
+                    }
+
+                    bg += currentClip.Length;
+                }
+                else
+                {
+                    baseCassieAnnouncement += $" {msg}";
                 }
             }
 
@@ -121,21 +146,13 @@
             currentPrefix = string.Empty;
             currentSuffix = string.Empty;
 
-            // Calculates the empty CASSIE message to send.
-            int bgi = (int)Math.Round(bg);
-            string a = string.Empty;
-            for (int i = 0; i < bgi; i++)
-            {
-                a += " . .";
-            }
-
             if (ticksSinceCassieSpoke <= 360)
             {
                 Timing.CallDelayed(0.5f, () => ReadMessage(messages, audioPlayers: audioPlayers, translation: translation, isNoisy: isNoisy));
             }
             else
             {
-                RespawnEffectsController.PlayCassieAnnouncement(string.IsNullOrWhiteSpace(translation) ? a : $"{translation.Replace(' ', '\u2005')}<size=0>{a}</size>", false, true, !string.IsNullOrWhiteSpace(translation));
+                RespawnEffectsController.PlayCassieAnnouncement(string.IsNullOrWhiteSpace(translation) ? baseCassieAnnouncement : $"{translation.Replace(' ', '\u2005')}<size=0> {baseCassieAnnouncement} </size>", false, true, !string.IsNullOrWhiteSpace(translation));
                 Timing.CallDelayed(2.25f, () => ReadWords(messages, audioPlayers));
             }
         }
@@ -144,15 +161,15 @@
         {
             string msg = messages[0].ToLower();
             messages.Remove(msg);
-            if (msg == ".")
+
+            if (messages.Count == 0)
             {
-                Timing.CallDelayed(0.25f, () => ReadWords(messages, audioPlayers));
                 return;
             }
 
-            if (!AudioClipStorage.AudioClips.ContainsKey(msg))
+            if (!AudioClipStorage.AudioClips.ContainsKey(msg) || !Plugin.RegisteredClips.Where(c => c.Name == msg).Any())
             {
-                ReadWords(messages, audioPlayers);
+                Timing.CallDelayed(NineTailedFoxAnnouncer.singleton.CalculateDuration(msg), () => ReadWords(messages, audioPlayers));
                 return;
             }
 

@@ -178,7 +178,7 @@
             return 0f;
         }
 
-        private void RegisterFolder(CassieDirectory directoryConfiguration, string directory = null)
+        private static void RegisterFolder(CassieDirectory directoryConfiguration, string directory = null)
         {
             DirectoryInfo d = new DirectoryInfo(directoryConfiguration.Path);
             if (directory is not null)
@@ -206,8 +206,8 @@
                     cassieClip.Name += "_";
                 }
 
-                registeredClips.Add(cassieClip);
                 AudioClipStorage.LoadClip(cassieClip.FileInfo.FullName, cassieClip.Name);
+                registeredClips.Add(cassieClip);
             }
         }
     }
