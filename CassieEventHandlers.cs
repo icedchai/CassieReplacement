@@ -44,7 +44,7 @@ namespace CassieReplacement
             CassieAnnouncement newAnnouncement = Config.NtfWaveAnnouncement;
             newAnnouncement = newAnnouncement
                 .Replace("{letter}", new CassieAnnouncement($"nato_{e.UnitName[0]}", e.UnitName))
-                .Replace("{number}", $"{e.UnitNumber}")
+                .Replace("{number}", e.UnitNumber < 10 ? $"0{e.UnitNumber}" : $"{e.UnitNumber}")
                 .Replace("{threatoverview}", e.ScpsLeft == 0 ? Config.ThreatOverviewNoScps : e.ScpsLeft == 1 ? Config.ThreatOverviewOneScp : Config.ThreatOverviewScps)
                 .Replace("{scps}", $"{e.ScpsLeft}");
             newAnnouncement.Announce();
