@@ -48,8 +48,6 @@
         /// <inheritdoc/>
         public override Version RequiredExiledVersion => new Version(9, 6, 0);
 
-        public override PluginPriority Priority => PluginPriority.Highest;
-
         private CassieEventHandlers cassieEventHandlers { get; set; }
 #else
         /// <inheritdoc/>
