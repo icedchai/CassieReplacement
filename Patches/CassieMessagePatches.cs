@@ -7,6 +7,7 @@
     using System.Threading.Tasks;
     using CassieReplacement.Models;
     using HarmonyLib;
+    using LabApi.Features.Console;
     using Mirror;
     using NorthwoodLib;
     using NorthwoodLib.Pools;
@@ -18,6 +19,8 @@
         [HarmonyPrefix]
         public static bool MessagePrefix(string words, bool makeHold, bool makeNoise, bool customAnnouncement)
         {
+            Logger.Info(words);
+
             // Checks for EXILED subtitle signatures.
             if (words.Contains("<size=0>") || words.Contains("<split>"))
             {

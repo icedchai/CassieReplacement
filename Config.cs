@@ -1,9 +1,9 @@
 ﻿namespace CassieReplacement
 {
+#pragma warning disable SA1600
     using System.Collections.Generic;
     using System.ComponentModel;
     using CassieReplacement.Models;
-#pragma warning disable SA1600
 #if EXILED
     using Exiled.API.Interfaces;
 
@@ -15,6 +15,9 @@
         public bool IsEnabled { get; set; } = true;
 
         public bool Debug { get; set; } = false;
+
+        public CassieOverrideConfigs CassieOverrideConfig { get; set; } = new CassieOverrideConfigs();
+
 #else
 
     /// <summary>
