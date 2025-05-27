@@ -21,6 +21,12 @@
         /// <inheritdoc/>
         public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
         {
+            if (arguments.Count != 0)
+            {
+                response = $"{NineTailedFoxAnnouncer.singleton.CalculateDuration(arguments.At(0))}";
+                return true;
+            }
+
             string words = "The available words are:\n";
             foreach (string word in Plugin.RegisteredClipNames)
             {

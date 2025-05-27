@@ -11,9 +11,9 @@
     using MEC;
     using PlayerRoles.FirstPersonControl;
     using PlayerRoles.PlayableScps.Scp079;
-    using LabApi.Features.Console;
 #if EXILED
     using Exiled.API.Features;
+    using Exiled.API.Enums;
 #else
     using LabApi.Loader.Features.Plugins;
     using LabApi.Features;
@@ -47,6 +47,8 @@
 
         /// <inheritdoc/>
         public override Version RequiredExiledVersion => new Version(9, 6, 0);
+
+        private CassieEventHandlers cassieEventHandlers { get; set; }
 #else
         /// <inheritdoc/>
         public override string Description => "CASSIE replacement plugin";
@@ -60,7 +62,6 @@
 
         /// <inheritdoc/>
         public override Version Version => new (1, 4, 1);
-
 
         private static List<CassieClip> registeredClips = new List<CassieClip>();
 
@@ -118,6 +119,8 @@
         public override void OnEnabled()
         {
             base.OnEnabled();
+            cassieEventHandlers = new();
+            cassieEventHandlers.Register();
 #else
         public override void Enable()
         {
@@ -144,6 +147,8 @@
         public override void OnDisabled()
         {
             base.OnDisabled();
+            cassieEventHandlers.Unregister();
+            cassieEventHandlers = null;
 #else
         public override void Disable()
         {
@@ -178,7 +183,7 @@
             return 0f;
         }
 
-        private void RegisterFolder(CassieDirectory directoryConfiguration, string directory = null)
+        private static void RegisterFolder(CassieDirectory directoryConfiguration, string directory = null)
         {
             DirectoryInfo d = new DirectoryInfo(directoryConfiguration.Path);
             if (directory is not null)
@@ -206,8 +211,8 @@
                     cassieClip.Name += "_";
                 }
 
-                registeredClips.Add(cassieClip);
                 AudioClipStorage.LoadClip(cassieClip.FileInfo.FullName, cassieClip.Name);
+                registeredClips.Add(cassieClip);
             }
         }
     }
