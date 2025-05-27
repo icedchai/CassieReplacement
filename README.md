@@ -14,7 +14,7 @@ https://github.com/user-attachments/assets/4a8e1ef7-ac78-451e-895a-018805555865
 
    2.1. The `prefix` property defines how you can refer to the clip in CASSIE.
 	 
-	 2.2. (EXILED ONLY PAST v1.5.0) You can also define CASSIE announcement overrides for SCP termination, NTF and CI arrivals, etc. (SEE **Overrides** in the readme)
+	 2.2. (EXILED ONLY PAST v1.5.0) You can also define CASSIE announcement overrides for SCP termination, NTF and CI arrivals, etc. (SEE [**Overrides**](https://github.com/icedchai/CassieReplacement/blob/dev/README.md#overrides-exiled-only) in the readme. See )
 ```
 # This is the folders where all of your audio clips will be stored. IMPORTANT: DIRECTORIES ARE ABSOLUTE, NOT RELATIVE!
 base_directories:
@@ -41,19 +41,26 @@ example: `cassie customcassie customword1 customword2`
 This is the default override config.
 Most word replacements/Keywords are context-specific.
 
-NTF Announcement Keywords
+### NTF Announcement Keywords
+
 `{letter}` & `{number}` are the relevant NATO Unit (eg. FOXTROT-18). "Relevant" meaning the Unit which spawned or the Unit which killed the SCP.
+
 `{scps}` is the number of SCPs left as reported by the `AnnouncingNtfEntranceEventArgs`
 
-Death Announcement Keywords
+
+### Death Announcement Keywords
+
 `{scp}` is the name of the SCP as defined in `scp_lookup_table`.
+
 `{deathcause}` is the phrase associated with the specific `DamageType` as defined in `damage_type_termination_announcement_lookup_table`.
+
 `{team}` is the phrase associated with the player who killed the SCP as defined in `team_termination_callsign_lookup_table`.
+
 `{scpkiller}` is the name of the SCP who killed the SCP as defined in `damage_type_termination_announcement_lookup_table`. (This should not be relevant most of the time, but can happen if an SCP uses a gun to kill another SCP.)
 ```
 cassie_override_config:
 # Whether to override these CASSIE messages. Put the prefix in front to play customcassie messages.
-  should_override_announcements: true
+  should_override_announcements: false
   ntf_wave_announcement:
     words: 'mtfunit epsilon 11 designated {letter} {number} hasentered allremaining {threatoverview}'
     translation: 'Mobile Task Force Unit Epsilon-11 designated {letter}-{number} has entered the facility.<split>All remaining personnel are advised to proceed with standard evacuation protocols until an MTF squad reaches your destination.<split>{threatoverview}'
