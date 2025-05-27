@@ -185,6 +185,9 @@
 
         private static void RegisterFolder(CassieDirectory directoryConfiguration, string directory = null)
         {
+#if EXILED
+            directoryConfiguration.Path = directoryConfiguration.Path.Replace("{exiled_config}", Paths.Configs);
+#endif
             DirectoryInfo d = new DirectoryInfo(directoryConfiguration.Path);
             if (directory is not null)
             {
