@@ -28,9 +28,13 @@
 
                 // If customcassie signature not found allow regular execution.
                 // Also prevents infinite self-call
-                if (!dividedBySplits[0].Contains(Plugin.PluginConfig.CustomCassiePrefix))
+                if (!dividedBySplits[0].StartsWith(Plugin.PluginConfig.CustomCassiePrefix))
                 {
                     return true;
+                }
+                else
+                {
+                    dividedBySplits[0].Remove(0, Plugin.PluginConfig.CustomCassiePrefix.Length);
                 }
 
                 StringBuilder subtitles = StringBuilderPool.Shared.Rent();
