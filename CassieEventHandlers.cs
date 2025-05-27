@@ -104,7 +104,7 @@ namespace CassieReplacement
             CassieDamageType damageType = CassieDamageType.Unknown;
 
             RoleTypeId role = e.DamageHandler.AttackerFootprint.Role;
-            string unit = e.Attacker is null ? string.Empty : e.Attacker.UnitName;
+            string unit = e.DamageHandler.Attacker is null ? string.Empty : e.DamageHandler.AttackerFootprint.UnitName;
 
             CassieAnnouncement letter = new CassieAnnouncement();
             string number = string.Empty;
