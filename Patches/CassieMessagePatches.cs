@@ -12,7 +12,6 @@
     using NorthwoodLib;
     using NorthwoodLib.Pools;
     using Respawning;
-    using UnityEngine.Windows;
 
     [HarmonyPatch(typeof(RespawnEffectsController), nameof(RespawnEffectsController.PlayCassieAnnouncement))]
     public static class CassieMessagePatches
@@ -66,15 +65,9 @@
             if (words.StartsWith(Plugin.PluginConfig.CustomCassiePrefix))
             {
                 string[] wordsplit = words.Split(';');
-                string finalInput = string.Empty;
-                string finalTranslate = string.Empty;
-                for (int i = 0; i < wordsplit.Count(); i += 2)
-                {
-                    finalInput += $"{wordsplit[i]}<split>";
-                    finalTranslate += $"{(wordsplit.TryGet(i + 1, out string trans) ? trans : string.Empty)}<split>";
-                }
-
-                CustomCassieReader.Singleton.CassieReadMessage(finalInput, makeNoise, finalTranslate);
+                List<string> input = wordsplit[0].ToLower().Split(' ').ToList();
+                input.Remove(Plugin.PluginConfig.CustomCassiePrefix);
+                CustomCassieReader.Singleton.CassieReadMessage(input, makeNoise, wordsplit.Count() > 1 ? wordsplit[1] : string.Empty);
                 return false;
             }
 
