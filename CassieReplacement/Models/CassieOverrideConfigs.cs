@@ -17,7 +17,7 @@
 
         public CassieAnnouncement ThreatOverviewNoScps { get; set; } = new ("noscpsleft", "Substantial threat to safety remains within the facility -- exercise caution.");
 
-        public CassieAnnouncement ThreatOverviewOneScp { get; set; } = new ("awaitingrecontaiment 1 scpsubject", "Awaiting recontaiment of: 1 SCP subject.");
+        public CassieAnnouncement ThreatOverviewOneScp { get; set; } = new ("awaitingrecontainment 1 scpsubject", "Awaiting recontaiment of: 1 SCP subject.");
 
         public CassieAnnouncement ThreatOverviewScps { get; set; } = new ("awaitingrecontainment {scps} scpsubjects", "Awaiting recontainment of: {scps} SCP subjects.");
 
