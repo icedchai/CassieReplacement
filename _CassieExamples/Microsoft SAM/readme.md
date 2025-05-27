@@ -10,8 +10,8 @@
 
 ### Entrance announcement override
 
-Relevant config
-
+[Relevant config
+](https://github.com/icedchai/CassieReplacement/tree/main/_CassieExamples/Microsoft%20SAM#entrance-announcement-config)
 https://github.com/user-attachments/assets/5ba85417-cc29-49ae-bb2b-2297d3a78893
 
 https://github.com/user-attachments/assets/d4bb2dce-3ba2-4115-8668-01b209cb78dc
@@ -20,8 +20,8 @@ The plugin has the capability to override all arrival announcements, like here.
 
 ### Termination announcement override
 
-Relevant config
-
+[Relevant config
+](https://github.com/icedchai/CassieReplacement/tree/main/_CassieExamples/Microsoft%20SAM#termination-announcement-config)
 https://github.com/user-attachments/assets/7906cdf4-d27b-402f-8805-e571120aa867
 
 https://github.com/user-attachments/assets/3563bcf3-5076-406e-a1ff-d565e24ce249
