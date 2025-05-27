@@ -41,7 +41,7 @@ namespace CassieReplacement
             }
 
             e.IsAllowed = false;
-            CassieAnnouncement newAnnouncement = new CassieAnnouncement(); 
+            CassieAnnouncement newAnnouncement = new CassieAnnouncement();
 
             if (!e.Wave.IsMiniWave)
             {
