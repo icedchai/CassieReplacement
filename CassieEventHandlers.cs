@@ -22,26 +22,57 @@ namespace CassieReplacement
         public void Register()
         {
             Exiled.Events.Handlers.Map.AnnouncingNtfEntrance += OnAnnouncingNtfEntrance;
+            Exiled.Events.Handlers.Map.AnnouncingChaosEntrance += OnAnnouncingChaosEntrance;
             Exiled.Events.Handlers.Map.AnnouncingScpTermination += OnAnnouncingScpTermination;
         }
 
         public void Unregister()
         {
             Exiled.Events.Handlers.Map.AnnouncingNtfEntrance -= OnAnnouncingNtfEntrance;
+            Exiled.Events.Handlers.Map.AnnouncingChaosEntrance -= OnAnnouncingChaosEntrance;
             Exiled.Events.Handlers.Map.AnnouncingScpTermination -= OnAnnouncingScpTermination;
         }
 
-        private void OnAnnouncingNtfEntrance(AnnouncingNtfEntranceEventArgs e)
+        private void OnAnnouncingChaosEntrance(AnnouncingChaosEntranceEventArgs e)
         {
-            if (!Config.ShouldOverrideAnnouncements)
+            if (!Config.ShouldOverrideAnnouncements || !e.IsAllowed)
             {
                 return;
             }
 
             e.IsAllowed = false;
+            CassieAnnouncement newAnnouncement = new CassieAnnouncement(); 
 
-            Log.Info($"{e.UnitName}, {e.UnitNumber}");
-            CassieAnnouncement newAnnouncement = Config.NtfWaveAnnouncement;
+            if (!e.Wave.IsMiniWave)
+            {
+                newAnnouncement = Config.ChaosWaveAnnouncement;
+            }
+            else
+            {
+                newAnnouncement = Config.ChaosMiniAnnouncement;
+            }
+
+            newAnnouncement.Announce();
+        }
+
+        private void OnAnnouncingNtfEntrance(AnnouncingNtfEntranceEventArgs e)
+        {
+            if (!Config.ShouldOverrideAnnouncements || !e.IsAllowed)
+            {
+                return;
+            }
+
+            e.IsAllowed = false;
+            CassieAnnouncement newAnnouncement = new CassieAnnouncement();
+            if (!e.Wave.IsMiniWave)
+            {
+                newAnnouncement = Config.NtfWaveAnnouncement;
+            }
+            else
+            {
+                newAnnouncement = Config.NtfMiniAnnouncement;
+            }
+
             newAnnouncement = newAnnouncement
                 .Replace("{letter}", new CassieAnnouncement($"nato_{e.UnitName[0]}", e.UnitName))
                 .Replace("{number}", e.UnitNumber < 10 ? $"0{e.UnitNumber}" : $"{e.UnitNumber}")

@@ -21,8 +21,16 @@
 
         public CassieAnnouncement ThreatOverviewScps { get; set; } = new ("awaitingrecontainment {scps} scpsubjects", "Awaiting recontainment of: {scps} SCP subjects.");
 
-        public CassieAnnouncement ScpTerminationAnnouncement { get; set; } = new ("{scp} {deathcause}", "{scp} {deathcause}");
+        public CassieAnnouncement NtfMiniAnnouncement { get; set; } = new ("NINETAILEDFOX BACKUP UNIT designated {letter} {number} hasentered {threatoverview}",
+            "Nine-Tailed Fox Backup Unit designated {letter}-{number} has entered the facility.<split>{threatoverview}");
 
+        public CassieAnnouncement ChaosWaveAnnouncement { get; set; } = new ("Security Alert . Substantial Chaos Insurgent Activity Detected . Security Personnel Proceed with Standard Protocols",
+            "Security alert. Substantial Chaos Insurgent activity detected.<split>Security personnel, proceed with standard protocols");
+
+        public CassieAnnouncement ChaosMiniAnnouncement { get; set; } = new ("ATTENTION SECURITY PERSONNEL . CHAOSINSURGENCY SPOTTED AT GATE A",
+            "Attention security personnel. Chaos Insurgency spotted at Gate A.");
+
+        public CassieAnnouncement ScpTerminationAnnouncement { get; set; } = new ("{scp} {deathcause}", "{scp} {deathcause}");
 
         public Dictionary<RoleTypeId, CassieAnnouncement> ScpLookupTable { get; set; } = new Dictionary<RoleTypeId, CassieAnnouncement>
         {
