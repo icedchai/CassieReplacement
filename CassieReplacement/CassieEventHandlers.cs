@@ -85,9 +85,9 @@ namespace CassieReplacement
 
             newAnnouncement = newAnnouncement
                 .Replace("{letter}", new CassieAnnouncement($"nato_{e.UnitName[0]}", e.UnitName))
-                .Replace("{number}", e.UnitNumber < 10 ? $"0{e.UnitNumber}" : $"{e.UnitNumber}")
+                .Replace("{number}", new CassieAnnouncement($"{e.UnitNumber}", e.UnitNumber < 10 ? $"0{e.UnitNumber}" : $"{e.UnitNumber}")
                 .Replace("{threatoverview}", e.ScpsLeft == 0 ? Config.ThreatOverviewNoScps : e.ScpsLeft == 1 ? Config.ThreatOverviewOneScp : Config.ThreatOverviewScps)
-                .Replace("{scps}", $"{e.ScpsLeft}");
+                .Replace("{scps}", $"{e.ScpsLeft}"));
             newAnnouncement.Announce();
         }
 
@@ -107,12 +107,15 @@ namespace CassieReplacement
             string unit = e.DamageHandler.Attacker is null ? string.Empty : e.DamageHandler.AttackerFootprint.UnitName;
 
             CassieAnnouncement letter = new CassieAnnouncement();
-            string number = string.Empty;
+            CassieAnnouncement number = new CassieAnnouncement();
 
             if (!string.IsNullOrWhiteSpace(unit) && unit.Contains('-'))
             {
-                letter = new CassieAnnouncement($"nato_{unit.Split('-')[0][0]}", unit.Split('-')[0]);
-                number = unit.Split('-')[1];
+                string[] split = unit.Split('-');
+                string natoLetter = $"nato_{split[0][0]}";
+                int natoNumber = int.Parse(split[1]);
+                letter = new CassieAnnouncement($"nato_{split[0][0]}", split[0]);
+                number = new CassieAnnouncement($"{natoNumber}", natoNumber < 10 ? $"0{natoNumber}" : $"{natoNumber}");
             }
 
             // Fucked up conversion.
