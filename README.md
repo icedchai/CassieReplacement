@@ -42,13 +42,20 @@ This is the default override config.
 Most word replacements/Keywords are context-specific.
 
 NTF Announcement Keywords
+
 `{letter}` & `{number}` are the relevant NATO Unit (eg. FOXTROT-18). "Relevant" meaning the Unit which spawned or the Unit which killed the SCP.
+
 `{scps}` is the number of SCPs left as reported by the `AnnouncingNtfEntranceEventArgs`
 
+
 Death Announcement Keywords
+
 `{scp}` is the name of the SCP as defined in `scp_lookup_table`.
+
 `{deathcause}` is the phrase associated with the specific `DamageType` as defined in `damage_type_termination_announcement_lookup_table`.
+
 `{team}` is the phrase associated with the player who killed the SCP as defined in `team_termination_callsign_lookup_table`.
+
 `{scpkiller}` is the name of the SCP who killed the SCP as defined in `damage_type_termination_announcement_lookup_table`. (This should not be relevant most of the time, but can happen if an SCP uses a gun to kill another SCP.)
 ```
 cassie_override_config:
