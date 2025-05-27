@@ -41,14 +41,14 @@ example: `cassie customcassie customword1 customword2`
 This is the default override config.
 Most word replacements/Keywords are context-specific.
 
-NTF Announcement Keywords
+### NTF Announcement Keywords
 
 `{letter}` & `{number}` are the relevant NATO Unit (eg. FOXTROT-18). "Relevant" meaning the Unit which spawned or the Unit which killed the SCP.
 
 `{scps}` is the number of SCPs left as reported by the `AnnouncingNtfEntranceEventArgs`
 
 
-Death Announcement Keywords
+### Death Announcement Keywords
 
 `{scp}` is the name of the SCP as defined in `scp_lookup_table`.
 
