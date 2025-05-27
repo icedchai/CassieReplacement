@@ -6,7 +6,7 @@
 - Copy `config.yml` into your own config for this plugin.
 
 ## Explanation
-[Basic explanation of the config can be found here.](https://github.com/icedchai/CassieReplacement/README.md#overrides-exiled-only)
+[Basic explanation of the config can be found here.](https://github.com/icedchai/CassieReplacement?tab=readme-ov-file#overrides-exiled-only)
 
 ### Entrance announcement override
 
