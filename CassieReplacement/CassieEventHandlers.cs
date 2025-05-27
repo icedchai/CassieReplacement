@@ -85,8 +85,8 @@ namespace CassieReplacement
 
             newAnnouncement = newAnnouncement
                 .Replace("{letter}", new CassieAnnouncement($"nato_{e.UnitName[0]}", e.UnitName))
-                .Replace("{number}", new CassieAnnouncement($"{e.UnitNumber}", e.UnitNumber < 10 ? $"0{e.UnitNumber}" : $"{e.UnitNumber}")
                 .Replace("{threatoverview}", e.ScpsLeft == 0 ? Config.ThreatOverviewNoScps : e.ScpsLeft == 1 ? Config.ThreatOverviewOneScp : Config.ThreatOverviewScps)
+                .Replace("{number}", new CassieAnnouncement($"{e.UnitNumber}", e.UnitNumber < 10 ? $"0{e.UnitNumber}" : $"{e.UnitNumber}")
                 .Replace("{scps}", $"{e.ScpsLeft}"));
             newAnnouncement.Announce();
         }
