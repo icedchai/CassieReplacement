@@ -13,9 +13,9 @@ https://github.com/user-attachments/assets/4a8e1ef7-ac78-451e-895a-018805555865
 2. In the `config.yml`, you need to add the path to the folder here:
 
    2.1. The `prefix` property defines how you can refer to the clip in CASSIE.
+	 
+	 2.2. (EXILED ONLY PAST v1.5.0) You can also define CASSIE announcement overrides for SCP termination, NTF and CI arrivals, etc.
 ```
-is_enabled: true
-debug: false
 # This is the folders where all of your audio clips will be stored. IMPORTANT: DIRECTORIES ARE ABSOLUTE, NOT RELATIVE!
 base_directories:
 -
@@ -33,3 +33,5 @@ base_directories:
 example: `cassie customcassie customword1 customword2`
 
    3.2. A silent cassie announcement will simply play the sound effects in order.
+	 
+	 3.3. When writing a CASSIE announcement in RA, type `;` after the words to indicate you wish to write the translation/subtitles now.
