@@ -5,7 +5,8 @@ Dependencies:
 [AudioPlayerApi by Killers0992](https://github.com/Killers0992/AudioPlayerApi/)
 
 
-https://github.com/user-attachments/assets/4a8e1ef7-ac78-451e-895a-018805555865
+https://github.com/user-attachments/assets/814c6776-f287-4fe9-b1a8-0af2f0ce9826
+
 
 ## How to use
 1. Create a folder with `.ogg` files that are `mono` & `48000 hz` sample rate
