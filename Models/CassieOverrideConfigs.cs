@@ -25,7 +25,7 @@
             "Nine-Tailed Fox Backup Unit designated {letter}-{number} has entered the facility.<split>{threatoverview}");
 
         public CassieAnnouncement ChaosWaveAnnouncement { get; set; } = new ("Security Alert . Substantial Chaos Insurgent Activity Detected . Security Personnel Proceed with Standard Protocols",
-            "Security alert. Substantial Chaos Insurgent activity detected.<split>Security personnel, proceed with standard protocols");
+            "Security alert. Substantial Chaos Insurgent activity detected.<split>Security personnel, proceed with standard protocols.");
 
         public CassieAnnouncement ChaosMiniAnnouncement { get; set; } = new ("ATTENTION SECURITY PERSONNEL . CHAOSINSURGENCY SPOTTED AT GATE A",
             "Attention security personnel. Chaos Insurgency spotted at Gate A.");
@@ -66,7 +66,7 @@
 
             { Team.FoundationForces, new CassieAnnouncement(" CONTAINMENTUNIT {letter} {number}", "-- Containment Unit {letter}-{number}") },
 
-            { Team.OtherAlive, new CassieAnnouncement(" CONTAINMENTUNIT UNKNOWN", "-- Containment Unit Unknown") },
+            { Team.OtherAlive, new CassieAnnouncement(" BY UNKNOWN PERSONNEL", "by unknown personnel") },
 
             { Team.SCPs, new CassieAnnouncement(" BY {scpkiller}", "by {scpkiller}") },
         };
