@@ -1,6 +1,7 @@
 ﻿namespace CassieReplacement
 {
     using CassieReplacement.Models;
+    using LabApi.Features.Console;
     using MEC;
     using Respawning;
     using System;
@@ -86,7 +87,6 @@
             for (int i = 0; i < messages.Count(); i++)
             {
                 string msg = messages[i];
-
                 if (string.IsNullOrWhiteSpace(msg))
                 {
                     messages.Remove(msg);
@@ -115,7 +115,6 @@
 
                 msg = $"{currentPrefix}{msg}{currentSuffix}";
                 messages[i] = msg;
-
                 if (Plugin.RegisteredClips.Where(c => c.Name == msg).Any())
                 {
                     CassieClip currentClip = Plugin.RegisteredClips.Where(c => c.Name == msg).First();
@@ -139,6 +138,7 @@
 
             if (!isNoisy)
             {
+                RespawnEffectsController.PlayCassieAnnouncement(string.IsNullOrWhiteSpace(translation) ? baseCassieAnnouncement : $"{translation.Replace(' ', '\u2005')}<size=0> {baseCassieAnnouncement} </size>", false, isNoisy, !string.IsNullOrWhiteSpace(translation));
                 ReadWords(messages, audioPlayers);
                 return;
             }
@@ -159,13 +159,13 @@
 
         private void ReadWords(List<string> messages, List<AudioPlayer> audioPlayers)
         {
-            string msg = messages[0].ToLower();
-            messages.Remove(msg);
-
             if (messages.Count == 0)
             {
                 return;
             }
+
+            string msg = messages[0].ToLower();
+            messages.Remove(msg);
 
             if (!AudioClipStorage.AudioClips.ContainsKey(msg) || !Plugin.RegisteredClips.Where(c => c.Name == msg).Any())
             {
