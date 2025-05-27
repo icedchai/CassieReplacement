@@ -111,7 +111,7 @@ namespace CassieReplacement
 
             if (!string.IsNullOrWhiteSpace(unit) && unit.Contains('-'))
             {
-                letter = new CassieAnnouncement($"nato_{unit.Split('-')[0]}", unit.Split('-')[0]);
+                letter = new CassieAnnouncement($"nato_{unit.Split('-')[0][0]}", unit.Split('-')[0]);
                 number = unit.Split('-')[1];
             }
 
