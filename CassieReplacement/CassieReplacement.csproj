@@ -40,7 +40,7 @@
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="AudioPlayerApi">
-      <HintPath>..\..\dependancies\plugins\AudioPlayerApi.dll</HintPath>
+      <HintPath>..\..\..\dependancies\plugins\AudioPlayerApi.dll</HintPath>
     </Reference>
     <Reference Include="CommandSystem.Core">
       <HintPath>$(SL_REFERENCES)\CommandSystem.Core.dll</HintPath>
