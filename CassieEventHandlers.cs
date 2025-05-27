@@ -19,6 +19,9 @@ namespace CassieReplacement
     {
         private CassieOverrideConfigs Config => Plugin.PluginConfig.CassieOverrideConfig;
 
+        /// <summary>
+        /// Registers the event handlers.
+        /// </summary>
         public void Register()
         {
             Exiled.Events.Handlers.Map.AnnouncingNtfEntrance += OnAnnouncingNtfEntrance;
@@ -26,6 +29,9 @@ namespace CassieReplacement
             Exiled.Events.Handlers.Map.AnnouncingScpTermination += OnAnnouncingScpTermination;
         }
 
+        /// <summary>
+        /// Unregisters the event handlers.
+        /// </summary>
         public void Unregister()
         {
             Exiled.Events.Handlers.Map.AnnouncingNtfEntrance -= OnAnnouncingNtfEntrance;
