@@ -47,6 +47,8 @@ namespace CassieReplacement
             }
 
             e.IsAllowed = false;
+            Cassie.Clear();
+
             CassieAnnouncement newAnnouncement = new CassieAnnouncement();
 
             if (!e.Wave.IsMiniWave)
@@ -69,6 +71,8 @@ namespace CassieReplacement
             }
 
             e.IsAllowed = false;
+            Cassie.Clear();
+
             CassieAnnouncement newAnnouncement = new CassieAnnouncement();
             if (!e.Wave.IsMiniWave)
             {
@@ -111,7 +115,11 @@ namespace CassieReplacement
                 number = unit.Split('-')[1];
             }
 
-            Enum.TryParse(e.DamageHandler.Type.ToString(), out damageType);
+            // Fucked up conversion.
+            if (Enum.TryParse(e.DamageHandler.Type.ToString(), out DamageTypeEnumToInt enum1))
+            {
+                damageType = (CassieDamageType)(int)enum1;
+            }
 
             newAnnouncement = newAnnouncement
                 .Replace("{scp}", Config.ScpLookupTable[e.Role.Type])
