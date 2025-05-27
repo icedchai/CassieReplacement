@@ -61,8 +61,8 @@ cassie_override_config:
     words: 'noscpsleft'
     translation: 'Substantial threat to safety remains within the facility -- exercise caution.'
   threat_overview_one_scp:
-    words: 'awaitingrecontaiment 1 scpsubject'
-    translation: 'Awaiting recontaiment of: 1 SCP subject.'
+    words: 'awaitingrecontainment 1 scpsubject'
+    translation: 'Awaiting recontainment of: 1 SCP subject.'
   threat_overview_scps:
     words: 'awaitingrecontainment {scps} scpsubjects'
     translation: 'Awaiting recontainment of: {scps} SCP subjects.'
