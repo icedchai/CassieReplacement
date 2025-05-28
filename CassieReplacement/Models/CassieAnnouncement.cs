@@ -59,7 +59,7 @@
         }
 
         [YamlIgnore]
-        public bool IsCustomMessage => Words.StartsWith(Plugin.PluginConfig.CustomCassiePrefix);
+        public bool IsCustomMessage => Words.StartsWith(Plugin.Singleton.Config.CustomCassiePrefix);
 
         public void Announce(bool isHeld = false, bool isNoisy = true, bool isSubtitles = true)
         {

@@ -28,13 +28,13 @@
 
                 // If customcassie signature not found allow regular execution.
                 // Also prevents infinite self-call
-                if (!dividedBySplits[0].StartsWith(Plugin.PluginConfig.CustomCassiePrefix))
+                if (!dividedBySplits[0].StartsWith(Plugin.Singleton.Config.CustomCassiePrefix))
                 {
                     return true;
                 }
                 else
                 {
-                    dividedBySplits[0].Remove(0, Plugin.PluginConfig.CustomCassiePrefix.Length);
+                    dividedBySplits[0].Remove(0, Plugin.Singleton.Config.CustomCassiePrefix.Length);
                 }
 
                 StringBuilder subtitles = StringBuilderPool.Shared.Rent();
@@ -66,11 +66,11 @@
                 return false;
             }
 
-            if (words.StartsWith(Plugin.PluginConfig.CustomCassiePrefix))
+            if (words.StartsWith(Plugin.Singleton.Config.CustomCassiePrefix))
             {
                 string[] wordsplit = words.Split(';');
                 List<string> input = wordsplit[0].ToLower().Split(' ').ToList();
-                input.Remove(Plugin.PluginConfig.CustomCassiePrefix);
+                input.Remove(Plugin.Singleton.Config.CustomCassiePrefix);
                 CustomCassieReader.Singleton.CassieReadMessage(input, makeNoise, wordsplit.Count() > 1 ? wordsplit[1] : string.Empty);
                 return false;
             }
@@ -81,10 +81,10 @@
         // test\u2005subtitles<size=0>test subtitles</size><split>
         public static bool TranslatedMessagePrefix(string message, string translation, bool isHeld, bool isNoisy, bool isSubtitles)
         {
-            if (message.StartsWith(Plugin.PluginConfig.CustomCassiePrefix))
+            if (message.StartsWith(Plugin.Singleton.Config.CustomCassiePrefix))
             {
                 List<string> input = message.ToLower().Split(' ').ToList();
-                input.Remove(Plugin.PluginConfig.CustomCassiePrefix);
+                input.Remove(Plugin.Singleton.Config.CustomCassiePrefix);
                 CustomCassieReader.Singleton.CassieReadMessage(input, isNoisy, translation);
                 return false;
             }
