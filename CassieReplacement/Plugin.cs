@@ -33,11 +33,6 @@
         /// </summary>
         public static Plugin Singleton;
 
-        /// <summary>
-        /// Gets the singleton's config.
-        /// </summary>
-        public static Config PluginConfig => Singleton.Config;
-
         /// <inheritdoc/>
         public override string Name => "CASSIE Replacement";
 

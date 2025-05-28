@@ -29,7 +29,7 @@
             string firstarg = words.First();
             if (float.TryParse(firstarg, out float vol))
             {
-                Plugin.PluginConfig.CassieVolume = vol;
+                Plugin.Singleton.Config.CassieVolume = vol;
                 response = $"Volume set to {vol}";
                 return true;
             }

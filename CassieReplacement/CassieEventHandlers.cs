@@ -17,7 +17,7 @@ namespace CassieReplacement
 
     public class CassieEventHandlers
     {
-        private CassieOverrideConfigs Config => Plugin.PluginConfig.CassieOverrideConfig;
+        private CassieOverrideConfigs Config => Plugin.Singleton.Config.CassieOverrideConfig;
 
         /// <summary>
         /// Registers the event handlers.
