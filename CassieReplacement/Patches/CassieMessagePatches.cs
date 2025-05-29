@@ -8,6 +8,7 @@
     using CassieReplacement.Models;
     using HarmonyLib;
     using LabApi.Features.Console;
+    using LabApi.Features.Wrappers;
     using Mirror;
     using NorthwoodLib;
     using NorthwoodLib.Pools;

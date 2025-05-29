@@ -1,6 +1,12 @@
 ﻿#if EXILED
 namespace CassieReplacement
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Security.Policy;
+    using System.Text;
+    using System.Threading.Tasks;
     using CassieReplacement.Models;
     using CassieReplacement.Models.Enums;
     using Exiled.API.Enums;
@@ -8,12 +14,7 @@ namespace CassieReplacement
     using Exiled.Events.EventArgs.Map;
     using LabApi.Events.Arguments.ServerEvents;
     using PlayerRoles;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Security.Policy;
-    using System.Text;
-    using System.Threading.Tasks;
+    using Respawning.Announcements;
 
     public class CassieEventHandlers
     {
@@ -84,10 +85,9 @@ namespace CassieReplacement
             }
 
             newAnnouncement = newAnnouncement
+                .GenericReplacement()
                 .Replace("{letter}", new CassieAnnouncement($"nato_{e.UnitName[0]}", e.UnitName))
-                .Replace("{number}", new CassieAnnouncement($"{e.UnitNumber}", e.UnitNumber < 10 ? $"0{e.UnitNumber}" : $"{e.UnitNumber}"))
-                .Replace("{threatoverview}", e.ScpsLeft == 0 ? Config.ThreatOverviewNoScps : e.ScpsLeft == 1 ? Config.ThreatOverviewOneScp : Config.ThreatOverviewScps)
-                .Replace("{scps}", $"{e.ScpsLeft}");
+                .Replace("{number}", new CassieAnnouncement($"{e.UnitNumber}", e.UnitNumber < 10 ? $"0{e.UnitNumber}" : $"{e.UnitNumber}"));
             newAnnouncement.Announce();
         }
 
@@ -100,7 +100,7 @@ namespace CassieReplacement
 
             e.IsAllowed = false;
 
-            CassieAnnouncement newAnnouncement = Config.ScpTerminationAnnouncement;
+            CassieAnnouncement newAnnouncement = Config.ScpTerminationAnnouncement.GenericReplacement();
             CassieDamageType damageType = CassieDamageType.Unknown;
 
             RoleTypeId role = e.DamageHandler.AttackerFootprint.Role;
@@ -125,6 +125,7 @@ namespace CassieReplacement
             }
 
             newAnnouncement = newAnnouncement
+                .GenericReplacement()
                 .Replace("{scp}", Config.ScpLookupTable[e.Role.Type])
                 .Replace("{deathcause}", Config.DamageTypeTerminationAnnouncementLookupTable[damageType])
                 .Replace("{team}", Config.TeamTerminationCallsignLookupTable[role.GetTeam()])
