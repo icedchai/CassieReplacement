@@ -1,7 +1,6 @@
 ﻿namespace CassieReplacement
 {
     using CassieReplacement.Models;
-    using LabApi.Features.Console;
     using MEC;
     using Respawning;
     using System;

@@ -4,7 +4,6 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using static UnityEngine.GraphicsBuffer;
 
     /// <summary>
     /// The command used to invoke <see cref="CustomCassieReader.ReadMessage(List{string})(System.Collections.Generic.List{string})"/> in-game.

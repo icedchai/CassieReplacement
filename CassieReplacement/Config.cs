@@ -1,9 +1,9 @@
 ﻿namespace CassieReplacement
 {
 #pragma warning disable SA1600
+    using CassieReplacement.Models;
     using System.Collections.Generic;
     using System.ComponentModel;
-    using CassieReplacement.Models;
 #if EXILED
     using Exiled.API.Interfaces;
 

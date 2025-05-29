@@ -1,7 +1,7 @@
 ﻿namespace CassieReplacement.Commands
 {
-    using System;
     using CommandSystem;
+    using System;
 
     /// <summary>
     /// The command used to see all registered Custom CASSIE words.

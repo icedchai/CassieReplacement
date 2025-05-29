@@ -1,18 +1,13 @@
 ﻿namespace CassieReplacement.Patches
 {
+    using CassieReplacement.Models;
+    using HarmonyLib;
+    using NorthwoodLib.Pools;
+    using Respawning;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
-    using System.Threading.Tasks;
-    using CassieReplacement.Models;
-    using HarmonyLib;
-    using LabApi.Features.Console;
-    using LabApi.Features.Wrappers;
-    using Mirror;
-    using NorthwoodLib;
-    using NorthwoodLib.Pools;
-    using Respawning;
 
     [HarmonyPatch(typeof(RespawnEffectsController), nameof(RespawnEffectsController.PlayCassieAnnouncement))]
     public static class CassieMessagePatches

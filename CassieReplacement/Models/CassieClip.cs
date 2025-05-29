@@ -1,12 +1,7 @@
 ﻿namespace CassieReplacement.Models
 {
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
     using NVorbis;
+    using System.IO;
 
     public class CassieClip
     {
@@ -18,7 +13,7 @@
         /// <param name="prefix">The prefix to add to the name.</param>
         public CassieClip(FileInfo file, float reverb = 0f, string prefix = "")
         {
-            VorbisReader vorbisReader = new (file.FullName);
+            VorbisReader vorbisReader = new(file.FullName);
             FileInfo = file;
             Name = Path.GetFileNameWithoutExtension(file.FullName).ToLower().Replace(' ', '_');
             Name = $"{prefix}{Name}";

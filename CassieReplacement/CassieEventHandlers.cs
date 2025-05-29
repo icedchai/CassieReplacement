@@ -1,20 +1,13 @@
 ﻿#if EXILED
 namespace CassieReplacement
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Security.Policy;
-    using System.Text;
-    using System.Threading.Tasks;
     using CassieReplacement.Models;
     using CassieReplacement.Models.Enums;
-    using Exiled.API.Enums;
     using Exiled.API.Features;
     using Exiled.Events.EventArgs.Map;
-    using LabApi.Events.Arguments.ServerEvents;
     using PlayerRoles;
-    using Respawning.Announcements;
+    using System;
+    using System.Linq;
 
     public class CassieEventHandlers
     {

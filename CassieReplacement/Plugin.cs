@@ -13,7 +13,6 @@
     using PlayerRoles.PlayableScps.Scp079;
 #if EXILED
     using Exiled.API.Features;
-    using Exiled.API.Enums;
 #else
     using LabApi.Loader.Features.Plugins;
     using LabApi.Features;
@@ -49,14 +48,14 @@
         public override string Description => "CASSIE replacement plugin";
 
         /// <inheritdoc/>
-        public override Version RequiredApiVersion => new (LabApiProperties.CompiledVersion);
+        public override Version RequiredApiVersion => new(LabApiProperties.CompiledVersion);
 #endif
 
         /// <inheritdoc/>
         public override string Author => "icedchqi";
 
         /// <inheritdoc/>
-        public override Version Version => new (1, 5, 0);
+        public override Version Version => new(1, 5, 0);
 
         private static List<CassieClip> registeredClips = new List<CassieClip>();
 
