@@ -42,8 +42,6 @@
         [Description("This is the volume of the speaker making CASSIE's words. Please adjust so that words spoken are loud enough to overpower the PA noise, but not so loud it clips or hurts to listen to.")]
         public float CassieVolume { get; set; } = 1f;
 
-#if EXILED
         public CassieOverrideConfigs CassieOverrideConfig { get; set; } = new CassieOverrideConfigs();
-#endif
     }
 }
