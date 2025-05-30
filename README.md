@@ -5,7 +5,8 @@ Dependencies:
 [AudioPlayerApi by Killers0992](https://github.com/Killers0992/AudioPlayerApi/)
 
 
-https://github.com/user-attachments/assets/4a8e1ef7-ac78-451e-895a-018805555865
+https://github.com/user-attachments/assets/814c6776-f287-4fe9-b1a8-0af2f0ce9826
+
 
 ## How to use
 1. Create a folder with `.ogg` files that are `mono` & `48000 hz` sample rate
@@ -14,7 +15,7 @@ https://github.com/user-attachments/assets/4a8e1ef7-ac78-451e-895a-018805555865
 
    2.1. The `prefix` property defines how you can refer to the clip in CASSIE.
 	 
-	 2.2. (EXILED ONLY PAST v1.5.0) You can also define CASSIE announcement overrides for SCP termination, NTF and CI arrivals, etc. (SEE [**Overrides**](https://github.com/icedchai/CassieReplacement/blob/dev/README.md#overrides-exiled-only) in the readme. See )
+	 2.2. (EXILED ONLY PAST v1.5.0) You can also define CASSIE announcement overrides for SCP termination, NTF and CI arrivals, etc. (SEE [**Overrides**](https://github.com/icedchai/CassieReplacement?tab=readme-ov-file#overrides-exiled-only) in the readme.)
 ```
 # This is the folders where all of your audio clips will be stored. IMPORTANT: DIRECTORIES ARE ABSOLUTE, NOT RELATIVE!
 base_directories:
