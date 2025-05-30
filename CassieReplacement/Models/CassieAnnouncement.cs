@@ -5,6 +5,7 @@
 #endif
     using NorthwoodLib.Pools;
     using PlayerRoles;
+    using Respawning;
     using System.Linq;
     using System.Text;
     using YamlDotNet.Serialization;

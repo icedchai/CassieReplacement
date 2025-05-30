@@ -4,38 +4,46 @@
     using System.Linq;
     using CassieReplacement.Models;
     using CassieReplacement.Models.Enums;
-    using Exiled.API.Features;
-    using Exiled.Events.EventArgs.Map;
     using PlayerRoles;
     using PlayerStatsSystem;
     using Respawning.Waves;
+#if EXILED
+    using Exiled.API.Features;
+    using Exiled.Events.EventArgs.Map;
+#endif
 
     public class CassieEventHandlers
     {
-        private CassieOverrideConfigs Config => Plugin.Singleton.Config.CassieOverrideConfig;
+        private static CassieOverrideConfigs Config => Plugin.Singleton.Config.CassieOverrideConfig;
 
-        public void HandleWaveEntrance(TimeBasedWave wave, string unitName)
+        public static void HandleAnnouncingWaveEntrance(Faction faction, bool isMiniWave, string unitLetter = "", int unitNumber = 0)
         {
-            string unitLetter = unitName.Split('-')[0];
-            int unitNumber = int.Parse(unitName.Split('-')[1]);
             CassieAnnouncement newAnnouncement = new CassieAnnouncement();
-            if (wave is not IMiniWave)
+            char unitLetterFirst = 'a';
+
+            if (!string.IsNullOrWhiteSpace(unitLetter))
             {
-                newAnnouncement = Config.NtfWaveAnnouncement;
+                unitLetterFirst = unitLetter[0];
             }
-            else
+
+            switch (faction)
             {
-                newAnnouncement = Config.NtfMiniAnnouncement;
+                case Faction.FoundationStaff:
+                    newAnnouncement = isMiniWave ? Config.NtfMiniAnnouncement : Config.NtfWaveAnnouncement;
+                    break;
+                case Faction.FoundationEnemy:
+                    newAnnouncement = isMiniWave ? Config.ChaosMiniAnnouncement : Config.ChaosWaveAnnouncement;
+                    break;
             }
 
             newAnnouncement = newAnnouncement
                 .GenericReplacement()
-                .Replace("{letter}", new CassieAnnouncement($"nato_{unitLetter[0]}", unitName))
+                .Replace("{letter}", new CassieAnnouncement($"nato_{unitLetterFirst}", unitLetter))
                 .Replace("{number}", new CassieAnnouncement($"{unitNumber}", unitNumber < 10 ? $"0{unitNumber}" : $"{unitNumber}"));
             newAnnouncement.Announce();
         }
 
-        public void HandleAnnouncingTermination(DamageHandlerBase damageHandler, RoleTypeId victimRole)
+        public static void HandleAnnouncingTermination(DamageHandlerBase damageHandler, RoleTypeId victimRole)
         {
             CassieAnnouncement newAnnouncement = Config.ScpTerminationAnnouncement.GenericReplacement();
             CassieDamageType damageType = CassieDamageType.Unknown;
@@ -59,6 +67,11 @@
                             damageType = CassieDamageType.Decontamination;
                         }
 
+                        if (universalDamageHandler.TranslationId == DeathTranslations.Tesla.Id)
+                        {
+                            damageType = CassieDamageType.Tesla;
+                        }
+
                         break;
                 }
             }
@@ -66,6 +79,7 @@
             {
                 attackerRole = aDamageHandler.Attacker.Role;
                 attackerUnit = aDamageHandler.Attacker.UnitName;
+                damageType = CassieDamageType.Player;
             }
 
             if (!string.IsNullOrWhiteSpace(attackerUnit) && attackerUnit.Contains('-'))
@@ -81,7 +95,7 @@
                 .GenericReplacement()
                 .Replace("{scp}", Config.ScpLookupTable[victimRole])
                 .Replace("{deathcause}", Config.DamageTypeTerminationAnnouncementLookupTable[damageType])
-                .Replace("{team}", Config.TeamTerminationCallsignLookupTable[attackerRole.GetTeam()])
+                .Replace("{team}", Config.TeamTerminationCallsignLookupTable.TryGetValue(attackerRole.GetTeam(), out CassieAnnouncement _callSign) ? _callSign : new CassieAnnouncement())
                 .Replace("{scpkiller}", Config.ScpLookupTable.TryGetValue(attackerRole, out _) ? Config.ScpLookupTable[attackerRole] : new CassieAnnouncement())
                 .Replace("{letter}", letter)
                 .Replace("{number}", number);
@@ -98,6 +112,7 @@
 
             e.IsAllowed = false;
             Cassie.Clear();
+            HandleAnnouncingWaveEntrance(e.Wave.Faction, e.Wave.IsMiniWave, e.UnitName, e.UnitNumber);
         }
 
         private void OnAnnouncingChaosEntrance(AnnouncingChaosEntranceEventArgs e)
@@ -109,6 +124,7 @@
 
             e.IsAllowed = false;
             Cassie.Clear();
+            HandleAnnouncingWaveEntrance(e.Wave.Faction, e.Wave.IsMiniWave);
         }
 
         private void OnAnnouncingScpTermination(AnnouncingScpTerminationEventArgs e)
