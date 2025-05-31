@@ -139,6 +139,11 @@
             currentPrefix = string.Empty;
             currentSuffix = string.Empty;
 
+            if (Plugin.Singleton.Config.CassieOverrideConfig.ShouldOverrideAll)
+            {
+                baseCassieAnnouncement = "noparse " + baseCassieAnnouncement;
+            }
+
             if (!isNoisy)
             {
                 RespawnEffectsController.PlayCassieAnnouncement(string.IsNullOrWhiteSpace(translation) ? baseCassieAnnouncement : $"{translation.Replace(' ', '\u2005')}<size=0> {baseCassieAnnouncement} </size>", false, isNoisy, !string.IsNullOrWhiteSpace(translation));
