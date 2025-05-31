@@ -11,6 +11,9 @@
         [Description("Whether to override these CASSIE messages. Put the prefix in front to play customcassie messages.")]
         public bool ShouldOverrideAnnouncements { get; set; } = false;
 
+        [Description("Whether to override every announcement. Careful with this one!")]
+        public bool ShouldOverrideAll { get; set; } = false;
+
         public CassieAnnouncement NtfWaveAnnouncement { get; set; } = new("mtfunit epsilon 11 designated {letter} {number} hasentered allremaining {threatoverview}",
             "Mobile Task Force Unit Epsilon-11 designated {letter}-{number} has entered the facility.<split>All remaining personnel are advised to proceed with standard evacuation protocols until an MTF squad reaches your destination.<split>{threatoverview}");
 
