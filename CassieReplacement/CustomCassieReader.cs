@@ -84,7 +84,7 @@
         {
             float bg = 0f;
             string baseCassieAnnouncement = string.Empty;
-            HashSet<CassieClip> clipsToRegister = new HashSet<CassieClip>();
+            HashSet<CassieClip> clipsToUnregister = new HashSet<CassieClip>();
             for (int i = 0; i < messages.Count(); i++)
             {
                 string msg = messages[i];
@@ -116,12 +116,17 @@
 
                 msg = $"{currentPrefix}{msg}{currentSuffix}";
                 messages[i] = msg;
-                CassieClip msgCassieClip = Plugin.RegisteredClips.Where(c => c.Name == msg).First();
+                CassieClip msgCassieClip = Plugin.RegisteredClips.FirstOrDefault(c => c.Name == msg);
                 if (msgCassieClip is not null)
                 {
-                    clipsToRegister.Add(msgCassieClip);
-                    AudioClipStorage.LoadClip(msgCassieClip.FileInfo.FullName, msgCassieClip.Name);
+                    // Part of dynamic registration; when a clip is added here, it will be unregistered when the reader is done reading the message.
+                    clipsToUnregister.Add(msgCassieClip);
+                    if (!AudioClipStorage.AudioClips.ContainsKey(msgCassieClip.Name))
+                    {
+                        AudioClipStorage.LoadClip(msgCassieClip.FileInfo.FullName, msgCassieClip.Name);
+                    }
 
+                    // Adds the appropriate amount of dots, where each dot is ~0.5 seconds
                     int howManyDotsToAdd = (int)Math.Round(msgCassieClip.Length * 2, MidpointRounding.AwayFromZero);
                     for (int j = 0; j < howManyDotsToAdd; j++)
                     {
@@ -161,7 +166,7 @@
             else
             {
                 RespawnEffectsController.PlayCassieAnnouncement(string.IsNullOrWhiteSpace(translation) ? baseCassieAnnouncement : $"{translation.Replace(' ', '\u2005')}<size=0> {baseCassieAnnouncement} </size>", false, true, !string.IsNullOrWhiteSpace(translation));
-                Timing.CallDelayed(2.25f, () => ReadWords(messages, audioPlayers, clipsToRegister));
+                Timing.CallDelayed(2.25f, () => ReadWords(messages, audioPlayers, clipsToUnregister));
             }
         }
 
@@ -183,7 +188,7 @@
             string msg = messages[0].ToLower();
             messages.Remove(msg);
 
-            if (!AudioClipStorage.AudioClips.ContainsKey(msg) || !Plugin.RegisteredClips.Where(c => c.Name == msg).Any())
+            if (!AudioClipStorage.AudioClips.ContainsKey(msg) || !Plugin.RegisteredClips.Any(c => c.Name == msg))
             {
                 Timing.CallDelayed(NineTailedFoxAnnouncer.singleton.CalculateDuration(msg), () => ReadWords(messages, audioPlayers, clipsToUnregister));
                 return;

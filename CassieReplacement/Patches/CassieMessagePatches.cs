@@ -16,7 +16,7 @@
         [HarmonyPrefix]
         public static bool MessagePrefix(string words, bool makeHold, bool makeNoise, bool customAnnouncement)
         {
-            if (words.StartsWith("noparse"))
+            if (words.Contains("noparse"))
             {
                 return true;
             }
@@ -61,9 +61,9 @@
                     }
                 }
 
-                new CassieAnnouncement(input.ToString(), subtitles.ToString()).Announce();
+                // new CassieAnnouncement(input.ToString(), subtitles.ToString()).Announce();
 
-                // CustomCassieReader.Singleton.CassieReadMessage(input.ToString().ToLower().Split(' ').ToList(), isNoisy: makeNoise, translation: subtitles.ToString());
+                CustomCassieReader.Singleton.CassieReadMessage(input.ToString().ToLower().Split(' ').ToList(), isNoisy: makeNoise, translation: subtitles.ToString());
                 StringBuilderPool.Shared.Return(input);
                 StringBuilderPool.Shared.Return(subtitles);
                 return false;
