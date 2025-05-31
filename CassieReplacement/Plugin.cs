@@ -93,7 +93,7 @@
                     continue;
                 }
 
-                CassiePlayer.AddSpeaker($"speaker_{i}", speaker.Position, minDistance: 1, maxDistance: 10);
+                CassiePlayer.AddSpeaker($"speaker_{i}", speaker.Position, minDistance: 8, maxDistance: 10);
             }
         }
 
@@ -153,7 +153,6 @@
             harmony.UnpatchAll("me.icedchai.cassie.patch");
             foreach (CassieClip clip in registeredClips)
             {
-                AudioClipStorage.DestroyClip(clip.Name);
                 registeredClips.Remove(clip);
             }
 
@@ -203,12 +202,11 @@
                 CassieClip cassieClip = new CassieClip(file, directoryConfiguration.BleedTime, directoryConfiguration.Prefix);
 
                 // Prevent duplicates from being registered by appending _ to the name as needed.
-                while (AudioClipStorage.AudioClips.ContainsKey(cassieClip.Name))
+                while (RegisteredClipNames.Contains(cassieClip.Name))
                 {
                     cassieClip.Name += "_";
                 }
 
-                AudioClipStorage.LoadClip(cassieClip.FileInfo.FullName, cassieClip.Name);
                 registeredClips.Add(cassieClip);
             }
         }

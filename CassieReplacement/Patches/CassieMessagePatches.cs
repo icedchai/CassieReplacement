@@ -16,7 +16,10 @@
         [HarmonyPrefix]
         public static bool MessagePrefix(string words, bool makeHold, bool makeNoise, bool customAnnouncement)
         {
-            // Logger.Info(words);
+            if (words.StartsWith("noparse"))
+            {
+                return true;
+            }
 
             // Checks for EXILED subtitle signatures.
             if (words.Contains("<size=0>") || words.Contains("<split>"))
@@ -25,13 +28,16 @@
 
                 // If customcassie signature not found allow regular execution.
                 // Also prevents infinite self-call
-                if (!dividedBySplits[0].StartsWith(Plugin.Singleton.Config.CustomCassiePrefix))
+                if (dividedBySplits[0].StartsWith(Plugin.Singleton.Config.CustomCassiePrefix))
                 {
-                    return true;
+                    dividedBySplits[0].Remove(0, Plugin.Singleton.Config.CustomCassiePrefix.Length);
+                }
+                else if (Plugin.Singleton.Config.CassieOverrideConfig.ShouldOverrideAll)
+                {
                 }
                 else
                 {
-                    dividedBySplits[0].Remove(0, Plugin.Singleton.Config.CustomCassiePrefix.Length);
+                    return true;
                 }
 
                 StringBuilder subtitles = StringBuilderPool.Shared.Rent();
@@ -63,7 +69,7 @@
                 return false;
             }
 
-            if (words.StartsWith(Plugin.Singleton.Config.CustomCassiePrefix))
+            if (words.StartsWith(Plugin.Singleton.Config.CustomCassiePrefix) || Plugin.Singleton.Config.CassieOverrideConfig.ShouldOverrideAll)
             {
                 string[] wordsplit = words.Split(';');
                 List<string> input = wordsplit[0].ToLower().Split(' ').ToList();

@@ -6,11 +6,12 @@
 - Copy `config.yml` into your own config for this plugin.
 
 ## Explanation
-[Basic explanation of the config can be found here.](https://github.com/icedchai/CassieReplacement/README.md#overrides-exiled-only)
+[Basic explanation of the config can be found here.](https://github.com/icedchai/CassieReplacement?tab=readme-ov-file#overrides-exiled-only)
 
 ### Entrance announcement override
 
-Relevant config
+[Relevant config
+](https://github.com/icedchai/CassieReplacement/tree/main/_CassieExamples/Microsoft%20SAM#entrance-announcement-config)
 
 https://github.com/user-attachments/assets/5ba85417-cc29-49ae-bb2b-2297d3a78893
 
@@ -20,7 +21,8 @@ The plugin has the capability to override all arrival announcements, like here.
 
 ### Termination announcement override
 
-Relevant config
+[Relevant config
+](https://github.com/icedchai/CassieReplacement/tree/main/_CassieExamples/Microsoft%20SAM#termination-announcement-config)
 
 https://github.com/user-attachments/assets/7906cdf4-d27b-402f-8805-e571120aa867
 

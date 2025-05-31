@@ -6,6 +6,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Utils.NonAllocLINQ;
 
     /// <summary>
     /// Reads Custom CASSIE messages.
@@ -83,6 +84,7 @@
         {
             float bg = 0f;
             string baseCassieAnnouncement = string.Empty;
+            HashSet<CassieClip> clipsToRegister = new HashSet<CassieClip>();
             for (int i = 0; i < messages.Count(); i++)
             {
                 string msg = messages[i];
@@ -114,17 +116,19 @@
 
                 msg = $"{currentPrefix}{msg}{currentSuffix}";
                 messages[i] = msg;
-                if (Plugin.RegisteredClips.Where(c => c.Name == msg).Any())
+                CassieClip msgCassieClip = Plugin.RegisteredClips.Where(c => c.Name == msg).First();
+                if (msgCassieClip is not null)
                 {
-                    CassieClip currentClip = Plugin.RegisteredClips.Where(c => c.Name == msg).First();
+                    clipsToRegister.Add(msgCassieClip);
+                    AudioClipStorage.LoadClip(msgCassieClip.FileInfo.FullName, msgCassieClip.Name);
 
-                    int howManyDotsToAdd = (int)Math.Round(currentClip.Length * 2, MidpointRounding.AwayFromZero);
+                    int howManyDotsToAdd = (int)Math.Round(msgCassieClip.Length * 2, MidpointRounding.AwayFromZero);
                     for (int j = 0; j < howManyDotsToAdd; j++)
                     {
                         baseCassieAnnouncement += " .";
                     }
 
-                    bg += currentClip.Length;
+                    bg += msgCassieClip.Length;
                 }
                 else
                 {
@@ -134,6 +138,11 @@
 
             currentPrefix = string.Empty;
             currentSuffix = string.Empty;
+
+            if (Plugin.Singleton.Config.CassieOverrideConfig.ShouldOverrideAll)
+            {
+                baseCassieAnnouncement = "noparse " + baseCassieAnnouncement;
+            }
 
             if (!isNoisy)
             {
@@ -152,14 +161,22 @@
             else
             {
                 RespawnEffectsController.PlayCassieAnnouncement(string.IsNullOrWhiteSpace(translation) ? baseCassieAnnouncement : $"{translation.Replace(' ', '\u2005')}<size=0> {baseCassieAnnouncement} </size>", false, true, !string.IsNullOrWhiteSpace(translation));
-                Timing.CallDelayed(2.25f, () => ReadWords(messages, audioPlayers));
+                Timing.CallDelayed(2.25f, () => ReadWords(messages, audioPlayers, clipsToRegister));
             }
         }
 
-        private void ReadWords(List<string> messages, List<AudioPlayer> audioPlayers)
+        private void ReadWords(List<string> messages, List<AudioPlayer> audioPlayers, HashSet<CassieClip> clipsToUnregister = null)
         {
             if (messages.Count == 0)
             {
+                if (clipsToUnregister is not null)
+                {
+                    foreach (var clip in clipsToUnregister)
+                    {
+                        AudioClipStorage.DestroyClip(clip.Name);
+                    }
+                }
+
                 return;
             }
 
@@ -168,7 +185,7 @@
 
             if (!AudioClipStorage.AudioClips.ContainsKey(msg) || !Plugin.RegisteredClips.Where(c => c.Name == msg).Any())
             {
-                Timing.CallDelayed(NineTailedFoxAnnouncer.singleton.CalculateDuration(msg), () => ReadWords(messages, audioPlayers));
+                Timing.CallDelayed(NineTailedFoxAnnouncer.singleton.CalculateDuration(msg), () => ReadWords(messages, audioPlayers, clipsToUnregister));
                 return;
             }
 
@@ -177,7 +194,7 @@
                 audioPlayer.AddClip(msg, Config.CassieVolume);
             }
 
-            Timing.CallDelayed(Plugin.GetClipLength(msg), () => ReadWords(messages, audioPlayers));
+            Timing.CallDelayed(Plugin.GetClipLength(msg), () => ReadWords(messages, audioPlayers, clipsToUnregister));
         }
     }
 }
