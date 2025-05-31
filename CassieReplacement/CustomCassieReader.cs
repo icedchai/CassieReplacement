@@ -6,6 +6,7 @@
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using Utils.NonAllocLINQ;
 
     /// <summary>
     /// Reads Custom CASSIE messages.
@@ -83,7 +84,7 @@
         {
             float bg = 0f;
             string baseCassieAnnouncement = string.Empty;
-            List<CassieClip> clipsToRegister = new List<CassieClip>();
+            HashSet<CassieClip> clipsToRegister = new HashSet<CassieClip>();
             for (int i = 0; i < messages.Count(); i++)
             {
                 string msg = messages[i];
@@ -115,20 +116,19 @@
 
                 msg = $"{currentPrefix}{msg}{currentSuffix}";
                 messages[i] = msg;
-                if (Plugin.RegisteredClips.Where(c => c.Name == msg).Any())
+                CassieClip msgCassieClip = Plugin.RegisteredClips.Where(c => c.Name == msg).First();
+                if (msgCassieClip is not null)
                 {
-                    CassieClip currentClip = Plugin.RegisteredClips.Where(c => c.Name == msg).First();
+                    clipsToRegister.Add(msgCassieClip);
+                    AudioClipStorage.LoadClip(msgCassieClip.FileInfo.FullName, msgCassieClip.Name);
 
-                    clipsToRegister.Add(currentClip);
-                    AudioClipStorage.LoadClip(currentClip.FileInfo.FullName, currentClip.Name);
-
-                    int howManyDotsToAdd = (int)Math.Round(currentClip.Length * 2, MidpointRounding.AwayFromZero);
+                    int howManyDotsToAdd = (int)Math.Round(msgCassieClip.Length * 2, MidpointRounding.AwayFromZero);
                     for (int j = 0; j < howManyDotsToAdd; j++)
                     {
                         baseCassieAnnouncement += " .";
                     }
 
-                    bg += currentClip.Length;
+                    bg += msgCassieClip.Length;
                 }
                 else
                 {
@@ -154,7 +154,6 @@
             currentPrefix = string.Empty;
             currentSuffix = string.Empty;
 
-
             if (ticksSinceCassieSpoke <= 360)
             {
                 Timing.CallDelayed(0.5f, () => ReadMessage(messages, audioPlayers: audioPlayers, translation: translation, isNoisy: isNoisy));
@@ -166,7 +165,7 @@
             }
         }
 
-        private void ReadWords(List<string> messages, List<AudioPlayer> audioPlayers, List<CassieClip> clipsToUnregister = null)
+        private void ReadWords(List<string> messages, List<AudioPlayer> audioPlayers, HashSet<CassieClip> clipsToUnregister = null)
         {
             if (messages.Count == 0)
             {
@@ -180,7 +179,6 @@
 
                 return;
             }
-
 
             string msg = messages[0].ToLower();
             messages.Remove(msg);
