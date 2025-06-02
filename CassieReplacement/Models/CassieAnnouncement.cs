@@ -108,7 +108,7 @@
 
             if (IsCustomMessage)
             {
-                CustomCassieReader.Singleton.CassieReadMessage(Words, isNoisy, isSubtitles ? Translation : string.Empty);
+                CustomCassieReader.Singleton.CassieReadMessage(Words, isNoisy, isSubtitles, Translation);
             }
             else
 #if EXILED

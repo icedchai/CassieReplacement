@@ -56,10 +56,12 @@
         /// </summary>
         /// <param name="messages">The list of strings to read.</param>
         /// <param name="isNoisy">A value indicating whether to put this message to CASSIE background noise.</param>
+        /// <param name="customAnnouncement">Value indicating whether to add a subtitle to this message reading.</param>
         /// <param name="translation">The CASSIE subtitles to use.</param>
-        public void CassieReadMessage(List<string> messages, bool isNoisy = true, string translation = "")
+        /// <param name="useCassie">Value indicating whether to use CASSIE basegame message.</param>
+        public void CassieReadMessage(List<string> messages, bool isNoisy = true, bool customAnnouncement = true, string translation = "", bool useCassie = true)
         {
-            ReadMessage(messages, new List<AudioPlayer> { CassiePlayer, CassiePlayerGlobal }, isNoisy, translation);
+            ReadMessage(messages, new List<AudioPlayer> { CassiePlayer, CassiePlayerGlobal }, isNoisy, customAnnouncement, translation, useCassie);
         }
 
         /// <summary>
@@ -67,10 +69,12 @@
         /// </summary>
         /// <param name="messages">The words to read.</param>
         /// <param name="isNoisy">A value indicating whether to put this message to CASSIE background noise.</param>
+        /// <param name="customAnnouncement">Value indicating whether to add a subtitle to this message reading.</param>
         /// <param name="translation">The CASSIE subtitles to use.</param>
-        public void CassieReadMessage(string messages, bool isNoisy = true, string translation = "")
+        /// <param name="useCassie">Value indicating whether to use CASSIE basegame message.</param>
+        public void CassieReadMessage(string messages, bool isNoisy = true, bool customAnnouncement = true, string translation = "", bool useCassie = true)
         {
-            ReadMessage(messages.Split(' ').ToList(), new List<AudioPlayer> { CassiePlayer, CassiePlayerGlobal }, isNoisy, translation);
+            ReadMessage(messages.Split(' ').ToList(), new List<AudioPlayer> { CassiePlayer, CassiePlayerGlobal }, isNoisy, customAnnouncement, translation, useCassie);
         }
 
         /// <summary>
@@ -79,10 +83,11 @@
         /// <param name="messages">The list of strings to read.</param>
         /// <param name="audioPlayers">The <see cref="AudioPlayer"/> instances to play this message from.</param>
         /// <param name="isNoisy">Value indicating whether to add a CASSIE background to this message reading.</param>
+        /// <param name="customAnnouncement">Value indicating whether to add a subtitle to this message reading.</param>
         /// <param name="translation">The CASSIE subtitles to use.</param>
-        public void ReadMessage(List<string> messages, List<AudioPlayer> audioPlayers, bool isNoisy = false, string translation = "")
+        /// <param name="useCassie">Value indicating whether to use CASSIE basegame message.</param>
+        public void ReadMessage(List<string> messages, List<AudioPlayer> audioPlayers, bool isNoisy = false, bool customAnnouncement = true, string translation = "", bool useCassie = true)
         {
-            float bg = 0f;
             string baseCassieAnnouncement = string.Empty;
             HashSet<CassieClip> clipsToUnregister = new HashSet<CassieClip>();
             for (int i = 0; i < messages.Count(); i++)
@@ -126,16 +131,17 @@
                         AudioClipStorage.LoadClip(msgCassieClip.FileInfo.FullName, msgCassieClip.Name);
                     }
 
-                    // Adds the appropriate amount of dots, where each dot is ~0.5 seconds
-                    int howManyDotsToAdd = (int)Math.Round(msgCassieClip.Length * 2, MidpointRounding.AwayFromZero);
-                    for (int j = 0; j < howManyDotsToAdd; j++)
+                    if (useCassie)
                     {
-                        baseCassieAnnouncement += " .";
+                        // Adds the appropriate amount of dots, where each dot is ~0.5 seconds
+                        int howManyDotsToAdd = (int)Math.Round(msgCassieClip.Length * 2, MidpointRounding.AwayFromZero);
+                        for (int j = 0; j < howManyDotsToAdd; j++)
+                        {
+                            baseCassieAnnouncement += " .";
+                        }
                     }
-
-                    bg += msgCassieClip.Length;
                 }
-                else
+                else if (useCassie)
                 {
                     baseCassieAnnouncement += $" {msg}";
                 }
@@ -144,6 +150,12 @@
             currentPrefix = string.Empty;
             currentSuffix = string.Empty;
 
+            if (!useCassie)
+            {
+                ReadWords(messages, audioPlayers, clipsToUnregister);
+                return;
+            }
+
             if (Plugin.Singleton.Config.CassieOverrideConfig.ShouldOverrideAll)
             {
                 baseCassieAnnouncement = "noparse " + baseCassieAnnouncement;
@@ -151,13 +163,10 @@
 
             if (!isNoisy)
             {
-                RespawnEffectsController.PlayCassieAnnouncement(string.IsNullOrWhiteSpace(translation) ? baseCassieAnnouncement : $"{translation.Replace(' ', '\u2005')}<size=0> {baseCassieAnnouncement} </size>", false, isNoisy, !string.IsNullOrWhiteSpace(translation));
-                ReadWords(messages, audioPlayers);
+                RespawnEffectsController.PlayCassieAnnouncement(string.IsNullOrWhiteSpace(translation) ? $"{string.Join(" ", messages).Replace(' ', '\u2005')}<size=0> {baseCassieAnnouncement} </size>" : $"{translation.Replace(' ', '\u2005')}<size=0> {baseCassieAnnouncement} </size>", false, isNoisy, customAnnouncement);
+                ReadWords(messages, audioPlayers, clipsToUnregister);
                 return;
             }
-
-            currentPrefix = string.Empty;
-            currentSuffix = string.Empty;
 
             if (ticksSinceCassieSpoke <= 360)
             {
@@ -165,7 +174,7 @@
             }
             else
             {
-                RespawnEffectsController.PlayCassieAnnouncement(string.IsNullOrWhiteSpace(translation) ? baseCassieAnnouncement : $"{translation.Replace(' ', '\u2005')}<size=0> {baseCassieAnnouncement} </size>", false, true, !string.IsNullOrWhiteSpace(translation));
+                RespawnEffectsController.PlayCassieAnnouncement(string.IsNullOrWhiteSpace(translation) ? $"{string.Join(" ", messages).Replace(' ', '\u2005')}<size=0> {baseCassieAnnouncement} </size>" : $"{translation.Replace(' ', '\u2005')}<size=0> {baseCassieAnnouncement} </size>", false, isNoisy, customAnnouncement);
                 Timing.CallDelayed(2.25f, () => ReadWords(messages, audioPlayers, clipsToUnregister));
             }
         }

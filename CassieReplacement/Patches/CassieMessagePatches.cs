@@ -16,6 +16,7 @@
         [HarmonyPrefix]
         public static bool MessagePrefix(string words, bool makeHold, bool makeNoise, bool customAnnouncement)
         {
+            bool useCassie = !words.Contains("nocassie");
             if (words.Contains("noparse"))
             {
                 return true;
@@ -63,7 +64,7 @@
 
                 // new CassieAnnouncement(input.ToString(), subtitles.ToString()).Announce();
 
-                CustomCassieReader.Singleton.CassieReadMessage(input.ToString().ToLower().Split(' ').ToList(), isNoisy: makeNoise, translation: subtitles.ToString());
+                CustomCassieReader.Singleton.CassieReadMessage(input.ToString().ToLower().Split(' ').ToList(), makeNoise, true, subtitles.ToString(), useCassie);
                 StringBuilderPool.Shared.Return(input);
                 StringBuilderPool.Shared.Return(subtitles);
                 return false;
@@ -74,7 +75,7 @@
                 string[] wordsplit = words.Split(';');
                 List<string> input = wordsplit[0].ToLower().Split(' ').ToList();
                 input.Remove(Plugin.Singleton.Config.CustomCassiePrefix);
-                CustomCassieReader.Singleton.CassieReadMessage(input, makeNoise, wordsplit.Count() > 1 ? wordsplit[1] : string.Empty);
+                CustomCassieReader.Singleton.CassieReadMessage(input, makeNoise, customAnnouncement, wordsplit.Count() > 1 ? wordsplit[1] : string.Empty, useCassie);
                 return false;
             }
 
@@ -88,7 +89,7 @@
             {
                 List<string> input = message.ToLower().Split(' ').ToList();
                 input.Remove(Plugin.Singleton.Config.CustomCassiePrefix);
-                CustomCassieReader.Singleton.CassieReadMessage(input, isNoisy, translation);
+                CustomCassieReader.Singleton.CassieReadMessage(input, isNoisy, isSubtitles, translation);
                 return false;
             }
 
