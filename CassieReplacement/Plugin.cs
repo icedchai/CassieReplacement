@@ -151,10 +151,7 @@
             CustomCassieReader.Singleton = null;
             Harmony harmony = new Harmony("me.icedchai.cassie.patch");
             harmony.UnpatchAll("me.icedchai.cassie.patch");
-            foreach (CassieClip clip in registeredClips)
-            {
-                registeredClips.Remove(clip);
-            }
+            UnregisterClips();
 
             LabApi.Events.Handlers.ServerEvents.RoundStarted -= InitSpeaker;
         }
@@ -176,7 +173,7 @@
             return 0f;
         }
 
-        private static void RegisterFolder(CassieDirectory directoryConfiguration, string directory = null)
+        internal static void RegisterFolder(CassieDirectory directoryConfiguration, string directory = null)
         {
 #if EXILED
             directoryConfiguration.Path = directoryConfiguration.Path.Replace("{exiled_config}", Paths.Configs);
@@ -209,6 +206,11 @@
 
                 registeredClips.Add(cassieClip);
             }
+        }
+
+        internal static void UnregisterClips()
+        {
+            registeredClips.Clear();
         }
     }
 }

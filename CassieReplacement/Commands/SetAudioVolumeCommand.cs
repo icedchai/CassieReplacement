@@ -9,16 +9,16 @@
     /// The command used to invoke <see cref="CustomCassieReader.ReadMessage(List{string})(System.Collections.Generic.List{string})"/> in-game.
     /// </summary>
     [CommandHandler(typeof(RemoteAdminCommandHandler))]
-    public class AudioTestCommand : ICommand
+    public class SetAudioVolumeCommand : ICommand
     {
         /// <inheritdoc/>
-        public string Command => "customcassie";
+        public string Command => "customcassievolume";
 
         /// <inheritdoc/>
-        public string[] Aliases => new string[] { "ccassie", "cassiesay", "custommsg" };
+        public string[] Aliases => new string[] { "cassievolume", "ccassievolume", "ccvolume" };
 
         /// <inheritdoc/>
-        public string Description => "Runs a custom CASSIE line.";
+        public string Description => "Sets the volume of the custom CASSIE speakers.";
 
         /// <inheritdoc/>
         public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
@@ -29,21 +29,12 @@
             if (float.TryParse(firstarg, out float vol))
             {
                 Plugin.Singleton.Config.CassieVolume = vol;
-                response = $"Volume set to {vol}";
+                response = $"CASSIE volume set to {vol}";
                 return true;
             }
 
-            if (AudioPlayer.TryGet(firstarg, out AudioPlayer player))
-            {
-                words.Remove(arguments.At(0));
-                CustomCassieReader.Singleton.ReadMessage(words, new List<AudioPlayer> { player });
-                response = $"Tried {string.Join(" ", words)}";
-                return true;
-            }
-
-            CustomCassieReader.Singleton.ReadMessage(words, new List<AudioPlayer> { Plugin.CassiePlayer, Plugin.CassiePlayerGlobal });
-            response = $"Tried {string.Join(" ", words)}";
-            return true;
+            response = "No volume provided.";
+            return false;
         }
     }
 }
