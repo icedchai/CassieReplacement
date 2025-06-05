@@ -34,6 +34,8 @@
 
         public float SpatialSpeakerVolume { get; set; } = 1f;
 
+        public float SurfaceZoneSpatialMultiplier { get; set; } = 3f;
+
         public float GlobalSpeakerVolume { get; set; } = 1.5f;
 
         [Description("The prefix to use when writing CASSIE messages to allow CASSIE replacer to take over.")]

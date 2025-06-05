@@ -92,7 +92,7 @@
                     bool ret = speakers.IsEmpty() || speakers.Any(s => UnityEngine.Vector3.Distance(p.PlayerCameraReference.position, s.Position) >= Config.SpatialSpeakerMaxDistance);
                     return ret;
                 };
-                CassiePlayerGlobal.AddSpeaker("Main", isSpatial: false, maxDistance: 50000f, volume: Config.GlobalSpeakerVolume);
+                CassiePlayerGlobal.AddSpeaker("Main", isSpatial: false, minDistance: 50000f, maxDistance: 50000f, volume: Config.GlobalSpeakerVolume);
                 CassieAudioPlayers.Add(CassiePlayerGlobal);
             }
 
@@ -103,7 +103,7 @@
                 foreach (Scp079InteractableBase speaker in allSpeakers)
                 {
                     i++;
-                    CassiePlayer.AddSpeaker($"speaker_{i}", speaker.Position, volume: Config.SpatialSpeakerVolume, minDistance: Config.SpatialSpeakerMinDistance, maxDistance: Config.SpatialSpeakerMaxDistance);
+                    CassiePlayer.AddSpeaker($"speaker_{i}", speaker.Position, volume: Config.SpatialSpeakerVolume * (speaker.Room.Zone == FacilityZone.Surface ? Config.SurfaceZoneSpatialMultiplier : 1f), minDistance: Config.SpatialSpeakerMinDistance, maxDistance: Config.SpatialSpeakerMaxDistance);
                 }
 
                 CassieAudioPlayers.Add(CassiePlayer);

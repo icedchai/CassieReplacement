@@ -30,7 +30,10 @@
 
         private Config Config => Plugin.Singleton.Config;
 
-        private Dictionary<CoroutineHandle, List<string>> HandlesToMessages { get; set; } = new Dictionary<CoroutineHandle, List<string>>();
+        /// <summary>
+        /// Gets a lookup table of coroutine handles to the messages they're in progress of reading.
+        /// </summary>
+        internal Dictionary<CoroutineHandle, List<string>> HandlesToMessages { get; set; } = new Dictionary<CoroutineHandle, List<string>>();
 
         private bool IsBeingUsed(string name)
         {
@@ -49,6 +52,8 @@
 
             return false;
         }
+
+        internal bool ShouldPause { get; set; } = false;
 
         /// <summary>
         /// Checks every frame whether CASSIE is speaking.
@@ -205,8 +210,14 @@
                 yield break;
             }
 
+            ShouldPause = false;
             foreach (string msg in messages)
             {
+                if (ShouldPause)
+                {
+                    yield break;
+                }
+
                 if (!AudioClipStorage.AudioClips.ContainsKey(msg) || !Plugin.RegisteredClips.Any(c => c.Name == msg))
                 {
                     yield return Timing.WaitForSeconds(NineTailedFoxAnnouncer.singleton.CalculateDuration(msg));
