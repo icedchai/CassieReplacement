@@ -7,7 +7,6 @@
     /// The command used to see all registered Custom CASSIE words.
     /// </summary>
     [CommandHandler(typeof(RemoteAdminCommandHandler))]
-    [CommandHandler(typeof(ClientCommandHandler))]
     public class ListWordsCommand : ICommand
     {
         /// <inheritdoc/>
