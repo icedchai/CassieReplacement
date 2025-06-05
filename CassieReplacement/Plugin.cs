@@ -59,11 +59,13 @@
 
         private static List<CassieClip> registeredClips = new List<CassieClip>();
 
+        private IEnumerable<Scp079InteractableBase> allSpeakers;
         /// <summary>
         /// Destroys the speaker on <see cref="Plugin.CassiePlayer"/>, and then re-adds it.
         /// </summary>
         public void InitSpeaker()
         {
+            allSpeakers = Scp079Speaker.AllInstances.Where(s => s is Scp079Speaker);
             CassiePlayerGlobal = AudioPlayer.CreateOrGet("icedchqi_cassieplayer_global");
             CassiePlayerGlobal.Condition = p =>
             {
@@ -77,14 +79,14 @@
                     return true;
                 }
 
-                IEnumerable<Scp079InteractableBase> speakers = Scp079Speaker.AllInstances.Where(s => s is Scp079Speaker && Room.Get(s.Room) == Room.Get(room));
-                bool ret = speakers.IsEmpty() || speakers.Any(s => UnityEngine.Vector3.Distance(p.GetPosition(), s.Position) > Config.SpatialSpeakerMaxDistance);
+                IEnumerable<Scp079InteractableBase> speakers = allSpeakers.Where(s => Room.Get(s.Room) == Room.Get(room));
+                bool ret = speakers.IsEmpty() || speakers.Any(s => UnityEngine.Vector3.Distance(p.PlayerCameraReference.position, s.Position) >= Config.SpatialSpeakerMaxDistance);
                 return ret;
             };
             CassiePlayerGlobal.AddSpeaker("Main", isSpatial: false, maxDistance: 50000f, volume: Config.GlobalSpeakerVolume);
             CassiePlayer = AudioPlayer.CreateOrGet("icedchqi_cassieplayer");
             int i = 0;
-            foreach (Scp079InteractableBase speaker in Scp079InteractableBase.AllInstances.Where(i => i is Scp079Speaker))
+            foreach (Scp079InteractableBase speaker in allSpeakers)
             {
                 i++;
                 CassiePlayer.AddSpeaker($"speaker_{i}", speaker.Position, volume: Config.SpatialSpeakerVolume, minDistance: Config.SpatialSpeakerMinDistance, maxDistance: Config.SpatialSpeakerMaxDistance);
