@@ -32,6 +32,24 @@
 
         private Dictionary<CoroutineHandle, List<string>> HandlesToMessages { get; set; } = new Dictionary<CoroutineHandle, List<string>>();
 
+        private bool IsBeingUsed(string name)
+        {
+            foreach (var kvp in HandlesToMessages)
+            {
+                if (kvp.Key.IsRunning && kvp.Value.Contains(name))
+                {
+                    return true;
+                }
+
+                if (!kvp.Key.IsRunning)
+                {
+                    HandlesToMessages.Remove(kvp.Key);
+                }
+            }
+
+            return false;
+        }
+
         /// <summary>
         /// Checks every frame whether CASSIE is speaking.
         /// </summary>
@@ -205,6 +223,18 @@
                 }
 
                 yield return Timing.WaitForSeconds(Plugin.GetClipLength(msg));
+            }
+
+            yield return Timing.WaitForSeconds(Plugin.GetClipBaseLength(messages.Last()));
+            if (clipsToUnregister is not null)
+            {
+                foreach (var clip in clipsToUnregister)
+                {
+                    if (!IsBeingUsed(clip.Name))
+                    {
+                        AudioClipStorage.DestroyClip(clip.Name);
+                    }
+                }
             }
         }
     }
