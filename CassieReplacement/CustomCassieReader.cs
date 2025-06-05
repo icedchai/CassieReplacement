@@ -63,7 +63,7 @@
         /// <param name="useCassie">Value indicating whether to use CASSIE basegame message.</param>
         public void CassieReadMessage(List<string> messages, bool isNoisy = true, bool customAnnouncement = true, string translation = "", bool useCassie = true)
         {
-            ReadMessage(messages, new List<AudioPlayer> { CassiePlayer, CassiePlayerGlobal }, isNoisy, customAnnouncement, translation, useCassie);
+            ReadMessage(messages, Plugin.Singleton.CassieAudioPlayers, isNoisy, customAnnouncement, translation, useCassie);
         }
 
         /// <summary>
@@ -76,7 +76,7 @@
         /// <param name="useCassie">Value indicating whether to use CASSIE basegame message.</param>
         public void CassieReadMessage(string messages, bool isNoisy = true, bool customAnnouncement = true, string translation = "", bool useCassie = true)
         {
-            ReadMessage(messages.Split(' ').ToList(), new List<AudioPlayer> { CassiePlayer, CassiePlayerGlobal }, isNoisy, customAnnouncement, translation, useCassie);
+            ReadMessage(messages.Split(' ').ToList(), Plugin.Singleton.CassieAudioPlayers, isNoisy, customAnnouncement, translation, useCassie);
         }
 
         /// <summary>

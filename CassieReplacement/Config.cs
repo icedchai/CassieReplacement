@@ -24,7 +24,9 @@
     public class Config
     {
 #endif
-        public bool UseSpatialSpeakers { get; set; } = true;
+        public bool UseGlobalSpeaker { get; set; } = true;
+
+        public bool UseSpatialSpeakers { get; set; } = false;
 
         public float SpatialSpeakerMaxDistance { get; set; } = 10f;
 
