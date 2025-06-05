@@ -24,6 +24,16 @@
     public class Config
     {
 #endif
+        public bool UseSpatialSpeakers { get; set; } = true;
+
+        public float SpatialSpeakerMaxDistance { get; set; } = 10f;
+
+        public float SpatialSpeakerMinDistance { get; set; } = 8f;
+
+        public float SpatialSpeakerVolume { get; set; } = 1f;
+
+        public float GlobalSpeakerVolume { get; set; } = 1.5f;
+
         [Description("The prefix to use when writing CASSIE messages to allow CASSIE replacer to take over.")]
         public string CustomCassiePrefix { get; set; } = "customcassie";
 

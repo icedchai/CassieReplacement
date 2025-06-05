@@ -72,22 +72,22 @@
                     return false;
                 }
 
-                if (!p.TryGetCurrentRoom(out RoomIdentifier room))
+                if (Config.UseSpatialSpeakers || !p.TryGetCurrentRoom(out RoomIdentifier room))
                 {
                     return true;
                 }
 
                 IEnumerable<Scp079InteractableBase> speakers = Scp079Speaker.AllInstances.Where(s => s is Scp079Speaker && Room.Get(s.Room) == Room.Get(room));
-                bool ret = speakers.IsEmpty() || speakers.Any(s => UnityEngine.Vector3.Distance(p.GetPosition(), s.Position) > 4f);
+                bool ret = speakers.IsEmpty() || speakers.Any(s => UnityEngine.Vector3.Distance(p.GetPosition(), s.Position) > Config.SpatialSpeakerMaxDistance);
                 return ret;
             };
-            CassiePlayerGlobal.AddSpeaker("Main", isSpatial: false, maxDistance: 50000f, volume: 1.5f);
+            CassiePlayerGlobal.AddSpeaker("Main", isSpatial: false, maxDistance: 50000f, volume: Config.GlobalSpeakerVolume);
             CassiePlayer = AudioPlayer.CreateOrGet("icedchqi_cassieplayer");
             int i = 0;
             foreach (Scp079InteractableBase speaker in Scp079InteractableBase.AllInstances.Where(i => i is Scp079Speaker))
             {
                 i++;
-                CassiePlayer.AddSpeaker($"speaker_{i}", speaker.Position, minDistance: 8, maxDistance: 10);
+                CassiePlayer.AddSpeaker($"speaker_{i}", speaker.Position, volume: Config.SpatialSpeakerVolume, minDistance: Config.SpatialSpeakerMinDistance, maxDistance: Config.SpatialSpeakerMaxDistance);
             }
         }
 
