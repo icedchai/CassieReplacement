@@ -1,5 +1,6 @@
 ﻿namespace CassieReplacement.Commands
 {
+    using CassieReplacement.Reader;
     using CommandSystem;
     using System;
     using System.Collections.Generic;

@@ -1,4 +1,4 @@
-﻿namespace CassieReplacement.Models.Enums
+﻿namespace CassieReplacement.Reader.Models.Enums
 {
     public enum CassieDamageType
     {

@@ -1,11 +1,11 @@
-﻿namespace CassieReplacement
+﻿namespace CassieReplacement.Config
 {
 #pragma warning disable SA1600
-    using CassieReplacement.Models;
     using System.Collections.Generic;
     using System.ComponentModel;
 #if EXILED
     using Exiled.API.Interfaces;
+    using CassieReplacement.Reader.Models;
 
     /// <summary>
     /// Plugin configuration.
@@ -45,9 +45,9 @@
         /// Gets or sets the directory from which audio files are sourced.
         /// </summary>
         [Description("This is the folders where all of your audio clips will be stored. IMPORTANT: DIRECTORIES ARE ABSOLUTE, NOT RELATIVE!")]
-        public List<CassieDirectory> BaseDirectories { get; set; } = new List<CassieDirectory>
+        public List<CassieDirectorySerializable> BaseDirectories { get; set; } = new List<CassieDirectorySerializable>
         {
-            new CassieDirectory(),
+            new CassieDirectorySerializable(),
         };
 
         /// <summary>

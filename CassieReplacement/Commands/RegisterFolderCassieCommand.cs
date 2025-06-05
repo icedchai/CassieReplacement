@@ -1,4 +1,5 @@
-﻿using CassieReplacement.Models;
+﻿using CassieReplacement.Reader;
+using CassieReplacement.Reader.Models;
 using CommandSystem;
 using System;
 using System.Collections.Generic;
@@ -34,8 +35,8 @@ namespace CassieReplacement.Commands
             float bleedTime = 0f;
             float.TryParse(arguments.Count > 1 ? arguments.At(1) : "0", out bleedTime);
             string prefix = arguments.Count > 2 ? arguments.At(2) : string.Empty;
-            CassieDirectory cassieDirectory = new CassieDirectory() { Path = path, BleedTime = bleedTime, Prefix = prefix };
-            Plugin.RegisterFolder(cassieDirectory);
+            CassieDirectorySerializable cassieDirectory = new CassieDirectorySerializable() { Path = path, BleedTime = bleedTime, Prefix = prefix };
+            CustomCassieReader.Singleton.ClipDatabase.RegisterFolder(cassieDirectory);
             response = $"Registered cassie directory, path {path}, prefix {prefix}, bleed {bleedTime}";
             return true;
         }

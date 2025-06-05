@@ -1,8 +1,9 @@
 ﻿#if EXILED
 namespace CassieReplacement
 {
-    using CassieReplacement.Models;
-    using CassieReplacement.Models.Enums;
+    using CassieReplacement.Config;
+    using CassieReplacement.Reader;
+    using CassieReplacement.Reader.Models.Enums;
     using Exiled.API.Features;
     using Exiled.Events.EventArgs.Map;
     using PlayerRoles;

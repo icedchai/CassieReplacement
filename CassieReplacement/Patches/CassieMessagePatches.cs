@@ -1,7 +1,7 @@
 ﻿namespace CassieReplacement.Patches
 {
 #pragma warning disable
-    using CassieReplacement.Models;
+    using CassieReplacement.Reader;
     using HarmonyLib;
     using NorthwoodLib.Pools;
     using Respawning;

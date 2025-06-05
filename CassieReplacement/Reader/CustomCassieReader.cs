@@ -1,11 +1,14 @@
-﻿namespace CassieReplacement
+﻿namespace CassieReplacement.Reader
 {
-    using CassieReplacement.Models;
+    using CassieReplacement;
+    using CassieReplacement.Config;
+    using CassieReplacement.Reader.Models;
     using MEC;
     using Respawning;
     using System;
     using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
     using Utils.NonAllocLINQ;
 
     /// <summary>
@@ -24,9 +27,7 @@
         /// </summary>
         public static CustomCassieReader Singleton { get; internal set; } = new CustomCassieReader();
 
-        private AudioPlayer CassiePlayer => Plugin.CassiePlayer;
-
-        private AudioPlayer CassiePlayerGlobal => Plugin.CassiePlayerGlobal;
+        public ClipDatabase ClipDatabase { get; set; } = new ();
 
         private Config Config => Plugin.Singleton.Config;
 
@@ -53,7 +54,15 @@
             return false;
         }
 
-        internal bool ShouldPause { get; set; } = false;
+        /// <summary>
+        /// Gets or sets a list of <see cref="AudioPlayer"/>'s from which all announcements fed into this reader will be played.
+        /// </summary>
+        public List<AudioPlayer> AudioPlayers { get; set; }
+
+        /// <summary>
+        /// Gets or sets <see cref="DateTime"/> that all announcements which started before it should be terminated.
+        /// </summary>
+        internal DateTime TimeBeforeWhichToPause { get; set; } = DateTime.MinValue;
 
         /// <summary>
         /// Checks every frame whether CASSIE is speaking.
@@ -86,7 +95,7 @@
         /// <param name="useCassie">Value indicating whether to use CASSIE basegame message.</param>
         public void CassieReadMessage(List<string> messages, bool isNoisy = true, bool customAnnouncement = true, string translation = "", bool useCassie = true)
         {
-            ReadMessage(messages, Plugin.Singleton.CassieAudioPlayers, isNoisy, customAnnouncement, translation, useCassie);
+            ReadMessage(messages, AudioPlayers, isNoisy, customAnnouncement, translation, useCassie);
         }
 
         /// <summary>
@@ -99,7 +108,7 @@
         /// <param name="useCassie">Value indicating whether to use CASSIE basegame message.</param>
         public void CassieReadMessage(string messages, bool isNoisy = true, bool customAnnouncement = true, string translation = "", bool useCassie = true)
         {
-            ReadMessage(messages.Split(' ').ToList(), Plugin.Singleton.CassieAudioPlayers, isNoisy, customAnnouncement, translation, useCassie);
+            ReadMessage(messages.Split(' ').ToList(), AudioPlayers, isNoisy, customAnnouncement, translation, useCassie);
         }
 
         /// <summary>
@@ -146,14 +155,14 @@
 
                 msg = $"{currentPrefix}{msg}{currentSuffix}";
                 messages[i] = msg;
-                CassieClip msgCassieClip = Plugin.RegisteredClips.FirstOrDefault(c => c.Name == msg);
+                CassieClip msgCassieClip = ClipDatabase.RegisteredClips.FirstOrDefault(c => c.Name == msg);
                 if (msgCassieClip is not null)
                 {
                     // Part of dynamic registration; when a clip is added here, it will be unregistered when the reader is done reading the message.
                     clipsToUnregister.Add(msgCassieClip);
                     if (!AudioClipStorage.AudioClips.ContainsKey(msgCassieClip.Name))
                     {
-                        AudioClipStorage.LoadClip(msgCassieClip.FileInfo.FullName, msgCassieClip.Name);
+                        Task.Run(() => AudioClipStorage.LoadClip(msgCassieClip.FileInfo.FullName, msgCassieClip.Name));
                     }
 
                     if (useCassie)
@@ -210,15 +219,15 @@
                 yield break;
             }
 
-            ShouldPause = false;
+            DateTime now = DateTime.Now;
             foreach (string msg in messages)
             {
-                if (ShouldPause)
+                if (TimeBeforeWhichToPause >= now)
                 {
                     yield break;
                 }
 
-                if (!AudioClipStorage.AudioClips.ContainsKey(msg) || !Plugin.RegisteredClips.Any(c => c.Name == msg))
+                if (!AudioClipStorage.AudioClips.ContainsKey(msg) || !ClipDatabase.RegisteredClips.Any(c => c.Name == msg))
                 {
                     yield return Timing.WaitForSeconds(NineTailedFoxAnnouncer.singleton.CalculateDuration(msg));
                 }
@@ -233,10 +242,10 @@
                     audioPlayer.AddClip(msg, Config.CassieVolume);
                 }
 
-                yield return Timing.WaitForSeconds(Plugin.GetClipLength(msg));
+                yield return Timing.WaitForSeconds(ClipDatabase.GetClipLength(msg));
             }
 
-            yield return Timing.WaitForSeconds(Plugin.GetClipBaseLength(messages.Last()));
+            yield return Timing.WaitForSeconds(ClipDatabase.GetClipBaseLength(messages.Last()));
             if (clipsToUnregister is not null)
             {
                 foreach (var clip in clipsToUnregister)

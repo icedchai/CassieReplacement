@@ -1,4 +1,5 @@
-﻿using CommandSystem;
+﻿using CassieReplacement.Reader;
+using CommandSystem;
 using LabApi.Features.Wrappers;
 using MEC;
 using System;
@@ -26,8 +27,8 @@ namespace CassieReplacement.Commands
         public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
         {
             Cassie.Clear();
-            CustomCassieReader.Singleton.ShouldPause = true;
-            foreach (var audioPlayer in Plugin.Singleton.CassieAudioPlayers)
+            CustomCassieReader.Singleton.TimeBeforeWhichToPause = DateTime.Now;
+            foreach (var audioPlayer in CustomCassieReader.Singleton.AudioPlayers)
             {
                 audioPlayer.RemoveAllClips();
             }

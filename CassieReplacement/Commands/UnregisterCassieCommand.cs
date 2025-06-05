@@ -1,4 +1,5 @@
-﻿using CommandSystem;
+﻿using CassieReplacement.Reader;
+using CommandSystem;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +24,7 @@ namespace CassieReplacement.Commands
         /// <inheritdoc/>
         public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
         {
-            Plugin.UnregisterClips();
+            CustomCassieReader.Singleton.ClipDatabase.UnregisterClips();
             response = "Unregistered clips.";
             return true;
         }

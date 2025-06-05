@@ -1,5 +1,6 @@
 ﻿namespace CassieReplacement.Commands
 {
+    using CassieReplacement.Reader;
     using CommandSystem;
     using System;
 
@@ -28,7 +29,7 @@
             }
 
             string words = "The available words are:\n";
-            foreach (string word in Plugin.RegisteredClipNames)
+            foreach (string word in CustomCassieReader.Singleton.ClipDatabase.RegisteredClipNames)
             {
                 words += $"{word}, ";
             }
