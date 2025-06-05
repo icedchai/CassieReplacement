@@ -30,6 +30,8 @@
 
         private Config Config => Plugin.Singleton.Config;
 
+        private Dictionary<CoroutineHandle, List<string>> HandlesToMessages { get; set; } = new Dictionary<CoroutineHandle, List<string>>();
+
         /// <summary>
         /// Checks every frame whether CASSIE is speaking.
         /// </summary>
@@ -161,54 +163,49 @@
                 baseCassieAnnouncement = "noparse " + baseCassieAnnouncement;
             }
 
-            if (!isNoisy)
-            {
-                RespawnEffectsController.PlayCassieAnnouncement(string.IsNullOrWhiteSpace(translation) ? $"{string.Join(" ", messages).Replace(' ', '\u2005')}<size=0> {baseCassieAnnouncement} </size>" : $"{translation.Replace(' ', '\u2005')}<size=0> {baseCassieAnnouncement} </size>", false, isNoisy, customAnnouncement);
-                ReadWords(messages, audioPlayers, clipsToUnregister);
-                return;
-            }
-
             if (ticksSinceCassieSpoke <= 360)
             {
-                Timing.CallDelayed(0.5f, () => ReadMessage(messages, audioPlayers: audioPlayers, translation: translation, isNoisy: isNoisy));
+                Timing.CallDelayed(0.5f, () =>
+                {
+                    ReadMessage(messages, audioPlayers: audioPlayers, translation: translation, isNoisy: isNoisy);
+                });
             }
             else
             {
                 RespawnEffectsController.PlayCassieAnnouncement(string.IsNullOrWhiteSpace(translation) ? $"{string.Join(" ", messages).Replace(' ', '\u2005')}<size=0> {baseCassieAnnouncement} </size>" : $"{translation.Replace(' ', '\u2005')}<size=0> {baseCassieAnnouncement} </size>", false, isNoisy, customAnnouncement);
-                Timing.CallDelayed(2.25f, () => ReadWords(messages, audioPlayers, clipsToUnregister));
+                Timing.CallDelayed(isNoisy ? 0f : 2.25f, () =>
+                {
+                    HandlesToMessages.Add(Timing.RunCoroutine(ReadWords(messages, audioPlayers, clipsToUnregister)), messages);
+                });
             }
         }
 
-        private void ReadWords(List<string> messages, List<AudioPlayer> audioPlayers, HashSet<CassieClip> clipsToUnregister = null)
+        private IEnumerator<float> ReadWords(List<string> messages, List<AudioPlayer> audioPlayers, HashSet<CassieClip> clipsToUnregister = null)
         {
             if (messages.Count == 0)
             {
-                if (clipsToUnregister is not null)
+                yield break;
+            }
+
+            foreach (string msg in messages)
+            {
+                if (!AudioClipStorage.AudioClips.ContainsKey(msg) || !Plugin.RegisteredClips.Any(c => c.Name == msg))
                 {
-                    foreach (var clip in clipsToUnregister)
-                    {
-                        AudioClipStorage.DestroyClip(clip.Name);
-                    }
+                    yield return Timing.WaitForSeconds(NineTailedFoxAnnouncer.singleton.CalculateDuration(msg));
                 }
 
-                return;
+                foreach (AudioPlayer audioPlayer in audioPlayers)
+                {
+                    if (!AudioClipStorage.AudioClips.ContainsKey(msg))
+                    {
+
+                    }
+
+                    audioPlayer.AddClip(msg, Config.CassieVolume);
+                }
+
+                yield return Timing.WaitForSeconds(Plugin.GetClipLength(msg));
             }
-
-            string msg = messages[0].ToLower();
-            messages.Remove(msg);
-
-            if (!AudioClipStorage.AudioClips.ContainsKey(msg) || !Plugin.RegisteredClips.Any(c => c.Name == msg))
-            {
-                Timing.CallDelayed(NineTailedFoxAnnouncer.singleton.CalculateDuration(msg), () => ReadWords(messages, audioPlayers, clipsToUnregister));
-                return;
-            }
-
-            foreach (AudioPlayer audioPlayer in audioPlayers)
-            {
-                audioPlayer.AddClip(msg, Config.CassieVolume);
-            }
-
-            Timing.CallDelayed(Plugin.GetClipLength(msg), () => ReadWords(messages, audioPlayers, clipsToUnregister));
         }
     }
 }
