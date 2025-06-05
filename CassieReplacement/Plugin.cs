@@ -72,7 +72,7 @@
                     return false;
                 }
 
-                if (Config.UseSpatialSpeakers || !p.TryGetCurrentRoom(out RoomIdentifier room))
+                if (!Config.UseSpatialSpeakers || !p.TryGetCurrentRoom(out RoomIdentifier room))
                 {
                     return true;
                 }

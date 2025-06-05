@@ -173,7 +173,7 @@
             else
             {
                 RespawnEffectsController.PlayCassieAnnouncement(string.IsNullOrWhiteSpace(translation) ? $"{string.Join(" ", messages).Replace(' ', '\u2005')}<size=0> {baseCassieAnnouncement} </size>" : $"{translation.Replace(' ', '\u2005')}<size=0> {baseCassieAnnouncement} </size>", false, isNoisy, customAnnouncement);
-                Timing.CallDelayed(isNoisy ? 0f : 2.25f, () =>
+                Timing.CallDelayed(isNoisy ? 2.25f : 0, () =>
                 {
                     HandlesToMessages.Add(Timing.RunCoroutine(ReadWords(messages, audioPlayers, clipsToUnregister)), messages);
                 });
