@@ -77,22 +77,16 @@
                     return true;
                 }
 
-                IEnumerable<Scp079InteractableBase> speakers = Scp079Speaker.AllInstances.Where(s => Room.Get(s.Room) == Room.Get(room));
+                IEnumerable<Scp079InteractableBase> speakers = Scp079Speaker.AllInstances.Where(s => s is Scp079Speaker && Room.Get(s.Room) == Room.Get(room));
                 bool ret = speakers.IsEmpty() || speakers.Any(s => UnityEngine.Vector3.Distance(p.GetPosition(), s.Position) > 4f);
                 return ret;
             };
             CassiePlayerGlobal.AddSpeaker("Main", isSpatial: false, maxDistance: 50000f, volume: 1.5f);
             CassiePlayer = AudioPlayer.CreateOrGet("icedchqi_cassieplayer");
             int i = 0;
-            foreach (Scp079InteractableBase speaker in Scp079Speaker.AllInstances)
+            foreach (Scp079InteractableBase speaker in Scp079InteractableBase.AllInstances.Where(i => i is Scp079Speaker))
             {
                 i++;
-                IEnumerable<Speaker> closeSpeakers = CassiePlayer.SpeakersByName.Values.Where(s => UnityEngine.Vector3.Distance(s.Position, speaker.Position) < 5);
-                if (closeSpeakers.Any())
-                {
-                    continue;
-                }
-
                 CassiePlayer.AddSpeaker($"speaker_{i}", speaker.Position, minDistance: 8, maxDistance: 10);
             }
         }
@@ -157,17 +151,42 @@
         }
 
         /// <summary>
+        /// Gets a clip with the specified name.
+        /// </summary>
+        /// <param name="name">The name to search for.</param>
+        /// <returns>The first <see cref="CassieClip"/> registered whose name is the same as <paramref name="name"/>, or null.</returns>
+        public static CassieClip GetClip(string name)
+        {
+            name = name.ToLower();
+            IEnumerable<CassieClip> clips = registeredClips.Where(c => c.Name == name);
+            return clips.FirstOrDefault();
+        }
+
+        /// <summary>
         /// Gets the length of the specified clip.
         /// </summary>
         /// <param name="clipName">The name of the clip in question.</param>
         /// <returns>A float representing how long a plugin-registered clip is, minus <see cref="Config.CassieReverb"/>, or zero.</returns>
         public static float GetClipLength(string clipName)
         {
-            clipName = clipName.ToLower();
-            IEnumerable<CassieClip> clips = registeredClips.Where(c => c.Name == clipName);
-            if (clips.Any())
+            if (GetClip(clipName) is not null)
             {
-                return clips.FirstOrDefault().Length;
+                return GetClip(clipName).Length;
+            }
+
+            return 0f;
+        }
+
+        /// <summary>
+        /// Gets the base length of the specified clip.
+        /// </summary>
+        /// <param name="clipName">The name of the clip in question.</param>
+        /// <returns>A float representing how long a plugin-registered clip is, or zero.</returns>
+        public static float GetClipBaseLength(string clipName)
+        {
+            if (GetClip(clipName) is not null)
+            {
+                return GetClip(clipName).BaseLength;
             }
 
             return 0f;
