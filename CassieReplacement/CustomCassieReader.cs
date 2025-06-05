@@ -154,7 +154,7 @@
 
             if (!useCassie)
             {
-                ReadWords(messages, audioPlayers, clipsToUnregister);
+                HandlesToMessages.Add(Timing.RunCoroutine(ReadWords(messages, audioPlayers, clipsToUnregister)), messages);
                 return;
             }
 
