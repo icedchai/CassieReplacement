@@ -88,13 +88,13 @@
                         return false;
                     }
 
-                    if (!Config.UseSpatialSpeakers || (Config.GlobalForSurfaceOnly && room.Zone == FacilityZone.Surface))
+                    if (!Config.UseSpatialSpeakers || !p.TryGetCurrentRoom(out RoomIdentifier room) || (Config.GlobalForSurfaceOnly && room.Zone == FacilityZone.Surface))
                     {
                         return true;
                     }
 
                     IEnumerable<Scp079InteractableBase> speakers = allSpeakers.Where(s => Room.Get(s.Room) == Room.Get(room));
-                    bool ret = speakers.IsEmpty() || (speakers.Any(s => UnityEngine.Vector3.Distance(p.PlayerCameraReference.position, s.Position) >= Config.SpatialSpeakerMaxDistance) ^ room is null);
+                    bool ret = speakers.IsEmpty() || speakers.Any(s => UnityEngine.Vector3.Distance(p.PlayerCameraReference.position, s.Position) >= Config.SpatialSpeakerMaxDistance);
                     return ret;
                 };
                 CassiePlayerGlobal.AddSpeaker("Main", isSpatial: false, minDistance: 50000f, maxDistance: 50000f, volume: Config.GlobalSpeakerVolume);
