@@ -46,9 +46,10 @@
         /// <returns>A float representing how long a plugin-registered clip is, minus <see cref="Config.CassieReverb"/>, or zero.</returns>
         public float GetClipLength(string clipName)
         {
-            if (GetClip(clipName) is not null)
+            CassieClip clip = GetClip(clipName);
+            if (clip is not null)
             {
-                return GetClip(clipName).Length;
+                return clip.Length;
             }
 
             return 0f;
@@ -61,9 +62,10 @@
         /// <returns>A float representing how long a plugin-registered clip is, or zero.</returns>
         public float GetClipBaseLength(string clipName)
         {
-            if (GetClip(clipName) is not null)
+            CassieClip clip = GetClip(clipName);
+            if (clip is not null)
             {
-                return GetClip(clipName).BaseLength;
+                return clip.BaseLength;
             }
 
             return 0f;

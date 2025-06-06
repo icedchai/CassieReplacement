@@ -22,6 +22,14 @@
             vorbisReader.Dispose();
         }
 
+        public CassieClip(string name, FileInfo fileInfo, float baseLength, float reverb = 0f)
+        {
+            Reverb = reverb;
+            BaseLength = baseLength;
+            Name = name;
+            FileInfo = fileInfo;
+        }
+
         public float Reverb { get; set; } = 0f;
 
         public float BaseLength { get; set; }

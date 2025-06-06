@@ -4,11 +4,15 @@
     using CassieReplacement.Config;
     using CassieReplacement.Reader.Models;
     using MEC;
+    using NVorbis;
     using Respawning;
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
+    using System.Xml.Linq;
+    using UnityEngine;
     using Utils.NonAllocLINQ;
 
     /// <summary>
@@ -27,7 +31,37 @@
         /// </summary>
         public static CustomCassieReader Singleton { get; internal set; } = new CustomCassieReader();
 
+        private List<CassieClip> PitchShiftedTempClips { get; set; } = new List<CassieClip>();
+
         public ClipDatabase ClipDatabase { get; set; } = new ();
+
+        private CassieClip GetClip(string name)
+        {
+            name = name.ToLower();
+            CassieClip clip = ClipDatabase.GetClip(name);
+            if (clip is not null)
+            {
+                return clip;
+            }
+            else
+            {
+                IEnumerable<CassieClip> clips = PitchShiftedTempClips.Where(c => c.Name == name);
+                clip = clips.FirstOrDefault();
+            }
+
+            return clip;
+        }
+
+        private float GetClipLength(string clipName)
+        {
+            CassieClip clip = GetClip(clipName);
+            if (clip is not null)
+            {
+                return clip.BaseLength;
+            }
+
+            return 0f;
+        }
 
         private Config Config => Plugin.Singleton.Config;
 
@@ -111,6 +145,35 @@
             ReadMessage(messages.Split(' ').ToList(), AudioPlayers, isNoisy, customAnnouncement, translation, useCassie);
         }
 
+        // I did not write this.
+        private static float[] Resample(float[] inputBuffer, int inputSampleRate, int outputSampleRate)
+        {
+            double sampleRateRatio = (double)outputSampleRate / inputSampleRate;
+            int outputBufferLength = (int)(inputBuffer.Length * sampleRateRatio);
+
+            float[] outputBuffer = new float[outputBufferLength];
+
+            for (int i = 0; i < outputBufferLength; i++)
+            {
+                double position = i / sampleRateRatio;
+                int leftIndex = (int)Math.Floor(position);
+                int rightIndex = leftIndex + 1;
+
+                double fraction = position - leftIndex;
+
+                if (rightIndex >= inputBuffer.Length)
+                {
+                    outputBuffer[i] = inputBuffer[leftIndex];
+                }
+                else
+                {
+                    outputBuffer[i] = (float)(inputBuffer[leftIndex] * (1 - fraction) + inputBuffer[rightIndex] * fraction);
+                }
+            }
+
+            return outputBuffer;
+        }
+
         /// <summary>
         /// Reads a message from an <see cref="AudioPlayer"/> instance, using the registered audio clips.
         /// </summary>
@@ -124,9 +187,13 @@
         {
             string baseCassieAnnouncement = string.Empty;
             HashSet<CassieClip> clipsToUnregister = new HashSet<CassieClip>();
+
+            float pitch = 1.0f;
+
+            // Process the messages & register sounds before proceeding.
             for (int i = 0; i < messages.Count(); i++)
             {
-                string msg = messages[i];
+                string msg = messages[i].ToLower();
                 if (string.IsNullOrWhiteSpace(msg))
                 {
                     messages.Remove(msg);
@@ -134,6 +201,13 @@
                     continue;
                 }
 
+                if (msg.StartsWith("pitch_"))
+                {
+                    pitch = float.TryParse(msg.Remove(0, "pitch_".Length), out float newPitch) ? newPitch : pitch;
+                    continue;
+                }
+
+                // prefix/suffix processor
                 if (msg.StartsWith("prefix_", true, null) || msg.StartsWith("suffix_", true, null))
                 {
                     switch (msg.Remove(6).ToLower())
@@ -154,15 +228,55 @@
                 }
 
                 msg = $"{currentPrefix}{msg}{currentSuffix}";
-                messages[i] = msg;
+
+                // Gets the registered clip
                 CassieClip msgCassieClip = ClipDatabase.RegisteredClips.FirstOrDefault(c => c.Name == msg);
+
                 if (msgCassieClip is not null)
                 {
+                    // Creates a new one if pitch shifted.
+                    if (pitch != 1.0f)
+                    {
+                        string newName = $"{pitch}_{msgCassieClip.Name}";
+                        msgCassieClip = new CassieClip(newName, msgCassieClip.FileInfo, msgCassieClip.BaseLength / pitch, msgCassieClip.Reverb / pitch);
+                        PitchShiftedTempClips.Add(msgCassieClip);
+                        msg = msgCassieClip.Name;
+                    }
+
+                    messages[i] = msg;
+
                     // Part of dynamic registration; when a clip is added here, it will be unregistered when the reader is done reading the message.
                     clipsToUnregister.Add(msgCassieClip);
-                    if (!AudioClipStorage.AudioClips.ContainsKey(msgCassieClip.Name))
+
+                    if (pitch == 1.0f)
                     {
-                        Task.Run(() => AudioClipStorage.LoadClip(msgCassieClip.FileInfo.FullName, msgCassieClip.Name));
+                        if (!AudioClipStorage.AudioClips.ContainsKey(msgCassieClip.Name))
+                        {
+                            Task.Run(() => AudioClipStorage.LoadClip(msgCassieClip.FileInfo.FullName, msgCassieClip.Name));
+                        }
+                    }
+                    else
+                    {
+                        if (!AudioClipStorage.AudioClips.ContainsKey(msgCassieClip.Name))
+                        {
+                            Task.Run(() =>
+                            {
+                                int sampleRate;
+                                int num;
+                                float[] array;
+                                using (VorbisReader vorbisReader = new VorbisReader(msgCassieClip.FileInfo.FullName))
+                                {
+                                    sampleRate = vorbisReader.SampleRate;
+                                    num = vorbisReader.Channels;
+                                    array = new float[vorbisReader.TotalSamples * num];
+                                    vorbisReader.ReadSamples(array);
+                                }
+
+                                array = Resample(array, 48000, Convert.ToInt32(48000 / pitch));
+
+                                AudioClipStorage.AudioClips.Add(msgCassieClip.Name, new AudioClipData(msgCassieClip.Name, sampleRate, num, array));
+                            });
+                        }
                     }
 
                     if (useCassie)
@@ -219,17 +333,37 @@
                 yield break;
             }
 
-            DateTime now = DateTime.Now;
+            DateTime timeStarted = DateTime.Now;
+            int jamDelay = 0;
+            int jamAmount = 0;
+            float pitch = 1.0f;
             foreach (string msg in messages)
             {
-                if (TimeBeforeWhichToPause >= now)
+                if (TimeBeforeWhichToPause >= timeStarted)
                 {
                     break;
                 }
 
-                if (!AudioClipStorage.AudioClips.ContainsKey(msg) || !ClipDatabase.RegisteredClips.Any(c => c.Name == msg))
+                if (msg.StartsWith("pitch_"))
                 {
-                    yield return Timing.WaitForSeconds(NineTailedFoxAnnouncer.singleton.CalculateDuration(msg));
+                    pitch = float.TryParse(msg.Remove(0, "pitch_".Length), out float newPitch) ? newPitch : pitch;
+                    continue;
+                }
+
+                if (msg.StartsWith("yield_"))
+                {
+                    if (float.TryParse(msg.Remove(0, "yield_".Length), out float yield))
+                    {
+                        yield return Timing.WaitForSeconds(yield);
+                    }
+
+                    continue;
+                }
+
+                if (!AudioClipStorage.AudioClips.ContainsKey(msg) || (!ClipDatabase.RegisteredClips.Any(c => c.Name == msg) && !PitchShiftedTempClips.Any(c => c.Name == msg)))
+                {
+                    yield return Timing.WaitForSeconds(NineTailedFoxAnnouncer.singleton.CalculateDuration(msg) / pitch);
+                    continue;
                 }
 
                 foreach (AudioPlayer audioPlayer in audioPlayers)
@@ -241,13 +375,13 @@
                         volume *= Config.GlobalSpeakerVolumeMultiplier;
                     }
 
-                    audioPlayer.AddClip(msg, volume);
+                    AudioClipPlayback playback = audioPlayer.AddClip(msg, volume);
                 }
 
-                yield return Timing.WaitForSeconds(ClipDatabase.GetClipLength(msg));
+                yield return Timing.WaitForSeconds(GetClipLength(msg));
             }
 
-            yield return Timing.WaitForSeconds(ClipDatabase.GetClipLength(messages.Last()) - ClipDatabase.GetClipBaseLength(messages.Last()));
+            yield return Timing.WaitForSeconds(GetClip(messages.Last()).Reverb);
             if (clipsToUnregister is not null)
             {
                 foreach (var clip in clipsToUnregister)
