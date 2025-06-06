@@ -36,7 +36,7 @@ namespace CassieReplacement.Commands
             float.TryParse(arguments.Count > 1 ? arguments.At(1) : "0", out bleedTime);
             string prefix = arguments.Count > 2 ? arguments.At(2) : string.Empty;
             CassieDirectorySerializable cassieDirectory = new CassieDirectorySerializable() { Path = path, BleedTime = bleedTime, Prefix = prefix };
-            CustomCassieReader.Singleton.ClipDatabase.RegisterFolder(cassieDirectory);
+            Task.Run(() => CustomCassieReader.Singleton.ClipDatabase.RegisterFolder(cassieDirectory));
             response = $"Registered cassie directory, path {path}, prefix {prefix}, bleed {bleedTime}";
             return true;
         }
