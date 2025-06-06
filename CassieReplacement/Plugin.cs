@@ -16,6 +16,7 @@
     using CassieReplacement.Reader;
     using CassieReplacement.Reader.Models;
     using System.Threading.Tasks;
+    using PlayerRoles;
 #else
     using LabApi.Loader.Features.Plugins;
     using LabApi.Features;
@@ -82,7 +83,6 @@
                 CassiePlayerGlobal = AudioPlayer.CreateOrGet("icedchqi_cassieplayer_global");
                 CassiePlayerGlobal.Condition = p =>
                 {
-                    p.TryGetCurrentRoom(out RoomIdentifier room);
                     if (p == null || p.IsHost)
                     {
                         return false;
