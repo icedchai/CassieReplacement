@@ -64,7 +64,7 @@
 
                 // new CassieAnnouncement(input.ToString(), subtitles.ToString()).Announce();
 
-                CustomCassieReader.Singleton.CassieReadMessage(input.ToString().ToLower().Split(' ').ToList(), makeNoise, true, subtitles.ToString(), useCassie);
+                CustomCassieReader.Singleton.CassieReadMessage(input.ToString().ToLower().Split(' ').ToList(), makeNoise, customAnnouncement, subtitles.ToString(), useCassie);
                 StringBuilderPool.Shared.Return(input);
                 StringBuilderPool.Shared.Return(subtitles);
                 return false;

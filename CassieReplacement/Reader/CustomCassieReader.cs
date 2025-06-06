@@ -224,7 +224,7 @@
             {
                 if (TimeBeforeWhichToPause >= now)
                 {
-                    yield break;
+                    break;
                 }
 
                 if (!AudioClipStorage.AudioClips.ContainsKey(msg) || !ClipDatabase.RegisteredClips.Any(c => c.Name == msg))
@@ -234,18 +234,20 @@
 
                 foreach (AudioPlayer audioPlayer in audioPlayers)
                 {
-                    if (!AudioClipStorage.AudioClips.ContainsKey(msg))
-                    {
+                    float volume = Config.CassieVolume;
 
+                    if (audioPlayer == Plugin.CassiePlayerGlobal)
+                    {
+                        volume *= Config.GlobalSpeakerVolumeMultiplier;
                     }
 
-                    audioPlayer.AddClip(msg, Config.CassieVolume);
+                    audioPlayer.AddClip(msg, volume);
                 }
 
                 yield return Timing.WaitForSeconds(ClipDatabase.GetClipLength(msg));
             }
 
-            yield return Timing.WaitForSeconds(ClipDatabase.GetClipBaseLength(messages.Last()));
+            yield return Timing.WaitForSeconds(ClipDatabase.GetClipLength(messages.Last()) - ClipDatabase.GetClipBaseLength(messages.Last()));
             if (clipsToUnregister is not null)
             {
                 foreach (var clip in clipsToUnregister)
