@@ -13,6 +13,8 @@
     using PlayerRoles.PlayableScps.Scp079;
 #if EXILED
     using Exiled.API.Features;
+    using Exiled.CustomItems.API;
+    using Exiled.CustomItems.API.Features;
     using CassieReplacement.Reader;
     using CassieReplacement.Reader.Models;
     using System.Threading.Tasks;
@@ -148,6 +150,8 @@
             base.OnEnabled();
             cassieEventHandlers = new();
             cassieEventHandlers.Register();
+
+            CustomItem.RegisterItems();
 #else
         public override void Enable()
         {
@@ -179,6 +183,7 @@
             base.OnDisabled();
             cassieEventHandlers.Unregister();
             cassieEventHandlers = null;
+            CustomItem.UnregisterItems();
 #else
         public override void Disable()
         {
