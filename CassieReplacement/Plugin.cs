@@ -72,6 +72,11 @@
         internal List<AudioPlayer> CassieAudioPlayers { get; private set; } = new List<AudioPlayer>();
 
         /// <summary>
+        /// Gets a list of <see cref="ReferenceHub"/>'s who are designated to hear the global speaker..
+        /// </summary>
+        private List<ReferenceHub> GlobalListenerHubs { get; set; } = new List<ReferenceHub>();
+
+        /// <summary>
         /// Destroys the speaker on <see cref="Plugin.CassiePlayer"/>, and then re-adds it.
         /// </summary>
         public void InitSpeaker()
@@ -85,16 +90,28 @@
                 {
                     if (p == null || p.IsHost)
                     {
+                        GlobalListenerHubs.Remove(p);
                         return false;
                     }
 
                     if (!Config.UseSpatialSpeakers || !p.TryGetCurrentRoom(out RoomIdentifier room) || (Config.GlobalForSurfaceOnly && room.Zone == FacilityZone.Surface))
                     {
+                        if (!GlobalListenerHubs.Contains(p))
+                        {
+                            GlobalListenerHubs.Add(p);
+                        }
+
                         return true;
                     }
 
                     IEnumerable<Scp079InteractableBase> speakers = allSpeakers.Where(s => Room.Get(s.Room) == Room.Get(room));
                     bool ret = speakers.IsEmpty() || speakers.Any(s => UnityEngine.Vector3.Distance(p.PlayerCameraReference.position, s.Position) >= Config.SpatialSpeakerMaxDistance);
+
+                    if (ret && !GlobalListenerHubs.Contains(p))
+                    {
+                        GlobalListenerHubs.Add(p);
+                    }
+
                     return ret;
                 };
                 CassiePlayerGlobal.AddSpeaker("Main", isSpatial: false, minDistance: 50000f, maxDistance: 50000f, volume: Config.GlobalSpeakerVolume);
@@ -104,6 +121,7 @@
             if (Config.UseSpatialSpeakers)
             {
                 CassiePlayer = AudioPlayer.CreateOrGet("icedchqi_cassieplayer");
+                CassiePlayer.Condition = p => !GlobalListenerHubs.Contains(p);
                 int i = 0;
                 foreach (Scp079InteractableBase speaker in allSpeakers)
                 {

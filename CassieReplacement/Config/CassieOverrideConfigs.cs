@@ -12,7 +12,7 @@
         [Description("Whether to override these CASSIE messages. Put the prefix in front to play customcassie messages.")]
         public bool ShouldOverrideAnnouncements { get; set; } = false;
 
-        [Description("Whether to override every announcement. Careful with this one!")]
+        [Description("Whether to apply Custom CASSIE to every announcement that plays (including base-game, commands, etc). Careful with this one!")]
         public bool ShouldOverrideAll { get; set; } = false;
 
         public CassieAnnouncement NtfWaveAnnouncement { get; set; } = new("mtfunit epsilon 11 designated {letter} {number} hasentered allremaining {threatoverview}",
