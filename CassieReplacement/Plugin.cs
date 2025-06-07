@@ -154,8 +154,6 @@
             base.OnEnabled();
             cassieEventHandlers = new();
             cassieEventHandlers.Register();
-
-            CustomItem.RegisterItems();
 #else
         public override void Enable()
         {
@@ -187,7 +185,6 @@
             base.OnDisabled();
             cassieEventHandlers.Unregister();
             cassieEventHandlers = null;
-            CustomItem.UnregisterItems();
 #else
         public override void Disable()
         {
