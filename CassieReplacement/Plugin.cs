@@ -113,6 +113,10 @@
                     {
                         GlobalListenerHubs.Add(p);
                     }
+                    else if (GlobalListenerHubs.Contains(p))
+                    {
+                        GlobalListenerHubs.Remove(p);
+                    }
 
                     return ret;
                 };
