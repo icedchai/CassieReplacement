@@ -1,5 +1,7 @@
-﻿namespace CassieReplacement.Models
+﻿namespace CassieReplacement.Reader
 {
+    using CassieReplacement;
+    using CassieReplacement.Config;
 #if EXILED
     using Exiled.API.Features;
 #endif
@@ -97,9 +99,9 @@
 
         public void Announce(bool isHeld = false, bool isNoisy = true, bool isSubtitles = true)
         {
-            CassieAnnouncement processed = this.GenericReplacement();
-            this.Words = processed.Words;
-            this.Translation = processed.Translation;
+            CassieAnnouncement processed = GenericReplacement();
+            Words = processed.Words;
+            Translation = processed.Translation;
 
             if (string.IsNullOrWhiteSpace(Words))
             {
@@ -108,7 +110,7 @@
 
             if (IsCustomMessage)
             {
-                CustomCassieReader.Singleton.CassieReadMessage(Words, isNoisy, isSubtitles ? Translation : string.Empty);
+                CustomCassieReader.Singleton.CassieReadMessage(Words, isNoisy, isSubtitles, Translation);
             }
             else
 #if EXILED

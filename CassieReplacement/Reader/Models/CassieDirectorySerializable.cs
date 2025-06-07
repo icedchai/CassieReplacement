@@ -1,4 +1,4 @@
-﻿namespace CassieReplacement.Models
+﻿namespace CassieReplacement.Reader.Models
 {
     using System;
 
@@ -6,7 +6,7 @@
     /// Describes a directory serializable.
     /// </summary>
     [Serializable]
-    public class CassieDirectory
+    public class CassieDirectorySerializable
     {
         public string Path { get; set; } = "C:/test";
 

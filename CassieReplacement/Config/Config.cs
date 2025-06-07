@@ -1,11 +1,11 @@
-﻿namespace CassieReplacement
+﻿namespace CassieReplacement.Config
 {
 #pragma warning disable SA1600
-    using CassieReplacement.Models;
     using System.Collections.Generic;
     using System.ComponentModel;
 #if EXILED
     using Exiled.API.Interfaces;
+    using CassieReplacement.Reader.Models;
 
     /// <summary>
     /// Plugin configuration.
@@ -24,6 +24,23 @@
     public class Config
     {
 #endif
+        public bool UseGlobalSpeaker { get; set; } = true;
+
+        public bool UseSpatialSpeakers { get; set; } = false;
+
+        [Description("Also removes spatial speakers from Surface Zone")]
+        public bool GlobalForSurfaceOnly { get; set; } = false;
+
+        public float SpatialSpeakerMaxDistance { get; set; } = 40f;
+
+        public float SpatialSpeakerMinDistance { get; set; } = 20f;
+
+        public float SpatialSpeakerVolume { get; set; } = 1f;
+
+        public float GlobalSpeakerVolume { get; set; } = 1.5f;
+
+        public float GlobalSpeakerVolumeMultiplier { get; set; } = 1f;
+
         [Description("The prefix to use when writing CASSIE messages to allow CASSIE replacer to take over.")]
         public string CustomCassiePrefix { get; set; } = "customcassie";
 
@@ -31,9 +48,9 @@
         /// Gets or sets the directory from which audio files are sourced.
         /// </summary>
         [Description("This is the folders where all of your audio clips will be stored. IMPORTANT: DIRECTORIES ARE ABSOLUTE, NOT RELATIVE!")]
-        public List<CassieDirectory> BaseDirectories { get; set; } = new List<CassieDirectory>
+        public List<CassieDirectorySerializable> BaseDirectories { get; set; } = new List<CassieDirectorySerializable>
         {
-            new CassieDirectory(),
+            new CassieDirectorySerializable(),
         };
 
         /// <summary>

@@ -1,12 +1,10 @@
 ﻿namespace CassieReplacement
 {
+    using CassieReplacement.Config;
+    using CassieReplacement.Reader;
+    using CassieReplacement.Reader.Models.Enums;
     using System;
     using System.Linq;
-    using CassieReplacement.Models;
-    using CassieReplacement.Models.Enums;
-    using PlayerRoles;
-    using PlayerStatsSystem;
-    using Respawning.Waves;
 #if EXILED
     using Exiled.API.Features;
     using Exiled.Events.EventArgs.Map;

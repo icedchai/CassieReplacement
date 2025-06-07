@@ -1,4 +1,4 @@
-﻿namespace CassieReplacement.Models
+﻿namespace CassieReplacement.Reader.Models
 {
     using NVorbis;
     using System.IO;
@@ -15,16 +15,26 @@
         {
             VorbisReader vorbisReader = new(file.FullName);
             FileInfo = file;
+            Reverb = reverb;
             Name = Path.GetFileNameWithoutExtension(file.FullName).ToLower().Replace(' ', '_');
             Name = $"{prefix}{Name}";
             BaseLength = (float)vorbisReader.TotalTime.TotalSeconds;
-            Length = BaseLength - reverb > 0 ? BaseLength - reverb : 0f;
             vorbisReader.Dispose();
         }
 
+        public CassieClip(string name, FileInfo fileInfo, float baseLength, float reverb = 0f)
+        {
+            Reverb = reverb;
+            BaseLength = baseLength;
+            Name = name;
+            FileInfo = fileInfo;
+        }
+
+        public float Reverb { get; set; } = 0f;
+
         public float BaseLength { get; set; }
 
-        public float Length { get; set; }
+        public float Length => BaseLength - Reverb > 0 ? BaseLength - Reverb : 0f;
 
         public string Name { get; set; }
 
