@@ -23,7 +23,7 @@
             }
 
             // Checks for EXILED subtitle signatures.
-            if (words.Contains("<size=0>") || words.Contains("<split>"))
+            if (words.Contains("<size=0>"))
             {
                 string[] dividedBySplits = words.Split(new string[] { "</size><split>" }, StringSplitOptions.None);
 
@@ -54,7 +54,7 @@
 
                     string[] dividedBySize = section.Split(new string[] { "<size=0>" }, StringSplitOptions.None);
                     subtitles.Append(dividedBySize[0]);
-                    input.Append(dividedBySize[1]);
+                    input.Append(dividedBySize.TryGet(1, out string input1) ? input1 : input);
                     if (i < dividedBySplits.Length - 2)
                     {
                         subtitles.Append("<split>");

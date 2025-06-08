@@ -141,7 +141,7 @@
         /// <summary>
         /// Copied from EXILED's Cassie.MessageTranslated for LabAPI.
         /// </summary>
-        private static string MessageTranslated(string message, string translation)
+        public static string MessageTranslated(string message, string translation)
         {
             StringBuilder stringBuilder = StringBuilderPool.Shared.Rent();
             string[] array = message.Split('\n');
