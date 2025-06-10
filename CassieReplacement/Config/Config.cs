@@ -53,6 +53,8 @@
             new CassieDirectorySerializable(),
         };
 
+        public Dictionary<string, string> WordsToBasegameOverride { get; set; } = new Dictionary<string, string>();
+
         /// <summary>
         /// Gets or sets the volume that <see cref="Plugin.CassiePlayer"/> plays audio at.
         /// </summary>

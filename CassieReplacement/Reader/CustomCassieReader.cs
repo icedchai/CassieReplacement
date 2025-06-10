@@ -182,14 +182,14 @@
         /// <param name="customAnnouncement">Value indicating whether to add a subtitle to this message reading.</param>
         /// <param name="translation">The CASSIE subtitles to use.</param>
         /// <param name="useCassie">Value indicating whether to use CASSIE basegame message.</param>
+        /// <returns>The IEnumerator.</returns>
         public IEnumerator<float> ReadMessage(List<string> messages, List<AudioPlayer> audioPlayers, bool isNoisy = false, bool customAnnouncement = true, string translation = "", bool useCassie = true)
         {
             string baseCassieAnnouncement = string.Empty;
             HashSet<CassieClip> clipsToUnregister = new HashSet<CassieClip>();
+            Dictionary<string, Task> tasks = new Dictionary<string, Task>();
 
             float pitch = 1.0f;
-
-            Task firstWordTask = null;
 
             // Process the messages & register sounds before proceeding.
             for (int i = 0; i < messages.Count(); i++)
@@ -263,9 +263,9 @@
                         {
                             Task task = Task.Run(() => AudioClipStorage.LoadClip(msgCassieClip.FileInfo.FullName, msgCassieClip.Name));
 
-                            if (firstWordTask is null)
+                            if (!tasks.TryGetValue(msg, out _))
                             {
-                                firstWordTask = task;
+                                tasks.Add(msgCassieClip.Name, task);
                             }
                         }
                     }
@@ -291,25 +291,32 @@
                             AudioClipStorage.AudioClips.Add(msgCassieClip.Name, new AudioClipData(msgCassieClip.Name, sampleRate, num, array));
                         });
 
-                        if (firstWordTask is null)
+                        if (!tasks.TryGetValue(msg, out _))
                         {
-                            firstWordTask = task;
+                            tasks.Add(msgCassieClip.Name, task);
                         }
                     }
 
                     if (useCassie)
                     {
-                        // Adds the appropriate amount of dots, where each dot is ~0.5 seconds
-                        int howManyDotsToAdd = (int)Math.Round(msgCassieClip.Length * 2, MidpointRounding.AwayFromZero);
-                        for (int j = 0; j < howManyDotsToAdd; j++)
+                        if (Config.WordsToBasegameOverride.TryGetValue(msg, out string word))
                         {
-                            baseCassieAnnouncement += " .";
+                            baseCassieAnnouncement += $" {word}";
+                        }
+                        else
+                        {
+                            // Adds the appropriate amount of dots, where each dot is ~0.5 seconds
+                            int howManyDotsToAdd = (int)Math.Round(msgCassieClip.Length * 2, MidpointRounding.AwayFromZero);
+                            for (int j = 0; j < howManyDotsToAdd; j++)
+                            {
+                                baseCassieAnnouncement += " .";
+                            }
                         }
                     }
                 }
                 else if (useCassie)
                 {
-                    baseCassieAnnouncement += $" {msg}";
+                    baseCassieAnnouncement += $" {(Config.WordsToBasegameOverride.TryGetValue(msg, out string word) ? word : msg)}";
                 }
             }
 
@@ -318,12 +325,7 @@
 
             if (!useCassie)
             {
-                while (firstWordTask is not null && !firstWordTask.IsCompleted)
-                {
-                    yield return Timing.WaitForOneFrame;
-                }
-
-                HandlesToMessages.Add(Timing.RunCoroutine(ReadWords(messages, audioPlayers, clipsToUnregister)), messages);
+                HandlesToMessages.Add(Timing.RunCoroutine(ReadWords(messages, audioPlayers, clipsToUnregister, tasks)), messages);
                 yield break;
             }
 
@@ -334,27 +336,18 @@
 
             if (ticksSinceCassieSpoke <= 360)
             {
-                Timing.CallDelayed(0.5f, () =>
-                {
-                    ReadMessage(messages, audioPlayers: audioPlayers, translation: translation, isNoisy: isNoisy);
-                });
+                yield return Timing.WaitForSeconds(0.5f);
+                Timing.RunCoroutine(ReadMessage(messages, audioPlayers: audioPlayers, translation: translation, isNoisy: isNoisy));
             }
             else
             {
-                while (firstWordTask is not null && !firstWordTask.IsCompleted)
-                {
-                    yield return Timing.WaitForOneFrame;
-                }
-
                 RespawnEffectsController.PlayCassieAnnouncement(CassieAnnouncement.MessageTranslated(baseCassieAnnouncement, string.IsNullOrWhiteSpace(translation) ? string.Join(" ", messages) : translation), false, isNoisy, customAnnouncement);
-                Timing.CallDelayed(isNoisy ? 2.25f : 0, () =>
-                {
-                    HandlesToMessages.Add(Timing.RunCoroutine(ReadWords(messages, audioPlayers, clipsToUnregister)), messages);
-                });
+                yield return Timing.WaitForSeconds(isNoisy ? 2.25f : 0);
+                HandlesToMessages.Add(Timing.RunCoroutine(ReadWords(messages, audioPlayers, clipsToUnregister, tasks)), messages);
             }
         }
 
-        private IEnumerator<float> ReadWords(List<string> messages, List<AudioPlayer> audioPlayers, HashSet<CassieClip> clipsToUnregister = null)
+        private IEnumerator<float> ReadWords(List<string> messages, List<AudioPlayer> audioPlayers, HashSet<CassieClip> clipsToUnregister = null, Dictionary<string, Task> tasksToAwait = null)
         {
             if (messages.Count == 0)
             {
@@ -387,6 +380,12 @@
                     }
 
                     continue;
+                }
+
+                tasksToAwait.TryGetValue(msg, out Task currentWordTask);
+                while (currentWordTask is not null && !currentWordTask.IsCompleted)
+                {
+                    yield return Timing.WaitForOneFrame;
                 }
 
                 if (!AudioClipStorage.AudioClips.ContainsKey(msg) || (!ClipDatabase.RegisteredClips.Any(c => c.Name == msg) && !PitchShiftedTempClips.TryGetValue(msg, out _)))
