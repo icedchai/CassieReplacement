@@ -231,10 +231,13 @@
                         default:
                             break;
                     }
+
                     messages.Remove(msg);
                     i--;
                     continue;
                 }
+
+                string oldMsg = msg;
                 msg = $"{currentPrefix}{msg}{currentSuffix}";
 
                 // Gets the registered clip
@@ -330,6 +333,20 @@
                             // baseCassieAnnouncement.Append($" pitch_{requiredPitch} . pitch_{pitch} jam_0_0");
                         }
                     }
+                }
+                else if (int.TryParse(oldMsg, out int num))
+                {
+                    string[] numbers = NineTailedFoxAnnouncer.ConvertNumber(num).Split(' ');
+                    messages.Remove(msg);
+                    int j = 0;
+                    for (; j < numbers.Length; j++)
+                    {
+                        messages.Insert(i + j, numbers[j]);
+                    }
+
+                    i--;
+                    LabApi.Features.Console.Logger.Info(string.Join(" ", numbers));
+                    LabApi.Features.Console.Logger.Info(string.Join(" ", messages));
                 }
                 else if (useCassie)
                 {
