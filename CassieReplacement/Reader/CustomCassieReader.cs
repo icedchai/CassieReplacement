@@ -3,6 +3,8 @@
     using CassieReplacement;
     using CassieReplacement.Config;
     using CassieReplacement.Reader.Models;
+    using Exiled.Events.EventArgs.Scp3114;
+    using LabApi.Features.Console;
     using MEC;
     using NVorbis;
     using Respawning;
@@ -10,10 +12,13 @@
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using System.Text;
     using System.Threading.Tasks;
     using System.Xml.Linq;
     using UnityEngine;
+    using NorthwoodLib.Pools;
     using Utils.NonAllocLINQ;
+    using static NineTailedFoxAnnouncer;
 
     /// <summary>
     /// Reads Custom CASSIE messages.
@@ -185,10 +190,9 @@
         /// <returns>The IEnumerator.</returns>
         public IEnumerator<float> ReadMessage(List<string> messages, List<AudioPlayer> audioPlayers, bool isNoisy = false, bool customAnnouncement = true, string translation = "", bool useCassie = true)
         {
-            string baseCassieAnnouncement = string.Empty;
+            StringBuilder baseCassieAnnouncement = StringBuilderPool.Shared.Rent();
             HashSet<CassieClip> clipsToUnregister = new HashSet<CassieClip>();
             Dictionary<string, Task> tasks = new Dictionary<string, Task>();
-
             float pitch = 1.0f;
 
             // Process the messages & register sounds before proceeding.
@@ -202,9 +206,14 @@
                     continue;
                 }
 
-                if (msg.StartsWith("pitch_"))
+                if (NineTailedFoxAnnouncer.VoiceLine.IsPitch(msg, out float pitchValue))
                 {
-                    pitch = float.TryParse(msg.Remove(0, "pitch_".Length), out float newPitch) ? newPitch : pitch;
+                    pitch = pitchValue;
+                    if (useCassie)
+                    {
+                        baseCassieAnnouncement.Append($" {msg}");
+                    }
+
                     continue;
                 }
 
@@ -222,12 +231,10 @@
                         default:
                             break;
                     }
-
                     messages.Remove(msg);
                     i--;
                     continue;
                 }
-
                 msg = $"{currentPrefix}{msg}{currentSuffix}";
 
                 // Gets the registered clip
@@ -301,22 +308,32 @@
                     {
                         if (Config.WordsToBasegameOverride.TryGetValue(msg, out string word))
                         {
-                            baseCassieAnnouncement += $" {word}";
+                            baseCassieAnnouncement.Append($" {word}");
                         }
                         else
                         {
                             // Adds the appropriate amount of dots, where each dot is ~0.5 seconds
+
                             int howManyDotsToAdd = (int)Math.Round(msgCassieClip.Length * 2, MidpointRounding.AwayFromZero);
+                            baseCassieAnnouncement.Append(" pitch_1");
                             for (int j = 0; j < howManyDotsToAdd; j++)
                             {
-                                baseCassieAnnouncement += " .";
+                                baseCassieAnnouncement.Append(" .");
                             }
+
+                            // Resets other values
+                            baseCassieAnnouncement.Append($" pitch_{pitch} jam_0_0");
+
+                            // REASONS NOT TO USE: WHEN NORMAL CASSIE WORDS JAM, THE PITCH SHIFT APPLIES TO THE TAIL-END OF THE WORD!
+
+                            // float requiredPitch = 0.5f / msgCassieClip.Length;
+                            // baseCassieAnnouncement.Append($" pitch_{requiredPitch} . pitch_{pitch} jam_0_0");
                         }
                     }
                 }
                 else if (useCassie)
                 {
-                    baseCassieAnnouncement += $" {(Config.WordsToBasegameOverride.TryGetValue(msg, out string word) ? word : msg)}";
+                    baseCassieAnnouncement.Append($" {(Config.WordsToBasegameOverride.TryGetValue(msg, out string word) ? word : msg)}");
                 }
             }
 
@@ -326,25 +343,25 @@
             if (!useCassie)
             {
                 HandlesToMessages.Add(Timing.RunCoroutine(ReadWords(messages, audioPlayers, clipsToUnregister, tasks)), messages);
+                StringBuilderPool.Shared.Return(baseCassieAnnouncement);
                 yield break;
             }
 
             if (Plugin.Singleton.Config.CassieOverrideConfig.ShouldOverrideAll)
             {
-                baseCassieAnnouncement = "noparse " + baseCassieAnnouncement;
+                baseCassieAnnouncement.Insert(0, "noparse ");
             }
 
-            if (ticksSinceCassieSpoke <= 360)
+            LabApi.Features.Console.Logger.Info(baseCassieAnnouncement.ToString());
+
+            while (ticksSinceCassieSpoke <= 360)
             {
-                yield return Timing.WaitForSeconds(0.5f);
-                Timing.RunCoroutine(ReadMessage(messages, audioPlayers: audioPlayers, translation: translation, isNoisy: isNoisy));
+                yield return Timing.WaitForOneFrame;
             }
-            else
-            {
-                RespawnEffectsController.PlayCassieAnnouncement(CassieAnnouncement.MessageTranslated(baseCassieAnnouncement, string.IsNullOrWhiteSpace(translation) ? string.Join(" ", messages) : translation), false, isNoisy, customAnnouncement);
-                yield return Timing.WaitForSeconds(isNoisy ? 2.25f : 0);
-                HandlesToMessages.Add(Timing.RunCoroutine(ReadWords(messages, audioPlayers, clipsToUnregister, tasks)), messages);
-            }
+
+            RespawnEffectsController.PlayCassieAnnouncement(CassieAnnouncement.MessageTranslated(StringBuilderPool.Shared.ToStringReturn(baseCassieAnnouncement), string.IsNullOrWhiteSpace(translation) ? string.Join(" ", messages) : translation), false, isNoisy, customAnnouncement);
+            yield return Timing.WaitForSeconds(isNoisy ? 2.25f : 0);
+            HandlesToMessages.Add(Timing.RunCoroutine(ReadWords(messages, audioPlayers, clipsToUnregister, tasks)), messages);
         }
 
         private IEnumerator<float> ReadWords(List<string> messages, List<AudioPlayer> audioPlayers, HashSet<CassieClip> clipsToUnregister = null, Dictionary<string, Task> tasksToAwait = null)
@@ -366,21 +383,29 @@
                     break;
                 }
 
-                if (msg.StartsWith("pitch_"))
+                if (NineTailedFoxAnnouncer.VoiceLine.IsPitch(msg, out float pitchValue))
                 {
-                    pitch = float.TryParse(msg.Remove(0, "pitch_".Length), out float newPitch) ? newPitch : pitch;
+                    pitch = pitchValue;
                     continue;
                 }
 
-                if (msg.StartsWith("yield_"))
+                if (NineTailedFoxAnnouncer.VoiceLine.IsYield(msg, out float yield))
                 {
-                    if (float.TryParse(msg.Remove(0, "yield_".Length), out float yield))
-                    {
-                        yield return Timing.WaitForSeconds(yield);
-                    }
-
+                    yield return Timing.WaitForSeconds(yield);
                     continue;
                 }
+
+                if (NineTailedFoxAnnouncer.VoiceLine.IsJam(msg, out int newDelay, out int newAmount))
+                {
+                    jamDelay = newDelay;
+                    jamAmount = newAmount;
+                    continue;
+                }
+
+                int workingJamDelay = jamDelay;
+                int workingJamAmount = jamAmount;
+                jamDelay = 0;
+                jamAmount = 0;
 
                 tasksToAwait.TryGetValue(msg, out Task currentWordTask);
                 while (currentWordTask is not null && !currentWordTask.IsCompleted)
@@ -390,10 +415,17 @@
 
                 if (!AudioClipStorage.AudioClips.ContainsKey(msg) || (!ClipDatabase.RegisteredClips.Any(c => c.Name == msg) && !PitchShiftedTempClips.TryGetValue(msg, out _)))
                 {
-                    yield return Timing.WaitForSeconds(NineTailedFoxAnnouncer.singleton.CalculateDuration(msg) / pitch);
+                    string jams = string.Empty;
+                    if (workingJamDelay != 0 || workingJamAmount != 0)
+                    {
+                        jams = $"jam_{workingJamDelay}_{workingJamAmount} ";
+                    }
+
+                    yield return Timing.WaitForSeconds(NineTailedFoxAnnouncer.singleton.CalculateDuration($"{jams}{msg}", speed: pitch));
                     continue;
                 }
 
+                List<AudioClipPlayback> playbacks = new List<AudioClipPlayback>();
                 foreach (AudioPlayer audioPlayer in audioPlayers)
                 {
                     float volume = Config.CassieVolume;
@@ -404,9 +436,27 @@
                     }
 
                     AudioClipPlayback playback = audioPlayer.AddClip(msg, volume);
+                    playbacks.Add(playback);
                 }
 
-                yield return Timing.WaitForSeconds(GetClipLength(msg));
+                if (workingJamDelay > 0 && workingJamDelay < 100 && playbacks.Count != 0)
+                {
+                    yield return Timing.WaitForSeconds(GetClipLength(msg) * workingJamDelay * 0.01f);
+                    int readPosition = playbacks.FirstOrDefault().ReadPosition;
+                    for (int i = 0; i < workingJamAmount; i++)
+                    {
+                        foreach (AudioClipPlayback playback in playbacks)
+                        {
+                            playback.ReadPosition = readPosition;
+                        }
+
+                        yield return Timing.WaitForSeconds(0.13f);
+                    }
+                }
+                else
+                {
+                    yield return Timing.WaitForSeconds(GetClipLength(msg));
+                }
             }
 
             yield return Timing.WaitForSeconds(GetClip(messages.Last()).Reverb);
