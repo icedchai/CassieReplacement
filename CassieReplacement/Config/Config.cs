@@ -1,11 +1,11 @@
 ﻿namespace CassieReplacement.Config
 {
+    using CassieReplacement.Reader.Models;
 #pragma warning disable SA1600
     using System.Collections.Generic;
     using System.ComponentModel;
 #if EXILED
     using Exiled.API.Interfaces;
-    using CassieReplacement.Reader.Models;
 
     /// <summary>
     /// Plugin configuration.

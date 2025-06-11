@@ -2,7 +2,6 @@
 {
     using CassieReplacement.Config;
     using CassieReplacement.Reader.Models;
-    using Exiled.API.Features;
     using System;
     using System.Collections.Generic;
     using System.IO;

@@ -11,12 +11,11 @@
     using MEC;
     using PlayerRoles.FirstPersonControl;
     using PlayerRoles.PlayableScps.Scp079;
+    using System.Threading.Tasks;
 #if EXILED
     using Exiled.API.Features;
     using Exiled.CustomItems.API;
     using Exiled.CustomItems.API.Features;
-    using CassieReplacement.Reader;
-    using CassieReplacement.Reader.Models;
     using System.Threading.Tasks;
     using PlayerRoles;
 #else

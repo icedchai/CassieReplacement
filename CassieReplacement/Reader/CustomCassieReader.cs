@@ -3,7 +3,6 @@
     using CassieReplacement;
     using CassieReplacement.Config;
     using CassieReplacement.Reader.Models;
-    using Exiled.Events.EventArgs.Scp3114;
     using LabApi.Features.Console;
     using MEC;
     using NVorbis;
