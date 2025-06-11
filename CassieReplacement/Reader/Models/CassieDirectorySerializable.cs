@@ -13,5 +13,7 @@
         public string Prefix { get; set; } = string.Empty;
 
         public float BleedTime { get; set; } = 0f;
+
+        public bool ShouldList { get; set; } = false;
     }
 }

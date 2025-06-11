@@ -29,7 +29,7 @@
             }
 
             string words = "The available words are:\n";
-            foreach (string word in CustomCassieReader.Singleton.ClipDatabase.RegisteredClipNames)
+            foreach (string word in CustomCassieReader.Singleton.ClipDatabase.ListableClipNames)
             {
                 words += $"{word}, ";
             }

@@ -28,6 +28,11 @@
         public List<string> RegisteredClipNames => RegisteredClips.Select(c => c.Name).ToList();
 
         /// <summary>
+        /// Gets a list of all registered <see cref="CassieClip"/> names where ShouldList is set to true.
+        /// </summary>
+        public List<string> ListableClipNames => RegisteredClips.Where(c => c.ShouldList).Select(c => c.Name).ToList();
+
+        /// <summary>
         /// Gets a clip with the specified name.
         /// </summary>
         /// <param name="name">The name to search for.</param>
@@ -99,8 +104,7 @@
 
             foreach (FileInfo file in d.GetFiles("*.ogg"))
             {
-                CassieClip cassieClip = new CassieClip(file, directoryConfiguration.BleedTime, directoryConfiguration.Prefix);
-
+                CassieClip cassieClip = new CassieClip(file, directoryConfiguration.BleedTime, directoryConfiguration.Prefix, directoryConfiguration.ShouldList);
                 // Prevent duplicates from being registered by appending _ to the name as needed.
                 while (RegisteredClipNames.Contains(cassieClip.Name))
                 {
