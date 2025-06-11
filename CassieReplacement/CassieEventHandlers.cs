@@ -4,12 +4,12 @@
     using System.Linq;
     using CassieReplacement.Config;
     using CassieReplacement.Reader;
-    using CassieReplacement.Reader.Models.Enums;
     using PlayerStatsSystem;
     using PlayerRoles;
 #if EXILED
     using Exiled.API.Features;
     using Exiled.Events.EventArgs.Map;
+    using CassieReplacement.Reader.Enums;
 #endif
 
     public class CassieEventHandlers

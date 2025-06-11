@@ -1,7 +1,7 @@
 ﻿namespace CassieReplacement.Config
 {
     using CassieReplacement.Reader;
-    using CassieReplacement.Reader.Models.Enums;
+    using CassieReplacement.Reader.Enums;
     using PlayerRoles;
     using System.Collections.Generic;
     using System.ComponentModel;

@@ -9,6 +9,10 @@
     using System.Text;
     using System.Threading.Tasks;
 
+#if EXILED
+    using Exiled.API.Features;
+#endif
+
     /// <summary>
     /// A database of clips to read from.
     /// </summary>
