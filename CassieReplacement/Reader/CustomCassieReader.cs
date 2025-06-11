@@ -392,8 +392,6 @@
                     }
 
                     i--;
-                    LabApi.Features.Console.Logger.Info(string.Join(" ", numbers));
-                    LabApi.Features.Console.Logger.Info(string.Join(" ", messages));
                 }
                 else if (useCassie)
                 {
@@ -415,8 +413,6 @@
             {
                 baseCassieAnnouncement.Insert(0, "noparse ");
             }
-
-            LabApi.Features.Console.Logger.Info(baseCassieAnnouncement.ToString());
 
             while (ticksSinceCassieSpoke <= 360)
             {
