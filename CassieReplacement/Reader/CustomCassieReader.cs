@@ -17,9 +17,9 @@
     using UnityEngine;
     using NorthwoodLib.Pools;
     using Utils.NonAllocLINQ;
-    using static NineTailedFoxAnnouncer;
     using CassieReplacement.Reader.Enums;
     using System.Text.RegularExpressions;
+    using static NineTailedFoxAnnouncer;
 
     /// <summary>
     /// Reads Custom CASSIE messages.
@@ -179,34 +179,45 @@
             return outputBuffer;
         }
 
-        private static readonly Regex SuffixRegex = new Regex("(?<base>.+?)(?<suffix>ted|ded|d|ing|s|sh|ch|x|z)?", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        // private static readonly Regex SuffixRegex = new Regex("(?<base>.+?)(?<suffix>ted|ded|d|ing|s|sh|ch|x|z)?", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
-        private CassieWordSuffixType GetSuffixType(string msg)
+        private CassieWordSuffixType GetSuffixType(string msg, out string baseMsg)
         {
-            if (!msg.EndsWith("TED", StringComparison.OrdinalIgnoreCase) && !msg.EndsWith("DED", StringComparison.OrdinalIgnoreCase))
+            if (msg.EndsWith("TED", StringComparison.OrdinalIgnoreCase) || msg.EndsWith("DED", StringComparison.OrdinalIgnoreCase))
+            {
+                baseMsg = msg.Substring(0, msg.Length - 3);
+                return CassieWordSuffixType.SuffixPastException;
+            }
+            else
             {
                 if (msg.EndsWith("D", StringComparison.OrdinalIgnoreCase))
                 {
+                    baseMsg = msg.Substring(0, msg.Length - 1);
                     return CassieWordSuffixType.SuffixPastStandard;
                 }
                 else if (msg.EndsWith("ING", StringComparison.OrdinalIgnoreCase))
                 {
+                    baseMsg = msg.Substring(0, msg.Length - 3);
                     return CassieWordSuffixType.SuffixContinuous;
                 }
-                else if (!msg.EndsWith("S", StringComparison.OrdinalIgnoreCase) && !msg.EndsWith("SH", StringComparison.OrdinalIgnoreCase)
-                    && !msg.EndsWith("CH", StringComparison.OrdinalIgnoreCase) && !msg.EndsWith("X", StringComparison.OrdinalIgnoreCase)
-                    && !msg.EndsWith("X", StringComparison.OrdinalIgnoreCase) && !msg.EndsWith("Z", StringComparison.OrdinalIgnoreCase))
+                else if (msg.EndsWith("S", StringComparison.OrdinalIgnoreCase) ||
+                    msg.EndsWith("X", StringComparison.OrdinalIgnoreCase) ||
+                    msg.EndsWith("Z", StringComparison.OrdinalIgnoreCase))
                 {
-                    return CassieWordSuffixType.SuffixPluralStandard;
+                    baseMsg = msg.Substring(0, msg.Length - 1);
+                    return CassieWordSuffixType.SuffixPluralException;
+                }
+                else if (msg.EndsWith("SH", StringComparison.OrdinalIgnoreCase)
+                    || msg.EndsWith("CH", StringComparison.OrdinalIgnoreCase))
+                {
+                    baseMsg = msg.Substring(0, msg.Length - 2);
+                    return CassieWordSuffixType.SuffixPluralException;
                 }
                 else
                 {
-                    return CassieWordSuffixType.SuffixPluralException;
+                    baseMsg = msg;
+                    return CassieWordSuffixType.SuffixPluralStandard;
                 }
-            }
-            else
-            {
-                return CassieWordSuffixType.SuffixPastException;
             }
 
             /*
@@ -239,6 +250,8 @@
             StringBuilder baseCassieAnnouncement = StringBuilderPool.Shared.Rent();
             HashSet<CassieClip> clipsToUnregister = new HashSet<CassieClip>();
             Dictionary<string, Task> tasks = new Dictionary<string, Task>();
+            int jamDelay = 0;
+            int jamAmount = 0;
             float pitch = 1.0f;
 
             // Process the messages & register sounds before proceeding.
@@ -391,6 +404,10 @@
                     }
 
                     i--;
+                }
+                else if (GetSuffixType(msg, out string baseMsg) != CassieWordSuffixType.SuffixPluralStandard)
+                {
+
                 }
                 else if (useCassie)
                 {
