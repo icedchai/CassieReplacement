@@ -19,6 +19,8 @@
     using NorthwoodLib.Pools;
     using Utils.NonAllocLINQ;
     using static NineTailedFoxAnnouncer;
+    using CassieReplacement.Reader.Enums;
+    using System.Text.RegularExpressions;
 
     /// <summary>
     /// Reads Custom CASSIE messages.
@@ -178,6 +180,15 @@
             return outputBuffer;
         }
 
+        private static readonly Regex SuffixRegex = new Regex("(.+?)(TED|DED|D|ING|S|SH|CH|X|Z)?", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+        private CassieWordSuffixType GetSuffixType(string msg)
+        {
+            if (!msg.EndsWith("TED", StringComparison.OrdinalIgnoreCase) && !msg.EndsWith("DED", StringComparison.OrdinalIgnoreCase))
+            {
+                if (msg.EndsWith("D", StringComparison.OrdinalIgnoreCase))
+                {
+                    return CassieWordSuffixType.SuffixPastStandard;
         /// <summary>
         /// Reads a message from an <see cref="AudioPlayer"/> instance, using the registered audio clips.
         /// </summary>
@@ -476,7 +487,11 @@
                 }
             }
 
-            yield return Timing.WaitForSeconds(GetClip(messages.Last()).Reverb);
+            if (GetClip(messages.Last()) is not null)
+            {
+                yield return Timing.WaitForSeconds(GetClip(messages.Last()).Reverb);
+            }
+
             if (clipsToUnregister is not null)
             {
                 foreach (var clip in clipsToUnregister)
