@@ -189,6 +189,42 @@
                 if (msg.EndsWith("D", StringComparison.OrdinalIgnoreCase))
                 {
                     return CassieWordSuffixType.SuffixPastStandard;
+                }
+                else if (msg.EndsWith("ING", StringComparison.OrdinalIgnoreCase))
+                {
+                    return CassieWordSuffixType.SuffixContinuous;
+                }
+                else if (!msg.EndsWith("S", StringComparison.OrdinalIgnoreCase) && !msg.EndsWith("SH", StringComparison.OrdinalIgnoreCase)
+                    && !msg.EndsWith("CH", StringComparison.OrdinalIgnoreCase) && !msg.EndsWith("X", StringComparison.OrdinalIgnoreCase)
+                    && !msg.EndsWith("X", StringComparison.OrdinalIgnoreCase) && !msg.EndsWith("Z", StringComparison.OrdinalIgnoreCase))
+                {
+                    return CassieWordSuffixType.SuffixPluralStandard;
+                }
+                else
+                {
+                    return CassieWordSuffixType.SuffixPluralException;
+                }
+            }
+            else
+            {
+                return CassieWordSuffixType.SuffixPastException;
+            }
+
+            /*
+                if (!text.EndsWith("TED") && !text.EndsWith("DED"))
+                {
+                    if (text.EndsWith("D")) suffixPastStandard
+                    else if (text.EndsWith("ING")) suffixContinuous
+                    else if (!text.EndsWith("S") && !text.EndsWith("SH") &&
+                        !text.EndsWith("CH") &&
+                        !text.EndsWith("X") && !text.EndsWith("Z")) suffixPluralStandard
+                    else suffixPluralException
+                }
+                else suffixPastException
+
+            */
+        }
+
         /// <summary>
         /// Reads a message from an <see cref="AudioPlayer"/> instance, using the registered audio clips.
         /// </summary>
