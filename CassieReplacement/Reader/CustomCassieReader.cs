@@ -60,9 +60,15 @@
         private float GetClipLength(string clipName)
         {
             CassieClip clip = GetClip(clipName);
+
+            string[] splits = clipName.Split('-');
             if (clip is not null)
             {
                 return clip.Length;
+            }
+            else if (splits.Length > 1 && float.TryParse(splits[1], out float reverb))
+            {
+                return GetClipLength(splits[0]) - reverb;
             }
 
             return 0f;
@@ -181,11 +187,12 @@
 
         // private static readonly Regex SuffixRegex = new Regex("(?<base>.+?)(?<suffix>ted|ded|d|ing|s|sh|ch|x|z)?", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
-        private CassieWordSuffixType GetSuffixType(string msg, out string baseMsg)
+        private CassieWordSuffixType GetSuffixType(string msg, out string baseMsg, out string suffix)
         {
             if (msg.EndsWith("TED", StringComparison.OrdinalIgnoreCase) || msg.EndsWith("DED", StringComparison.OrdinalIgnoreCase))
             {
                 baseMsg = msg.Substring(0, msg.Length - 3);
+                suffix = msg.Substring(msg.Length - 3);
                 return CassieWordSuffixType.SuffixPastException;
             }
             else
@@ -193,11 +200,13 @@
                 if (msg.EndsWith("D", StringComparison.OrdinalIgnoreCase))
                 {
                     baseMsg = msg.Substring(0, msg.Length - 1);
+                    suffix = msg.Substring(msg.Length - 1);
                     return CassieWordSuffixType.SuffixPastStandard;
                 }
                 else if (msg.EndsWith("ING", StringComparison.OrdinalIgnoreCase))
                 {
                     baseMsg = msg.Substring(0, msg.Length - 3);
+                    suffix = msg.Substring(msg.Length - 3);
                     return CassieWordSuffixType.SuffixContinuous;
                 }
                 else if (msg.EndsWith("S", StringComparison.OrdinalIgnoreCase) ||
@@ -205,17 +214,20 @@
                     msg.EndsWith("Z", StringComparison.OrdinalIgnoreCase))
                 {
                     baseMsg = msg.Substring(0, msg.Length - 1);
+                    suffix = msg.Substring(msg.Length - 1);
                     return CassieWordSuffixType.SuffixPluralException;
                 }
                 else if (msg.EndsWith("SH", StringComparison.OrdinalIgnoreCase)
                     || msg.EndsWith("CH", StringComparison.OrdinalIgnoreCase))
                 {
                     baseMsg = msg.Substring(0, msg.Length - 2);
+                    suffix = msg.Substring(msg.Length - 2);
                     return CassieWordSuffixType.SuffixPluralException;
                 }
                 else
                 {
                     baseMsg = msg;
+                    suffix = string.Empty;
                     return CassieWordSuffixType.SuffixPluralStandard;
                 }
             }
@@ -265,6 +277,18 @@
                     continue;
                 }
 
+                int workingDelay = jamDelay;
+                int workingAmount = jamAmount;
+                jamDelay = 0;
+                jamAmount = 0;
+
+                if (NineTailedFoxAnnouncer.VoiceLine.IsJam(msg, out int newDelay, out int newAmount))
+                {
+                    jamDelay = newDelay;
+                    jamAmount = newAmount;
+                    continue;
+                }
+
                 if (NineTailedFoxAnnouncer.VoiceLine.IsPitch(msg, out float pitchValue))
                 {
                     pitch = pitchValue;
@@ -307,7 +331,7 @@
                     // Creates a new one if pitch shifted.
                     if (pitch != 1.0f)
                     {
-                        string newName = $"{pitch}_{msgCassieClip.Name}";
+                        string newName = $"pitch_{pitch}_{msgCassieClip.Name}";
                         if (!PitchShiftedTempClips.TryGetValue(newName, out CassieClip pitched))
                         {
                             msgCassieClip = new CassieClip(newName, msgCassieClip.FileInfo, msgCassieClip.BaseLength / pitch, msgCassieClip.Reverb / pitch);
@@ -375,7 +399,6 @@
                         else
                         {
                             // Adds the appropriate amount of dots, where each dot is ~0.5 seconds
-
                             int howManyDotsToAdd = (int)Math.Round(msgCassieClip.Length * 2, MidpointRounding.AwayFromZero);
                             baseCassieAnnouncement.Append(" pitch_1");
                             for (int j = 0; j < howManyDotsToAdd; j++)
@@ -405,9 +428,13 @@
 
                     i--;
                 }
-                else if (GetSuffixType(msg, out string baseMsg) != CassieWordSuffixType.SuffixPluralStandard)
+                else if (GetSuffixType(msg, out string baseMsg, out string suffix) != CassieWordSuffixType.SuffixPluralStandard)
                 {
+                    messages.Remove(msg);
+                    messages.Insert(i, $"{baseMsg}-0.1");
+                    messages.Insert(i + 1, suffix);
 
+                    i--;
                 }
                 else if (useCassie)
                 {
@@ -429,6 +456,8 @@
             {
                 baseCassieAnnouncement.Insert(0, "noparse ");
             }
+
+            LabApi.Features.Console.Logger.Info(baseCassieAnnouncement);
 
             while (ticksSinceCassieSpoke <= 360)
             {
@@ -528,6 +557,8 @@
 
                         yield return Timing.WaitForSeconds(0.13f);
                     }
+
+                    yield return Timing.WaitForSeconds(GetClipLength(msg) * (100 - workingJamDelay) * 0.01f);
                 }
                 else
                 {
