@@ -180,7 +180,7 @@
             return outputBuffer;
         }
 
-        private static readonly Regex SuffixRegex = new Regex("(.+?)(TED|DED|D|ING|S|SH|CH|X|Z)?", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        private static readonly Regex SuffixRegex = new Regex("(?<base>.+?)(?<suffix>ted|ded|d|ing|s|sh|ch|x|z)?", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
         private CassieWordSuffixType GetSuffixType(string msg)
         {
