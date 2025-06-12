@@ -19,6 +19,7 @@
     using Utils.NonAllocLINQ;
     using CassieReplacement.Reader.Enums;
     using System.Text.RegularExpressions;
+    using Logger = LabApi.Features.Console.Logger;
     using static NineTailedFoxAnnouncer;
 
     /// <summary>
@@ -328,10 +329,14 @@
 
                 if (msgCassieClip is not null)
                 {
+                    Logger.Info(pitch);
+
+                    Logger.Info(msgCassieClip.Name);
+
                     // Creates a new one if pitch shifted.
                     if (pitch != 1.0f)
                     {
-                        string newName = $"pitch_{pitch}_{msgCassieClip.Name}";
+                        string newName = $"p{pitch}_{msgCassieClip.Name}";
                         if (!PitchShiftedTempClips.TryGetValue(newName, out CassieClip pitched))
                         {
                             msgCassieClip = new CassieClip(newName, msgCassieClip.FileInfo, msgCassieClip.BaseLength / pitch, msgCassieClip.Reverb / pitch);
@@ -428,14 +433,14 @@
 
                     i--;
                 }
-                else if (GetSuffixType(msg, out string baseMsg, out string suffix) != CassieWordSuffixType.SuffixPluralStandard)
+                /*else if (GetSuffixType(msg, out string baseMsg, out string suffix) != CassieWordSuffixType.SuffixPluralStandard && )
                 {
                     messages.Remove(msg);
                     messages.Insert(i, $"{baseMsg}-0.1");
                     messages.Insert(i + 1, suffix);
 
                     i--;
-                }
+                }*/
                 else if (useCassie)
                 {
                     baseCassieAnnouncement.Append($" {(Config.WordsToBasegameOverride.TryGetValue(msg, out string word) ? word : msg)}");
