@@ -6,10 +6,10 @@
     using CassieReplacement.Reader;
     using PlayerStatsSystem;
     using PlayerRoles;
+    using CassieReplacement.Reader.Enums;
 #if EXILED
     using Exiled.API.Features;
     using Exiled.Events.EventArgs.Map;
-    using CassieReplacement.Reader.Enums;
 #endif
 
     public class CassieEventHandlers

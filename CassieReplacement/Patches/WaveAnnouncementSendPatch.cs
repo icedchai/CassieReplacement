@@ -15,7 +15,7 @@ namespace CassieReplacement.Patches
     [HarmonyPatch]
     public static class WaveAnnouncementSendPatch
     {
-        public static bool Prefix(WaveAnnouncementBase waveMessage)
+        public static bool Prefix(WaveAnnouncementBase __instance)
         {
             if (!Plugin.Singleton.Config.CassieOverrideConfig.ShouldOverrideAnnouncements)
             {
@@ -30,7 +30,7 @@ namespace CassieReplacement.Patches
                 unitNumber = int.Parse(rule.LastGeneratedName.Split('-')[1]);
             }
 
-            switch (waveMessage)
+            switch (__instance)
             {
                 case NtfWaveAnnouncement:
                     CassieEventHandlers.HandleAnnouncingWaveEntrance(PlayerRoles.Faction.FoundationStaff, false, unitLetter, unitNumber);

@@ -10,12 +10,12 @@
     {
         public static bool Prefix()
         {
-            if (Plugin.Singleton.Config.CassieOverrideConfig.ShouldOverrideAnnouncements)
+            if (!Plugin.Singleton.Config.CassieOverrideConfig.ShouldOverrideAnnouncements)
             {
-                return false;
+                return true;
             }
 
-            return true;
+            return false;
         }
 
         public static IEnumerable<MethodBase> TargetMethods()

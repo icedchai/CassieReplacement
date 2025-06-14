@@ -557,7 +557,7 @@
                         yield return Timing.WaitForSeconds(0.13f);
                     }
 
-                    yield return Timing.WaitForSeconds(GetClipLength(msg) * (100 - workingJamDelay) * 0.01f);
+                    // yield return Timing.WaitForSeconds(GetClipLength(msg) * (100 - workingJamDelay) * 0.01f);
                 }
                 else
                 {
