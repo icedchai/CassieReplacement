@@ -329,10 +329,6 @@
 
                 if (msgCassieClip is not null)
                 {
-                    Logger.Info(pitch);
-
-                    Logger.Info(msgCassieClip.Name);
-
                     // Creates a new one if pitch shifted.
                     if (pitch != 1.0f)
                     {
@@ -461,8 +457,6 @@
             {
                 baseCassieAnnouncement.Insert(0, "noparse ");
             }
-
-            LabApi.Features.Console.Logger.Info(baseCassieAnnouncement);
 
             while (ticksSinceCassieSpoke <= 360)
             {
