@@ -1,4 +1,4 @@
-# This is an example/demo you can use to quickly set this up on your own server. (EXILED ONLY)
+# This is an example/demo you can use to quickly set this up on your own server.
 
 ## How to install
 - Download `_sam.zip`
@@ -6,7 +6,7 @@
 - Copy `config.yml` into your own config for this plugin.
 
 ## Explanation
-[Basic explanation of the config can be found here.](https://github.com/icedchai/CassieReplacement?tab=readme-ov-file#overrides-exiled-only)
+[Basic explanation of the config can be found here.](https://github.com/icedchai/CassieReplacement?tab=readme-ov-file#overrides)
 
 ### Entrance announcement override
 

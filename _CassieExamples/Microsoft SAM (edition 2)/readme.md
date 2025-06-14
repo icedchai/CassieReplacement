@@ -1,0 +1,1 @@
+# This is a set of words that fully replaces base-game CASSIE with a sound effect for every word he can say, plus some extras.

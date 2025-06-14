@@ -15,20 +15,20 @@ https://github.com/user-attachments/assets/814c6776-f287-4fe9-b1a8-0af2f0ce9826
 
    2.1. The `prefix` property defines how you can refer to the clip in CASSIE.
 	 
-	 2.2. (EXILED ONLY PAST v1.5.0) You can also define CASSIE announcement overrides for SCP termination, NTF and CI arrivals, etc. (SEE [**Overrides**](https://github.com/icedchai/CassieReplacement?tab=readme-ov-file#overrides-exiled-only) in the readme.)
+	 2.2. (Both versions supported) You can also define CASSIE announcement overrides for SCP termination, NTF and CI arrivals, etc. (SEE [**Overrides**](https://github.com/icedchai/CassieReplacement?tab=readme-ov-file#overrides-exiled-only) in the readme.)
 ```
 # This is the folders where all of your audio clips will be stored. IMPORTANT: DIRECTORIES ARE ABSOLUTE, NOT RELATIVE!
 base_directories:
 -
 # Path of this directory.
-  path: 'PATH/TO/FOLDER/WITH/SOUND/FILES'
+  path: '/PATH/TO/FOLDER/WITH/SOUND/FILES'
   # Prefix to put in the name of each registered clip from this directory.
   prefix: ''
   # The amount of time each clip in this directory may bleed into the next.
   bleed_time: 0
 ```
  
-3. When writing a CASSIE announcement, type `customcassie` at the beginning to indicate to the plugin you want to use custom clips
+3. When writing a CASSIE announcement, type `customcassie` (or the specified prefix) at the beginning to indicate to the plugin you want to use custom clips
 
    3.1. The filename, minus the extension, will be the name of the clip.
 example: `cassie customcassie customword1 customword2`
@@ -37,7 +37,7 @@ example: `cassie customcassie customword1 customword2`
 	 
 	 3.3. When writing a CASSIE announcement in RA, type `;` after the words to indicate you wish to write the translation/subtitles now.
 
-## Overrides (EXILED only)
+## Overrides
 
 This is the default override config.
 Most word replacements/Keywords are context-specific.
@@ -62,6 +62,8 @@ Most word replacements/Keywords are context-specific.
 cassie_override_config:
 # Whether to override these CASSIE messages. Put the prefix in front to play customcassie messages.
   should_override_announcements: false
+  # Whether to apply Custom CASSIE to every announcement that plays (including base-game, commands, etc). Careful with this one!
+  should_override_all: false
   ntf_wave_announcement:
     words: 'mtfunit epsilon 11 designated {letter} {number} hasentered allremaining {threatoverview}'
     translation: 'Mobile Task Force Unit Epsilon-11 designated {letter}-{number} has entered the facility.<split>All remaining personnel are advised to proceed with standard evacuation protocols until an MTF squad reaches your destination.<split>{threatoverview}'
