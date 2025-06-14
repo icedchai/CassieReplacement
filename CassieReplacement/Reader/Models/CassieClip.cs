@@ -1,12 +1,7 @@
-﻿namespace CassieReplacement.Models
+﻿namespace CassieReplacement.Reader.Models
 {
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
     using NVorbis;
+    using System.IO;
 
     public class CassieClip
     {
@@ -16,20 +11,34 @@
         /// <param name="file">The FileInfo.</param>
         /// <param name="reverb">The amount to subtract from the length of the clip.</param>
         /// <param name="prefix">The prefix to add to the name.</param>
-        public CassieClip(FileInfo file, float reverb = 0f, string prefix = "")
+        public CassieClip(FileInfo file, float reverb = 0f, string prefix = "", bool shouldList = false)
         {
-            VorbisReader vorbisReader = new (file.FullName);
+            VorbisReader vorbisReader = new(file.FullName);
             FileInfo = file;
+            Reverb = reverb;
             Name = Path.GetFileNameWithoutExtension(file.FullName).ToLower().Replace(' ', '_');
             Name = $"{prefix}{Name}";
             BaseLength = (float)vorbisReader.TotalTime.TotalSeconds;
-            Length = BaseLength - reverb > 0 ? BaseLength - reverb : 0f;
+            ShouldList = shouldList;
             vorbisReader.Dispose();
         }
 
+        public CassieClip(string name, FileInfo fileInfo, float baseLength, float reverb = 0f, bool shouldList = false)
+        {
+            Reverb = reverb;
+            BaseLength = baseLength;
+            Name = name;
+            FileInfo = fileInfo;
+            ShouldList = shouldList;
+        }
+
+        public bool ShouldList { get; set; } = false;
+
+        public float Reverb { get; set; } = 0f;
+
         public float BaseLength { get; set; }
 
-        public float Length { get; set; }
+        public float Length => BaseLength - Reverb > 0 ? BaseLength - Reverb : 0f;
 
         public string Name { get; set; }
 

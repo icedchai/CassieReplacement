@@ -1,7 +1,8 @@
 ﻿namespace CassieReplacement.Commands
 {
-    using System;
+    using CassieReplacement.Reader;
     using CommandSystem;
+    using System;
 
     /// <summary>
     /// The command used to see all registered Custom CASSIE words.
@@ -28,7 +29,7 @@
             }
 
             string words = "The available words are:\n";
-            foreach (string word in Plugin.RegisteredClipNames)
+            foreach (string word in CustomCassieReader.Singleton.ClipDatabase.ListableClipNames)
             {
                 words += $"{word}, ";
             }

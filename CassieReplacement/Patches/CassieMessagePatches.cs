@@ -1,17 +1,14 @@
 ﻿namespace CassieReplacement.Patches
 {
+#pragma warning disable
+    using CassieReplacement.Reader;
+    using HarmonyLib;
+    using NorthwoodLib.Pools;
+    using Respawning;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
-    using System.Threading.Tasks;
-    using CassieReplacement.Models;
-    using HarmonyLib;
-    using LabApi.Features.Console;
-    using Mirror;
-    using NorthwoodLib;
-    using NorthwoodLib.Pools;
-    using Respawning;
 
     [HarmonyPatch(typeof(RespawnEffectsController), nameof(RespawnEffectsController.PlayCassieAnnouncement))]
     public static class CassieMessagePatches
@@ -19,22 +16,29 @@
         [HarmonyPrefix]
         public static bool MessagePrefix(string words, bool makeHold, bool makeNoise, bool customAnnouncement)
         {
-            // Logger.Info(words);
+            bool useCassie = !words.Contains("nocassie");
+            if (words.Contains("noparse"))
+            {
+                return true;
+            }
 
             // Checks for EXILED subtitle signatures.
-            if (words.Contains("<size=0>") || words.Contains("<split>"))
+            if (words.Contains("<size=0>"))
             {
                 string[] dividedBySplits = words.Split(new string[] { "</size><split>" }, StringSplitOptions.None);
 
                 // If customcassie signature not found allow regular execution.
                 // Also prevents infinite self-call
-                if (!dividedBySplits[0].StartsWith(Plugin.Singleton.Config.CustomCassiePrefix))
+                if (dividedBySplits[0].StartsWith(Plugin.Singleton.Config.CustomCassiePrefix))
                 {
-                    return true;
+                    dividedBySplits[0].Remove(0, Plugin.Singleton.Config.CustomCassiePrefix.Length);
+                }
+                else if (Plugin.Singleton.Config.CassieOverrideConfig.ShouldOverrideAll)
+                {
                 }
                 else
                 {
-                    dividedBySplits[0].Remove(0, Plugin.Singleton.Config.CustomCassiePrefix.Length);
+                    return true;
                 }
 
                 StringBuilder subtitles = StringBuilderPool.Shared.Rent();
@@ -50,7 +54,7 @@
 
                     string[] dividedBySize = section.Split(new string[] { "<size=0>" }, StringSplitOptions.None);
                     subtitles.Append(dividedBySize[0]);
-                    input.Append(dividedBySize[1]);
+                    input.Append(dividedBySize.TryGet(1, out string input1) ? input1 : input);
                     if (i < dividedBySplits.Length - 2)
                     {
                         subtitles.Append("<split>");
@@ -58,20 +62,20 @@
                     }
                 }
 
-                new CassieAnnouncement(input.ToString(), subtitles.ToString()).Announce();
+                // new CassieAnnouncement(input.ToString(), subtitles.ToString()).Announce();
 
-                // CustomCassieReader.Singleton.CassieReadMessage(input.ToString().ToLower().Split(' ').ToList(), isNoisy: makeNoise, translation: subtitles.ToString());
+                CustomCassieReader.Singleton.CassieReadMessage(input.ToString().ToLower().Split(' ').ToList(), makeNoise, customAnnouncement, subtitles.ToString(), useCassie);
                 StringBuilderPool.Shared.Return(input);
                 StringBuilderPool.Shared.Return(subtitles);
                 return false;
             }
 
-            if (words.StartsWith(Plugin.Singleton.Config.CustomCassiePrefix))
+            if (words.StartsWith(Plugin.Singleton.Config.CustomCassiePrefix) || Plugin.Singleton.Config.CassieOverrideConfig.ShouldOverrideAll)
             {
                 string[] wordsplit = words.Split(';');
                 List<string> input = wordsplit[0].ToLower().Split(' ').ToList();
                 input.Remove(Plugin.Singleton.Config.CustomCassiePrefix);
-                CustomCassieReader.Singleton.CassieReadMessage(input, makeNoise, wordsplit.Count() > 1 ? wordsplit[1] : string.Empty);
+                CustomCassieReader.Singleton.CassieReadMessage(input, makeNoise, customAnnouncement, wordsplit.Count() > 1 ? wordsplit[1] : string.Empty, useCassie);
                 return false;
             }
 
@@ -85,7 +89,7 @@
             {
                 List<string> input = message.ToLower().Split(' ').ToList();
                 input.Remove(Plugin.Singleton.Config.CustomCassiePrefix);
-                CustomCassieReader.Singleton.CassieReadMessage(input, isNoisy, translation);
+                CustomCassieReader.Singleton.CassieReadMessage(input, isNoisy, isSubtitles, translation);
                 return false;
             }
 
