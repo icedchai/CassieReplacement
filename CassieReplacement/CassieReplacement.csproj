@@ -12,7 +12,7 @@
     <DebugType>full</DebugType>
     <PlatformTarget>ARM64</PlatformTarget>
     <Optimize>False</Optimize>
-    <DefineConstants>$(DefineConstants);CUSTOMITEM</DefineConstants>
+    <DefineConstants>$(DefineConstants);EXILED;CUSTOMITEM</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>full</DebugType>
