@@ -9,13 +9,13 @@
     <OutputPath>bin\$(Configuration)\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugType>embedded</DebugType>
+    <DebugType>full</DebugType>
     <PlatformTarget>ARM64</PlatformTarget>
     <Optimize>False</Optimize>
-    <DefineConstants>$(DefineConstants);EXILED;CUSTOMITEM</DefineConstants>
+    <DefineConstants>$(DefineConstants);CUSTOMITEM</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>embedded</DebugType>
+    <DebugType>full</DebugType>
     <Optimize>True</Optimize>
   </PropertyGroup>
   <ItemGroup>
