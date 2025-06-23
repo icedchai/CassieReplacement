@@ -453,10 +453,7 @@
                 yield break;
             }
 
-            if (Plugin.Singleton.Config.CassieOverrideConfig.ShouldOverrideAll)
-            {
-                baseCassieAnnouncement.Insert(0, "noparse ");
-            }
+            baseCassieAnnouncement.Insert(0, "noparse ");
 
             while (ticksSinceCassieSpoke <= 360)
             {

@@ -47,7 +47,7 @@
         public override string Prefix => "cassie_replacement";
 
         /// <inheritdoc/>
-        public override Version RequiredExiledVersion => new Version(9, 6, 0);
+        public override Version RequiredExiledVersion => new Version(9, 6, 1);
 
         private CassieEventHandlers cassieEventHandlers { get; set; }
 #else
@@ -196,8 +196,7 @@
         public override void Disable()
         {
 #endif
-            Harmony harmony = new Harmony("me.icedchai.cassie.patch");
-            harmony.UnpatchAll("me.icedchai.cassie.patch");
+            Patcher.DoUnpatch();
 
             LabApi.Events.Handlers.ServerEvents.RoundStarted -= InitSpeaker;
             Singleton = null;
