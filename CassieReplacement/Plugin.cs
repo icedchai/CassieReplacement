@@ -62,7 +62,7 @@
         public override string Author => "icedchqi";
 
         /// <inheritdoc/>
-        public override Version Version => new(1, 6, 0);
+        public override Version Version => new(1, 6, 1);
 
         private static List<CassieClip> registeredClips = new List<CassieClip>();
 
@@ -196,8 +196,7 @@
         public override void Disable()
         {
 #endif
-            Harmony harmony = new Harmony("me.icedchai.cassie.patch");
-            harmony.UnpatchAll("me.icedchai.cassie.patch");
+            Patcher.DoUnpatch();
 
             LabApi.Events.Handlers.ServerEvents.RoundStarted -= InitSpeaker;
             Singleton = null;

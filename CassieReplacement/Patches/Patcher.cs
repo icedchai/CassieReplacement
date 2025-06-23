@@ -6,13 +6,24 @@
 
     public static class Patcher
     {
+        private static Harmony HarmonyInstance { get; set; }
+
         /// <summary>
         /// Do patching.
         /// </summary>
         public static void DoPatching()
         {
-            var harmony = new Harmony("me.icedchai.cassie.patch");
-            harmony.PatchAll();
+            HarmonyInstance = new Harmony("me.icedchai.cassie.patch");
+            HarmonyInstance.PatchAll();
+        }
+
+        /// <summary>
+        /// Unpatches.
+        /// </summary>
+        public static void DoUnpatch()
+        {
+            HarmonyInstance.UnpatchAll("me.icedchai.cassie.patch");
+            HarmonyInstance = null;
         }
     }
 }
