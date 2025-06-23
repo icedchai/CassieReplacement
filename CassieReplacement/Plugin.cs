@@ -47,7 +47,7 @@
         public override string Prefix => "cassie_replacement";
 
         /// <inheritdoc/>
-        public override Version RequiredExiledVersion => new Version(9, 6, 1);
+        public override Version RequiredExiledVersion => new Version(9, 6, 0);
 
         private CassieEventHandlers cassieEventHandlers { get; set; }
 #else
@@ -62,7 +62,7 @@
         public override string Author => "icedchqi";
 
         /// <inheritdoc/>
-        public override Version Version => new(1, 6, 0);
+        public override Version Version => new(1, 6, 1);
 
         private static List<CassieClip> registeredClips = new List<CassieClip>();
 
