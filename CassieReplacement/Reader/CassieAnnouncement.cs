@@ -82,6 +82,8 @@
 
         private string translation;
 
+        public bool IsNoisy { get; set; } = true;
+
         public string Words
         {
             get => words;
@@ -97,8 +99,14 @@
         [YamlIgnore]
         public bool IsCustomMessage => Words.StartsWith(Plugin.Singleton.Config.CustomCassiePrefix);
 
-        public void Announce(bool isHeld = false, bool isNoisy = true, bool isSubtitles = true)
+        public void Announce(bool isHeld = false, bool? isNoisy = null, bool isSubtitles = true)
         {
+            bool playNoise = IsNoisy;
+            if (isNoisy != null)
+            {
+                playNoise = !(bool)isNoisy;
+            }
+
             CassieAnnouncement processed = GenericReplacement();
             Words = processed.Words;
             Translation = processed.Translation;
@@ -108,52 +116,14 @@
                 return;
             }
 
-            if (IsCustomMessage)
+            if (string.IsNullOrWhiteSpace(Translation))
             {
-                CustomCassieReader.Singleton.CassieReadMessage(Words, isNoisy, isSubtitles, Translation);
+                RespawnEffectsController.PlayCassieAnnouncement(Words, isHeld, playNoise, isSubtitles);
             }
             else
-#if EXILED
             {
-                if (string.IsNullOrWhiteSpace(Translation))
-                {
-                    Cassie.Message(Words, isHeld, isNoisy, isSubtitles);
-                }
-                else
-                {
-                    Cassie.MessageTranslated(Words, Translation, isHeld, isNoisy, isSubtitles);
-                }
+                RespawnEffectsController.PlayCassieAnnouncement(Words, isHeld, playNoise, isSubtitles, Translation);
             }
-#else
-            {
-                if (string.IsNullOrWhiteSpace(Translation))
-                {
-                    RespawnEffectsController.PlayCassieAnnouncement(Words, isHeld, isNoisy, isSubtitles);
-                }
-                else
-                {
-                    RespawnEffectsController.PlayCassieAnnouncement(MessageTranslated(Words, Translation), isHeld, isNoisy, isSubtitles);
-                }
-            }
-#endif
-        }
-
-        /// <summary>
-        /// Copied from EXILED's Cassie.MessageTranslated for LabAPI.
-        /// </summary>
-        public static string MessageTranslated(string message, string translation)
-        {
-            StringBuilder stringBuilder = StringBuilderPool.Shared.Rent();
-            string[] array = message.Split('\n');
-            string[] array2 = translation.Split('\n');
-            for (int i = 0; i < array.Length; i++)
-            {
-                stringBuilder.Append(array2[i].Replace(' ', '\u2005') + "<size=0> " + array[i] + " </size><split>");
-            }
-
-            string output = stringBuilder.ToString();
-            StringBuilderPool.Shared.Return(stringBuilder);
-            return output;
         }
     }
 }

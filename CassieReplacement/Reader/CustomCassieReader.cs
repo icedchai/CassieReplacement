@@ -397,6 +397,10 @@
                         {
                             baseCassieAnnouncement.Append($" {word}");
                         }
+                        else if (msg == "<split>")
+                        {
+                            baseCassieAnnouncement.Append(" <split>");
+                        }
                         else
                         {
                             // Adds the appropriate amount of dots, where each dot is ~0.5 seconds
@@ -459,8 +463,9 @@
             {
                 yield return Timing.WaitForOneFrame;
             }
-
-            RespawnEffectsController.PlayCassieAnnouncement(CassieAnnouncement.MessageTranslated(StringBuilderPool.Shared.ToStringReturn(baseCassieAnnouncement), string.IsNullOrWhiteSpace(translation) ? string.Join(" ", messages) : translation), false, isNoisy, customAnnouncement);
+            Logger.Info(baseCassieAnnouncement);
+            Logger.Info(string.IsNullOrWhiteSpace(translation) ? string.Join(" ", messages) : translation);
+            RespawnEffectsController.PlayCassieAnnouncement(StringBuilderPool.Shared.ToStringReturn(baseCassieAnnouncement), false, isNoisy, customAnnouncement, string.IsNullOrWhiteSpace(translation) ? string.Join(" ", messages) : translation);
             yield return Timing.WaitForSeconds(isNoisy ? 2.25f : 0);
             HandlesToMessages.Add(Timing.RunCoroutine(ReadWords(messages, audioPlayers, clipsToUnregister, tasks)), messages);
         }
