@@ -14,7 +14,7 @@
     public static class CassieMessagePatches
     {
         [HarmonyPrefix]
-        public static bool MessagePrefix(string words, bool makeHold, bool makeNoise, bool customAnnouncement)
+        public static bool MessagePrefix(string words, bool makeHold, bool makeNoise, bool customAnnouncement, string customSubtitles)
         {
             bool useCassie = !words.Contains("nocassie");
             if (words.Contains("noparse"))
@@ -75,21 +75,7 @@
                 string[] wordsplit = words.Split(';');
                 List<string> input = wordsplit[0].ToLower().Split(' ').ToList();
                 input.Remove(Plugin.Singleton.Config.CustomCassiePrefix);
-                CustomCassieReader.Singleton.CassieReadMessage(input, makeNoise, customAnnouncement, wordsplit.Count() > 1 ? wordsplit[1] : string.Empty, useCassie);
-                return false;
-            }
-
-            return true;
-        }
-
-        // test\u2005subtitles<size=0>test subtitles</size><split>
-        public static bool TranslatedMessagePrefix(string message, string translation, bool isHeld, bool isNoisy, bool isSubtitles)
-        {
-            if (message.StartsWith(Plugin.Singleton.Config.CustomCassiePrefix))
-            {
-                List<string> input = message.ToLower().Split(' ').ToList();
-                input.Remove(Plugin.Singleton.Config.CustomCassiePrefix);
-                CustomCassieReader.Singleton.CassieReadMessage(input, isNoisy, isSubtitles, translation);
+                CustomCassieReader.Singleton.CassieReadMessage(input, makeNoise, customAnnouncement, wordsplit.Count() > 1 ? wordsplit[1] : customSubtitles ?? string.Empty, useCassie);
                 return false;
             }
 
