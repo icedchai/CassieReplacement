@@ -470,7 +470,20 @@
 
             //Logger.Info(baseCassieAnnouncement);
             //Logger.Info(string.IsNullOrWhiteSpace(translation) ? string.Join(" ", messages) : translation);
-            new CassieAnnouncement(new CassieTtsPayload(StringBuilderPool.Shared.ToStringReturn(baseCassieAnnouncement), string.IsNullOrWhiteSpace(translation) ? string.Join(" ", messages) : translation, isNoisy)).AddToQueue();
+
+            string finalBaseAnnouncement = StringBuilderPool.Shared.ToStringReturn(baseCassieAnnouncement);
+            CassieTtsPayload payload;
+            if (customAnnouncement)
+            {
+                string finalSubtitles = string.IsNullOrWhiteSpace(translation) ? string.Join(" ", messages) : translation;
+                payload = new CassieTtsPayload(finalBaseAnnouncement, finalSubtitles, isNoisy);
+            }
+            else
+            {
+                payload = new CassieTtsPayload(finalBaseAnnouncement, false, isNoisy);
+            }
+
+            new CassieAnnouncement(payload).AddToQueue();
             yield return Timing.WaitForSeconds(isNoisy ? 2.5f : 0);
             HandlesToMessages.Add(Timing.RunCoroutine(ReadWords(messages, audioPlayers, clipsToUnregister, tasks)), messages);
         }

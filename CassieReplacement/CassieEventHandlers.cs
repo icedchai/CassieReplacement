@@ -29,30 +29,30 @@
             switch (faction)
             {
                 case Faction.FoundationStaff:
-                    newAnnouncement = isMiniWave ? Config.NtfMiniAnnouncement : Config.NtfWaveAnnouncement;
+                    newAnnouncement = new (isMiniWave ? Config.NtfMiniAnnouncement : Config.NtfWaveAnnouncement);
                     break;
                 case Faction.FoundationEnemy:
-                    newAnnouncement = isMiniWave ? Config.ChaosMiniAnnouncement : Config.ChaosWaveAnnouncement;
+                    newAnnouncement = new(isMiniWave ? Config.ChaosMiniAnnouncement : Config.ChaosWaveAnnouncement);
                     break;
             }
 
             newAnnouncement = newAnnouncement
-                .GenericReplacement()
-                .Replace("{letter}", new CustomCassieAnnouncement($"nato_{unitLetterFirst}", unitLetter))
-                .Replace("{number}", new CustomCassieAnnouncement($"{unitNumber}", unitNumber < 10 ? $"0{unitNumber}" : $"{unitNumber}"));
+                .PerformGenericReplacements()
+                .Replace("{letter}", new SerializableCassieAnnouncement($"nato_{unitLetterFirst}", unitLetter))
+                .Replace("{number}", new SerializableCassieAnnouncement($"{unitNumber}", unitNumber < 10 ? $"0{unitNumber}" : $"{unitNumber}"));
             newAnnouncement.Announce();
         }
 
         public static void HandleAnnouncingTermination(DamageHandlerBase damageHandler, RoleTypeId victimRole)
         {
-            CustomCassieAnnouncement newAnnouncement = Config.ScpTerminationAnnouncement.GenericReplacement();
+            CustomCassieAnnouncement newAnnouncement = new CustomCassieAnnouncement(Config.ScpTerminationAnnouncement).PerformGenericReplacements();
             CassieDamageType damageType = CassieDamageType.Unknown;
 
             RoleTypeId attackerRole = RoleTypeId.None;
             string attackerUnit = string.Empty;
 
-            CustomCassieAnnouncement letter = new CustomCassieAnnouncement();
-            CustomCassieAnnouncement number = new CustomCassieAnnouncement();
+            SerializableCassieAnnouncement letter = null;
+            SerializableCassieAnnouncement number = null;
 
             if (damageHandler is not AttackerDamageHandler aDamageHandler)
             {
@@ -87,16 +87,16 @@
                 string[] split = attackerUnit.Split('-');
                 string natoLetter = $"nato_{split[0][0]}";
                 int natoNumber = int.Parse(split[1]);
-                letter = new CustomCassieAnnouncement($"nato_{split[0][0]}", split[0]);
-                number = new CustomCassieAnnouncement($"{natoNumber}", natoNumber < 10 ? $"0{natoNumber}" : $"{natoNumber}");
+                letter = new SerializableCassieAnnouncement($"nato_{split[0][0]}", split[0]);
+                number = new SerializableCassieAnnouncement($"{natoNumber}", natoNumber < 10 ? $"0{natoNumber}" : $"{natoNumber}");
             }
 
             newAnnouncement = newAnnouncement
-                .GenericReplacement()
+                .PerformGenericReplacements()
                 .Replace("{scp}", Config.ScpLookupTable[victimRole])
                 .Replace("{deathcause}", Config.DamageTypeTerminationAnnouncementLookupTable[damageType])
-                .Replace("{team}", Config.TeamTerminationCallsignLookupTable.TryGetValue(attackerRole.GetTeam(), out CustomCassieAnnouncement _callSign) ? _callSign : new CustomCassieAnnouncement())
-                .Replace("{scpkiller}", Config.ScpLookupTable.TryGetValue(attackerRole, out _) ? Config.ScpLookupTable[attackerRole] : new CustomCassieAnnouncement())
+                .Replace("{team}", Config.TeamTerminationCallsignLookupTable.TryGetValue(attackerRole.GetTeam(), out SerializableCassieAnnouncement _callSign) ? _callSign : null)
+                .Replace("{scpkiller}", Config.ScpLookupTable.TryGetValue(attackerRole, out _) ? Config.ScpLookupTable[attackerRole] : null)
                 .Replace("{letter}", letter)
                 .Replace("{number}", number);
             newAnnouncement.Announce();

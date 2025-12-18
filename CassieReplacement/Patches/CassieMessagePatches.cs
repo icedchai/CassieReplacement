@@ -81,7 +81,7 @@
                 return false;
             }
 
-            if (words.StartsWith(Plugin.Singleton.Config.CustomCassiePrefix) || Plugin.Singleton.Config.CassieOverrideConfig.ShouldOverrideAll)
+            if (words.StartsWith(Plugin.Singleton.Config.CustomCassiePrefix, StringComparison.OrdinalIgnoreCase) || Plugin.Singleton.Config.CassieOverrideConfig.ShouldOverrideAll)
             {
                 string[] wordsplit = words.Split(';');
                 List<string> input = wordsplit[0].ToLower().Split(' ').ToList();

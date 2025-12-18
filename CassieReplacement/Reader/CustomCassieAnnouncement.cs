@@ -27,41 +27,42 @@
 
         private static int PlayersLeft(Team team) => ReferenceHub.AllHubs.Where(hub => hub.GetTeam() == team).Count();
 
-        public CustomCassieAnnouncement Replace(string oldText, CustomCassieAnnouncement newText)
+        public CustomCassieAnnouncement Replace(string oldText, SerializableCassieAnnouncement? newText)
         {
-            return new CustomCassieAnnouncement(Words.Replace(oldText, newText.Words), Translation.Replace(oldText, newText.Translation));
+            if (newText == null)
+            {
+                Words = Words.Replace(oldText, string.Empty);
+                Translation = Translation.Replace(oldText, string.Empty);
+            }
+            else
+            {
+                Words = Words.Replace(oldText, newText.Words);
+                Translation = Translation?.Replace(oldText, newText.Translation);
+            }
+
+            return this;
         }
 
         public CustomCassieAnnouncement Replace(string oldText, string newText)
         {
-            return new CustomCassieAnnouncement(Words.Replace(oldText, newText), Translation.Replace(oldText, newText));
+            Words = Words.Replace(oldText, newText);
+            Translation = Translation?.Replace(oldText, newText);
+            return this;
         }
 
         public CustomCassieAnnouncement(string words, string translation = "")
         {
-            Words = words;
-            Translation = translation;
-        }
-
-        public void ReplaceVoid(string oldText, string newText)
-        {
-            Words = Words.Replace(oldText, newText);
-            Translation = Translation.Replace(oldText, newText);
-        }
-
-        public void ReplaceVoid(string oldText, CustomCassieAnnouncement newText)
-        {
-            Words = Words.Replace(oldText, newText.Words);
-            Translation = Translation.Replace(oldText, newText.Translation);
+            Words = StringBuilderPool.Shared.Rent(words);
+            Translation = string.IsNullOrWhiteSpace(translation) ? null : StringBuilderPool.Shared.Rent(translation);
         }
 
         /// <summary>
-        /// The basic replacements to do. Run right before announcement to ensure it is up-to-date!
+        /// Performs several basic replacement operations on this instance, including threat overviews, and number of members of specific teams. Run right before announcement to ensure it is up-to-date.
         /// </summary>
-        /// <returns>A new <see cref="CustomCassieAnnouncement"/> with most replacements applied.</returns>
-        public CustomCassieAnnouncement GenericReplacement()
+        /// <returns>The same <see cref="CustomCassieAnnouncement"/> with most replacements applied.</returns>
+        public CustomCassieAnnouncement PerformGenericReplacements()
         {
-            return new CustomCassieAnnouncement(Words, Translation)
+            return this
 
                 // more complex ideas (needs to go first).
                 .Replace("{threatoverview}", ScpsLeft == 0 ? Config.ThreatOverviewNoScps : ScpsLeft == 1 ? Config.ThreatOverviewOneScp : Config.ThreatOverviewScps)
@@ -79,26 +80,18 @@
         {
         }
 
-        private string words;
-
-        private string translation;
+        public CustomCassieAnnouncement(SerializableCassieAnnouncement serializable)
+            : this(serializable.Words, serializable.Translation)
+        {
+        }
 
         public bool IsNoisy { get; set; } = true;
 
-        public string Words
-        {
-            get => words;
-            set => words = value.ToLower();
-        }
+        public StringBuilder Words { get; set; }
 
-        public string Translation
-        {
-            get => translation;
-            set => translation = value;
-        }
+        #nullable enable
 
-        [YamlIgnore]
-        public bool IsCustomMessage => Words.StartsWith(Plugin.Singleton.Config.CustomCassiePrefix);
+        public StringBuilder? Translation { get; set; }
 
         public void Announce(bool isHeld = false, bool? isNoisy = null, bool isSubtitles = true)
         {
@@ -108,22 +101,20 @@
                 playNoise = !(bool)isNoisy;
             }
 
-            CustomCassieAnnouncement processed = GenericReplacement();
-            Words = processed.Words;
-            Translation = processed.Translation;
+            PerformGenericReplacements();
 
-            if (string.IsNullOrWhiteSpace(Words))
+            if (Words == null)
             {
                 return;
             }
 
-            if (string.IsNullOrWhiteSpace(Translation))
+            if (Translation == null)
             {
-                new CassieAnnouncement(new CassieTtsPayload(Words, playNoise)).AddToQueue();
+                new CassieAnnouncement(new CassieTtsPayload(StringBuilderPool.Shared.ToStringReturn(Words), playNoise)).AddToQueue();
             }
             else
             {
-                new CassieAnnouncement(new CassieTtsPayload(Words, Translation, playNoise)).AddToQueue();
+                new CassieAnnouncement(new CassieTtsPayload(StringBuilderPool.Shared.ToStringReturn(Words), StringBuilderPool.Shared.ToStringReturn(Translation), playNoise)).AddToQueue();
             }
         }
     }
