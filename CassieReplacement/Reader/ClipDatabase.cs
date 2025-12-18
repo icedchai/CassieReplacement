@@ -28,12 +28,12 @@
         /// <summary>
         /// Gets a list of all registered <see cref="CassieClip"/> names.
         /// </summary>
-        public List<string> RegisteredClipNames => RegisteredClips.Select(c => c.Name).ToList();
+        public IEnumerable<string> RegisteredClipNames => RegisteredClips.Select(c => c.Name);
 
         /// <summary>
         /// Gets a list of all registered <see cref="CassieClip"/> names where ShouldList is set to true.
         /// </summary>
-        public List<string> ListableClipNames => RegisteredClips.Where(c => c.ShouldList).Select(c => c.Name).ToList();
+        public IEnumerable<string> ListableClipNames => RegisteredClips.Where(c => c.ShouldList).Select(c => c.Name);
 
         /// <summary>
         /// Gets a clip with the specified name.
@@ -42,8 +42,7 @@
         /// <returns>The first <see cref="CassieClip"/> registered whose name is the same as <paramref name="name"/>, or null.</returns>
         public CassieClip GetClip(string name)
         {
-            name = name.ToLower();
-            IEnumerable<CassieClip> clips = registeredClips.Where(c => c.Name == name);
+            IEnumerable<CassieClip> clips = registeredClips.Where(c => string.Equals(c.Name, name, StringComparison.OrdinalIgnoreCase));
             return clips.FirstOrDefault();
         }
 

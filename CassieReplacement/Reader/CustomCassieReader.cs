@@ -483,7 +483,7 @@
                 payload = new CassieTtsPayload(finalBaseAnnouncement, false, isNoisy);
             }
 
-            new CassieAnnouncement(payload).AddToQueue();
+            new CassieAnnouncement(payload, glitchScale: 0).AddToQueue();
             yield return Timing.WaitForSeconds(isNoisy ? 2.5f : 0);
             HandlesToMessages.Add(Timing.RunCoroutine(ReadWords(messages, audioPlayers, clipsToUnregister, tasks)), messages);
         }
@@ -655,7 +655,7 @@
 
             if (GetClip(messages.Last()) is not null)
             {
-                yield return Timing.WaitForSeconds(GetClip(messages.Last()).Reverb);
+                yield return Timing.WaitForSeconds(GetClip(messages.Last()).Reverb + 3);
             }
 
             if (clipsToUnregister is not null)

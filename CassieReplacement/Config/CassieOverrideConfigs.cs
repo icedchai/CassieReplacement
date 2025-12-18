@@ -24,8 +24,8 @@
 
         public SerializableCassieAnnouncement ThreatOverviewScps { get; set; } = new("awaitingrecontainment {scps} scpsubjects", "Awaiting recontainment of: {scps} SCP subjects.");
 
-        public SerializableCassieAnnouncement NtfMiniAnnouncement { get; set; } = new("NINETAILEDFOX BACKUP UNIT designated {letter} {number} hasentered {threatoverview}",
-            "Nine-Tailed Fox Backup Unit designated {letter}-{number} has entered the facility.<split>{threatoverview}");
+        public SerializableCassieAnnouncement NtfMiniAnnouncement { get; set; } = new("NINETAILEDFOX BACKUP UNIT hasentered {threatoverview}",
+            "Nine-Tailed Fox Backup Unit has entered the facility.<split>{threatoverview}");
 
         public SerializableCassieAnnouncement ChaosWaveAnnouncement { get; set; } = new("Security Alert . Substantial Chaos Insurgent Activity Detected . Security Personnel Proceed with Standard Protocols",
             "Security alert. Substantial Chaos Insurgent activity detected.<split>Security personnel, proceed with standard protocols.");

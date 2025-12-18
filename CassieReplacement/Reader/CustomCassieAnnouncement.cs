@@ -83,6 +83,7 @@
         public CustomCassieAnnouncement(SerializableCassieAnnouncement serializable)
             : this(serializable.Words, serializable.Translation)
         {
+            IsNoisy = serializable.IsNoisy;
         }
 
         public bool IsNoisy { get; set; } = true;
@@ -110,11 +111,11 @@
 
             if (Translation == null)
             {
-                new CassieAnnouncement(new CassieTtsPayload(StringBuilderPool.Shared.ToStringReturn(Words), playNoise)).AddToQueue();
+                new CassieAnnouncement(new CassieTtsPayload(StringBuilderPool.Shared.ToStringReturn(Words), playNoise), glitchScale: 0).AddToQueue();
             }
             else
             {
-                new CassieAnnouncement(new CassieTtsPayload(StringBuilderPool.Shared.ToStringReturn(Words), StringBuilderPool.Shared.ToStringReturn(Translation), playNoise)).AddToQueue();
+                new CassieAnnouncement(new CassieTtsPayload(StringBuilderPool.Shared.ToStringReturn(Words), StringBuilderPool.Shared.ToStringReturn(Translation), playNoise), glitchScale: 0).AddToQueue();
             }
         }
     }
