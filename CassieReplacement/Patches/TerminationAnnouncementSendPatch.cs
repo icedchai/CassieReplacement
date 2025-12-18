@@ -5,7 +5,8 @@ namespace CassieReplacement.Patches
     using PlayerRoles;
     using PlayerStatsSystem;
 
-    [HarmonyPatch(typeof(NineTailedFoxAnnouncer), nameof(NineTailedFoxAnnouncer.AnnounceScpTermination))]
+    // TODO: fix SCP termination patch
+    //[HarmonyPatch(typeof(NineTailedFoxAnnouncer), nameof(NineTailedFoxAnnouncer.AnnounceScpTermination))]
     public static class TerminationAnnouncementSendPatch
     {
         public static bool Prefix(ReferenceHub scp, DamageHandlerBase hit)

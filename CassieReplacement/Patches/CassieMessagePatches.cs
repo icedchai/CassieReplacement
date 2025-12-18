@@ -1,8 +1,11 @@
 ﻿namespace CassieReplacement.Patches
 {
+    using Cassie;
 #pragma warning disable
     using CassieReplacement.Reader;
+    using CommandSystem.Commands.RemoteAdmin;
     using HarmonyLib;
+    using LabApi.Features.Console;
     using NorthwoodLib.Pools;
     using Respawning;
     using System;
@@ -10,15 +13,23 @@
     using System.Linq;
     using System.Text;
 
-    [HarmonyPatch(typeof(RespawnEffectsController), nameof(RespawnEffectsController.PlayCassieAnnouncement))]
+    [HarmonyPatch(typeof(CassieAnnouncementDispatcher), nameof(CassieAnnouncementDispatcher.AddToQueue))]
     public static class CassieMessagePatches
     {
         [HarmonyPrefix]
-        public static bool MessagePrefix(string words, bool makeHold, bool makeNoise, bool customAnnouncement, string customSubtitles)
+        public static bool MessagePrefix(CassieAnnouncement announcement)
         {
-            bool useCassie = !words.Contains("nocassie");
-            if (words.Contains("noparse"))
+            string words = announcement.Payload.Content;
+            bool makeNoise = announcement.Payload.PlayBackground;
+            bool customAnnouncement = announcement.Payload.SubtitleSource != CassieTtsPayload.SubtitleMode.None;
+            string customSubtitles = announcement.Payload._customSubtitle;
+
+            //Logger.Info($"Content: {words}, PlayBackground: {makeNoise}, SubtitleSource: {announcement.Payload.SubtitleSource}, customSubtitle: {announcement.Payload._customSubtitle}");
+
+            bool useCassie = words.IndexOf("nocassie", StringComparison.OrdinalIgnoreCase) == -1;
+            if (words.IndexOf("noparse", StringComparison.OrdinalIgnoreCase) != -1)
             {
+                //Logger.Info("Allowed because noparse");
                 return true;
             }
 

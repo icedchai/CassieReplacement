@@ -62,7 +62,7 @@
         public override string Author => "icedchqi";
 
         /// <inheritdoc/>
-        public override Version Version => new(1, 7, 0);
+        public override Version Version => new(2, 0, 0);
 
         private static List<CassieClip> registeredClips = new List<CassieClip>();
 
@@ -177,7 +177,7 @@
                 Timing.RunCoroutine(CustomCassieReader.CassieCheck());
             });
 
-            LabApi.Events.Handlers.ServerEvents.RoundStarted += InitSpeaker;
+            LabApi.Events.Handlers.ServerEvents.WaitingForPlayers += InitSpeaker;
         }
 
         /// <inheritdoc/>
@@ -198,7 +198,7 @@
 #endif
             Patcher.DoUnpatch();
 
-            LabApi.Events.Handlers.ServerEvents.RoundStarted -= InitSpeaker;
+            LabApi.Events.Handlers.ServerEvents.WaitingForPlayers -= InitSpeaker;
             Singleton = null;
             CustomCassieReader.Singleton = null;
         }

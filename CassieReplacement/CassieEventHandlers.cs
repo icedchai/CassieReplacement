@@ -18,7 +18,7 @@
 
         public static void HandleAnnouncingWaveEntrance(Faction faction, bool isMiniWave, string unitLetter = "", int unitNumber = 0)
         {
-            CassieAnnouncement newAnnouncement = new CassieAnnouncement();
+            CustomCassieAnnouncement newAnnouncement = new CustomCassieAnnouncement();
             char unitLetterFirst = 'a';
 
             if (!string.IsNullOrWhiteSpace(unitLetter))
@@ -38,21 +38,21 @@
 
             newAnnouncement = newAnnouncement
                 .GenericReplacement()
-                .Replace("{letter}", new CassieAnnouncement($"nato_{unitLetterFirst}", unitLetter))
-                .Replace("{number}", new CassieAnnouncement($"{unitNumber}", unitNumber < 10 ? $"0{unitNumber}" : $"{unitNumber}"));
+                .Replace("{letter}", new CustomCassieAnnouncement($"nato_{unitLetterFirst}", unitLetter))
+                .Replace("{number}", new CustomCassieAnnouncement($"{unitNumber}", unitNumber < 10 ? $"0{unitNumber}" : $"{unitNumber}"));
             newAnnouncement.Announce();
         }
 
         public static void HandleAnnouncingTermination(DamageHandlerBase damageHandler, RoleTypeId victimRole)
         {
-            CassieAnnouncement newAnnouncement = Config.ScpTerminationAnnouncement.GenericReplacement();
+            CustomCassieAnnouncement newAnnouncement = Config.ScpTerminationAnnouncement.GenericReplacement();
             CassieDamageType damageType = CassieDamageType.Unknown;
 
             RoleTypeId attackerRole = RoleTypeId.None;
             string attackerUnit = string.Empty;
 
-            CassieAnnouncement letter = new CassieAnnouncement();
-            CassieAnnouncement number = new CassieAnnouncement();
+            CustomCassieAnnouncement letter = new CustomCassieAnnouncement();
+            CustomCassieAnnouncement number = new CustomCassieAnnouncement();
 
             if (damageHandler is not AttackerDamageHandler aDamageHandler)
             {
@@ -87,16 +87,16 @@
                 string[] split = attackerUnit.Split('-');
                 string natoLetter = $"nato_{split[0][0]}";
                 int natoNumber = int.Parse(split[1]);
-                letter = new CassieAnnouncement($"nato_{split[0][0]}", split[0]);
-                number = new CassieAnnouncement($"{natoNumber}", natoNumber < 10 ? $"0{natoNumber}" : $"{natoNumber}");
+                letter = new CustomCassieAnnouncement($"nato_{split[0][0]}", split[0]);
+                number = new CustomCassieAnnouncement($"{natoNumber}", natoNumber < 10 ? $"0{natoNumber}" : $"{natoNumber}");
             }
 
             newAnnouncement = newAnnouncement
                 .GenericReplacement()
                 .Replace("{scp}", Config.ScpLookupTable[victimRole])
                 .Replace("{deathcause}", Config.DamageTypeTerminationAnnouncementLookupTable[damageType])
-                .Replace("{team}", Config.TeamTerminationCallsignLookupTable.TryGetValue(attackerRole.GetTeam(), out CassieAnnouncement _callSign) ? _callSign : new CassieAnnouncement())
-                .Replace("{scpkiller}", Config.ScpLookupTable.TryGetValue(attackerRole, out _) ? Config.ScpLookupTable[attackerRole] : new CassieAnnouncement())
+                .Replace("{team}", Config.TeamTerminationCallsignLookupTable.TryGetValue(attackerRole.GetTeam(), out CustomCassieAnnouncement _callSign) ? _callSign : new CustomCassieAnnouncement())
+                .Replace("{scpkiller}", Config.ScpLookupTable.TryGetValue(attackerRole, out _) ? Config.ScpLookupTable[attackerRole] : new CustomCassieAnnouncement())
                 .Replace("{letter}", letter)
                 .Replace("{number}", number);
             newAnnouncement.Announce();

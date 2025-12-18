@@ -1,4 +1,4 @@
-﻿namespace CassieReplacement.Patches
+﻿/*namespace CassieReplacement.Patches
 {
     using HarmonyLib;
     using Respawning.Announcements;
@@ -20,11 +20,12 @@
 
         public static IEnumerable<MethodBase> TargetMethods()
         {
-            string sendSubtitles = nameof(WaveAnnouncementBase.SendSubtitles);
+            // TOOD: readd subtitle wave patch
+            *//*string sendSubtitles = nameof(WaveAnnouncementBase);
             yield return typeof(NtfWaveAnnouncement).GetMethod(sendSubtitles);
             yield return typeof(NtfMiniwaveAnnouncement).GetMethod(sendSubtitles);
             yield return typeof(ChaosWaveAnnouncement).GetMethod(sendSubtitles);
-            yield return typeof(ChaosMiniwaveAnnouncement).GetMethod(sendSubtitles);
+            yield return typeof(ChaosMiniwaveAnnouncement).GetMethod(sendSubtitles);*//*
         }
     }
-}
+}*/

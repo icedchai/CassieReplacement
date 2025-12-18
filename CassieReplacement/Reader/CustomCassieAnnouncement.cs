@@ -1,5 +1,6 @@
 ﻿namespace CassieReplacement.Reader
 {
+    using Cassie;
     using CassieReplacement;
     using CassieReplacement.Config;
 #if EXILED
@@ -13,11 +14,11 @@
     using YamlDotNet.Serialization;
 
 #pragma warning disable SA1600
-    public class CassieAnnouncement
+    public class CustomCassieAnnouncement
     {
-        public static CassieAnnouncement operator +(CassieAnnouncement left, CassieAnnouncement right)
+        public static CustomCassieAnnouncement operator +(CustomCassieAnnouncement left, CustomCassieAnnouncement right)
         {
-            return new CassieAnnouncement($"{left.Words} {right.Words}", $"{left.Translation} {right.Translation}");
+            return new CustomCassieAnnouncement($"{left.Words} {right.Words}", $"{left.Translation} {right.Translation}");
         }
 
         private static CassieOverrideConfigs Config => Plugin.Singleton.Config.CassieOverrideConfig;
@@ -26,17 +27,17 @@
 
         private static int PlayersLeft(Team team) => ReferenceHub.AllHubs.Where(hub => hub.GetTeam() == team).Count();
 
-        public CassieAnnouncement Replace(string oldText, CassieAnnouncement newText)
+        public CustomCassieAnnouncement Replace(string oldText, CustomCassieAnnouncement newText)
         {
-            return new CassieAnnouncement(Words.Replace(oldText, newText.Words), Translation.Replace(oldText, newText.Translation));
+            return new CustomCassieAnnouncement(Words.Replace(oldText, newText.Words), Translation.Replace(oldText, newText.Translation));
         }
 
-        public CassieAnnouncement Replace(string oldText, string newText)
+        public CustomCassieAnnouncement Replace(string oldText, string newText)
         {
-            return new CassieAnnouncement(Words.Replace(oldText, newText), Translation.Replace(oldText, newText));
+            return new CustomCassieAnnouncement(Words.Replace(oldText, newText), Translation.Replace(oldText, newText));
         }
 
-        public CassieAnnouncement(string words, string translation = "")
+        public CustomCassieAnnouncement(string words, string translation = "")
         {
             Words = words;
             Translation = translation;
@@ -48,7 +49,7 @@
             Translation = Translation.Replace(oldText, newText);
         }
 
-        public void ReplaceVoid(string oldText, CassieAnnouncement newText)
+        public void ReplaceVoid(string oldText, CustomCassieAnnouncement newText)
         {
             Words = Words.Replace(oldText, newText.Words);
             Translation = Translation.Replace(oldText, newText.Translation);
@@ -57,10 +58,10 @@
         /// <summary>
         /// The basic replacements to do. Run right before announcement to ensure it is up-to-date!
         /// </summary>
-        /// <returns>A new <see cref="CassieAnnouncement"/> with most replacements applied.</returns>
-        public CassieAnnouncement GenericReplacement()
+        /// <returns>A new <see cref="CustomCassieAnnouncement"/> with most replacements applied.</returns>
+        public CustomCassieAnnouncement GenericReplacement()
         {
-            return new CassieAnnouncement(Words, Translation)
+            return new CustomCassieAnnouncement(Words, Translation)
 
                 // more complex ideas (needs to go first).
                 .Replace("{threatoverview}", ScpsLeft == 0 ? Config.ThreatOverviewNoScps : ScpsLeft == 1 ? Config.ThreatOverviewOneScp : Config.ThreatOverviewScps)
@@ -74,7 +75,7 @@
                 .Replace("{flamingos}", PlayersLeft(Team.Flamingos).ToString());
         }
 
-        public CassieAnnouncement()
+        public CustomCassieAnnouncement()
         {
         }
 
@@ -107,7 +108,7 @@
                 playNoise = !(bool)isNoisy;
             }
 
-            CassieAnnouncement processed = GenericReplacement();
+            CustomCassieAnnouncement processed = GenericReplacement();
             Words = processed.Words;
             Translation = processed.Translation;
 
@@ -118,11 +119,11 @@
 
             if (string.IsNullOrWhiteSpace(Translation))
             {
-                RespawnEffectsController.PlayCassieAnnouncement(Words, isHeld, playNoise, isSubtitles);
+                new CassieAnnouncement(new CassieTtsPayload(Words, playNoise)).AddToQueue();
             }
             else
             {
-                RespawnEffectsController.PlayCassieAnnouncement(Words, isHeld, playNoise, isSubtitles, Translation);
+                new CassieAnnouncement(new CassieTtsPayload(Words, Translation, playNoise)).AddToQueue();
             }
         }
     }

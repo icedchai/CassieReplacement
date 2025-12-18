@@ -20,7 +20,7 @@
     using CassieReplacement.Reader.Enums;
     using System.Text.RegularExpressions;
     using Logger = LabApi.Features.Console.Logger;
-    using static NineTailedFoxAnnouncer;
+    using Cassie;
 
     /// <summary>
     /// Reads Custom CASSIE messages.
@@ -118,7 +118,7 @@
         {
             while (true)
             {
-                if (NineTailedFoxAnnouncer.singleton.queue.Count != 0)
+                if (LabApi.Features.Wrappers.Cassie.IsSpeaking)
                 {
                     ticksSinceCassieSpoke = 0;
                 }
@@ -283,7 +283,9 @@
                 jamDelay = 0;
                 jamAmount = 0;
 
-                if (NineTailedFoxAnnouncer.VoiceLine.IsJam(msg, out int newDelay, out int newAmount))
+                // TODO: Re-add jam and pitch functionality
+
+                /*if (NineTailedFoxAnnouncer.VoiceLine.IsJam(msg, out int newDelay, out int newAmount))
                 {
                     jamDelay = newDelay;
                     jamAmount = newAmount;
@@ -300,7 +302,7 @@
 
                     continue;
                 }
-
+*/
                 // prefix/suffix processor
                 if (msg.StartsWith("prefix_", true, null) || msg.StartsWith("suffix_", true, null))
                 {
@@ -405,14 +407,16 @@
                         {
                             // Adds the appropriate amount of dots, where each dot is ~0.5 seconds
                             int howManyDotsToAdd = (int)Math.Round(msgCassieClip.Length * 2, MidpointRounding.AwayFromZero);
-                            baseCassieAnnouncement.Append(" pitch_1");
+                            baseCassieAnnouncement.Append(" $pitch_1");
                             for (int j = 0; j < howManyDotsToAdd; j++)
                             {
                                 baseCassieAnnouncement.Append(" .");
                             }
 
                             // Resets other values
-                            baseCassieAnnouncement.Append($" pitch_{pitch} jam_0_0");
+
+                            // TODO: Reimplement jam and stuff
+                            baseCassieAnnouncement.Append($" $pitch_{pitch}");
 
                             // REASONS NOT TO USE: WHEN NORMAL CASSIE WORDS JAM, THE PITCH SHIFT APPLIES TO THE TAIL-END OF THE WORD!
 
@@ -423,7 +427,7 @@
                 }
                 else if (int.TryParse(oldMsg, out int num))
                 {
-                    string[] numbers = NineTailedFoxAnnouncer.ConvertNumber(num).Split(' ');
+                    string[] numbers = ConvertNumber(num).Split(' ');
                     messages.Remove(msg);
                     int j = 0;
                     for (; j < numbers.Length; j++)
@@ -463,11 +467,73 @@
             {
                 yield return Timing.WaitForOneFrame;
             }
-            Logger.Info(baseCassieAnnouncement);
-            Logger.Info(string.IsNullOrWhiteSpace(translation) ? string.Join(" ", messages) : translation);
-            RespawnEffectsController.PlayCassieAnnouncement(StringBuilderPool.Shared.ToStringReturn(baseCassieAnnouncement), false, isNoisy, customAnnouncement, string.IsNullOrWhiteSpace(translation) ? string.Join(" ", messages) : translation);
-            yield return Timing.WaitForSeconds(isNoisy ? 2.25f : 0);
+
+            //Logger.Info(baseCassieAnnouncement);
+            //Logger.Info(string.IsNullOrWhiteSpace(translation) ? string.Join(" ", messages) : translation);
+            new CassieAnnouncement(new CassieTtsPayload(StringBuilderPool.Shared.ToStringReturn(baseCassieAnnouncement), string.IsNullOrWhiteSpace(translation) ? string.Join(" ", messages) : translation, isNoisy)).AddToQueue();
+            yield return Timing.WaitForSeconds(isNoisy ? 2.5f : 0);
             HandlesToMessages.Add(Timing.RunCoroutine(ReadWords(messages, audioPlayers, clipsToUnregister, tasks)), messages);
+        }
+
+        // TODO: move to a more apropo place
+        private static string ConvertNumber(int num)
+        {
+            if (num <= 0)
+            {
+                return " 0 ";
+            }
+
+            ushort num2 = 0;
+            byte b = 0;
+            byte b2 = 0;
+            while ((float)num / 1000f >= 1f)
+            {
+                num2++;
+                num -= 1000;
+            }
+
+            while ((float)num / 100f >= 1f)
+            {
+                b++;
+                num -= 100;
+            }
+
+            if (num >= 20)
+            {
+                while ((float)num / 10f >= 1f)
+                {
+                    b2++;
+                    num -= 10;
+                }
+            }
+
+            string text = string.Empty;
+            if (num2 > 0)
+            {
+                text = text + ConvertNumber(num2) + " thousand ";
+            }
+
+            if (b > 0)
+            {
+                text = text + b + " hundred ";
+            }
+
+            if (b + num2 > 0 && (num > 0 || b2 > 0))
+            {
+                text += " and ";
+            }
+
+            if (b2 > 0)
+            {
+                text = text + b2 + "0 ";
+            }
+
+            if (num > 0)
+            {
+                text = text + num + " ";
+            }
+
+            return text;
         }
 
         private IEnumerator<float> ReadWords(List<string> messages, List<AudioPlayer> audioPlayers, HashSet<CassieClip> clipsToUnregister = null, Dictionary<string, Task> tasksToAwait = null)
@@ -489,6 +555,8 @@
                     break;
                 }
 
+                // TODO: Re-add pitch, yield, & jam
+                /*
                 if (NineTailedFoxAnnouncer.VoiceLine.IsPitch(msg, out float pitchValue))
                 {
                     pitch = pitchValue;
@@ -507,7 +575,7 @@
                     jamAmount = newAmount;
                     continue;
                 }
-
+*/
                 int workingJamDelay = jamDelay;
                 int workingJamAmount = jamAmount;
                 jamDelay = 0;
@@ -527,7 +595,12 @@
                         jams = $"jam_{workingJamDelay}_{workingJamAmount} ";
                     }
 
-                    yield return Timing.WaitForSeconds(NineTailedFoxAnnouncer.singleton.CalculateDuration($"{jams}{msg}", speed: pitch));
+                    // TODO: Figure out this stupid ReadOnlySpan<T> bullshit with unity's mscorlib
+                    if (TryGetLine(MemoryExtensions.AsSpan($"{msg}"), out CassieLine cassieLine))
+                    {
+                        yield return Timing.WaitForSeconds(cassieLine.Duration * pitch);
+                    }
+
                     continue;
                 }
 
@@ -582,6 +655,32 @@
                     }
                 }
             }
+        }
+
+        // TODO: Had to copy because stupid BS with System.Memory and Assembly-CSharp using a different type of Span<>.
+        public unsafe bool TryGetLine(ReadOnlySpan<char> word, out CassieLine line)
+        {
+            CassieLineDatabase clipDatabase = Cassie.CassieTtsAnnouncer._singleton._clipDatabase;
+            //IL_003d: Unknown result type (might be due to invalid IL or missing references)
+            //IL_0044: Unknown result type (might be due to invalid IL or missing references)
+            clipDatabase.ValidateCache();
+            if (word.Length == 0 || !CassieLineDatabase.LinesByFirstCharCache.TryGetValue((char)word[0], out var value))
+            {
+                line = null;
+                return false;
+            }
+
+            foreach (CassieLine item in value)
+            {
+                if (MemoryExtensions.SequenceEqual<char>(word, MemoryExtensions.AsSpan(item.ApiName)))
+                {
+                    line = item;
+                    return true;
+                }
+            }
+
+            line = null;
+            return false;
         }
     }
 }

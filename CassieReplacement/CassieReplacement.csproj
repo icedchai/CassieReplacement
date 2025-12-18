@@ -7,12 +7,12 @@
     <Product>CassieReplacement</Product>
     <Copyright>Copyright ©  2025</Copyright>
     <OutputPath>bin\$(Configuration)\</OutputPath>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>embedded</DebugType>
     <PlatformTarget>ARM64</PlatformTarget>
     <Optimize>False</Optimize>
-    <DefineConstants>$(DefineConstants);EXILED;CUSTOMITEM</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>embedded</DebugType>

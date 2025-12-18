@@ -26,7 +26,7 @@ namespace CassieReplacement.Commands
         /// <inheritdoc/>
         public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
         {
-            Cassie.Clear();
+            LabApi.Features.Wrappers.Cassie.Clear();
             CustomCassieReader.Singleton.TimeBeforeWhichToPause = DateTime.Now;
             foreach (var audioPlayer in CustomCassieReader.Singleton.AudioPlayers)
             {
