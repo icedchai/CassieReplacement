@@ -19,13 +19,18 @@
         [HarmonyPrefix]
         public static bool MessagePrefix(CassieAnnouncement announcement)
         {
-            string words = announcement.Payload.Content;
+            string words = announcement.Payload.Content ?? string.Empty;
             bool makeNoise = announcement.Payload.PlayBackground;
             bool customAnnouncement = announcement.Payload.SubtitleSource != CassieTtsPayload.SubtitleMode.None;
             string customSubtitles = announcement.Payload._customSubtitle;
+            Logger.Info($"Content: {words ?? "null"}, PlayBackground: {makeNoise}, SubtitleSource: {announcement.Payload.SubtitleSource}, customSubtitle: {announcement.Payload._customSubtitle}");
 
-            //Logger.Info($"Content: {words}, PlayBackground: {makeNoise}, SubtitleSource: {announcement.Payload.SubtitleSource}, customSubtitle: {announcement.Payload._customSubtitle}");
+            if (announcement.Payload.Content == null)
+            {
+                return true;
+            }
 
+            // NRE here on SCP termination. What the actual fuck?
             bool useCassie = words.IndexOf("nocassie", StringComparison.OrdinalIgnoreCase) == -1;
             if (words.IndexOf("noparse", StringComparison.OrdinalIgnoreCase) != -1)
             {

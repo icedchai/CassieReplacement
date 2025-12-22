@@ -1,12 +1,12 @@
 ﻿#if !EXILED
-namespace CassieReplacement.Patches
+/*namespace CassieReplacement.Patches
 {
     using HarmonyLib;
     using PlayerRoles;
     using PlayerStatsSystem;
 
     // TODO: fix SCP termination patch
-    //[HarmonyPatch(typeof(NineTailedFoxAnnouncer), nameof(NineTailedFoxAnnouncer.AnnounceScpTermination))]
+    [HarmonyPatch(typeof(NineTailedFoxAnnouncer), nameof(NineTailedFoxAnnouncer.AnnounceScpTermination))]
     public static class TerminationAnnouncementSendPatch
     {
         public static bool Prefix(ReferenceHub scp, DamageHandlerBase hit)
@@ -26,5 +26,5 @@ namespace CassieReplacement.Patches
             return false;
         }
     }
-}
+}*/
 #endif
